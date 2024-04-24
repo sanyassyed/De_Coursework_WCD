@@ -13,11 +13,29 @@ Here I will be documenting all the steps I followed during the learning of this 
         vim .gitignore
         # create a readme file
         touch readme.md
+        # add and commit chages
+        git add .
+        git commit -m "CICD: Intital commit"
 
         # create a repo `deCourse` on github to push the local repo to it
         # add id_pub key to GitHub account to enable push and pull from the local system to remote repo
-        git remote add origin 
+        git remote add origin git@github.com:sanyassyed/deCourse.git
+        # check if the remote is added
+        git remote
+        # check the branch name
+        git branch
+        # if you want to change the name of the master branch name to main then use the command `git branch -M main` but we will keep the name as master
+        git push -u origin master
     ```
+
+### Codespace Server
+Connect the course repo to git codespace. [Source Documentation](https://docs.github.com/en/codespaces/developing-in-a-codespace/creating-a-codespace-for-a-repository#creating-a-codespace-for-a-repository)
+
+* Goto the remote repo on GitHub
+* Click on the `CODE <>` button
+* Select the `codespace` tab
+* Select `Create codespace on master` button
+
 
 ### Systems Used
 * Local System 
