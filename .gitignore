@@ -1,0 +1,10 @@
+# virtual env
+*.env
+
+# VS files
+
+# Credential
+credentials/*
+
+# Data
+*.csv
