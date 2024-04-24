@@ -173,6 +173,11 @@ Remember to follow these steps when working on the local and remote server respe
 * Stop Steps
     * Save Chages to the files
     * Commit changes and push to remote repo
+* Apps:
+    * VSCode
+    * OneNote
+    * Chrome
+    
 ### Server - Git Codespace
 * Start Steps
     * Goto VSCode app on Desktop and select `remote:codespaces-reimaginedGarbanzo` server to work on the remote codespace server  
