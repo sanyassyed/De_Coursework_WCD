@@ -1,10 +1,28 @@
-# virtual env
-*.env
-
-# VS files
+# VSCode files
+__pycache__/
 
 # Credential
 credentials/*
 
 # Data
 *.csv
+
+# Virtual Env
+.my_env/
+
+# Environment Variables
+.env_main
+.env
+
+# Credentials Folder contents but not the folder
+credentials/*
+!credentials/.gitkeep
+
+# Data files
+# exclude everything
+data/*
+aq_upload/*
+# exception to the rule to keep the folder itself
+!data/.gitkeep 
+!aq_upload/.gitkeep
+

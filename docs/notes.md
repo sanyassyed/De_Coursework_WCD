@@ -17,11 +17,24 @@ Here I will be documenting all the steps I followed during the learning of this 
         git add .
         git commit -m "CICD: Intital commit"
 
+        # Check if the global user.name & user.email has been set
+        git config --list 
+
+        # If not; set the global config as follows
+        # set the global variables
+        git config --global user.email "xyz@gmail.com"
+        git config --global user.name "xyz pc"
+
         # create a repo `deCourse` on github to push the local repo to it
+        # Create SSH key by following steps [here](https://github.com/sanyassyed/sf_eviction/blob/master/docs/README_Dev.md#conda)
         # add id_pub key to GitHub account to enable push and pull from the local system to remote repo
         git remote add origin git@github.com:sanyassyed/deCourse.git
         # check if the remote is added
         git remote
+        # check the remote origin is set with ssh
+        git remote -v
+        # Check the SSH connection with repo from VM using
+        ssh -T git@github.com
         # check the branch name
         git branch
         # if you want to change the name of the master branch name to main then use the command `git branch -M main` but we will keep the name as master
@@ -50,6 +63,7 @@ Connect the course repo to git codespace.
     * OS: MS Windows 10 x-64 based PC
     * Course related apps intalled
         * Anaconda
+            * TODO:
         * MySQL
         * PowerBI
         * VSCode
@@ -64,33 +78,62 @@ Connect the course repo to git codespace.
 
     * Apps Installed: Git Codespace server already has installed the following:
         * Docker
-        * docker
-        * conda
+        * Conda: if not available then follow the step [here](https://github.com/sanyassyed/sf_eviction/blob/master/docs/README_Dev.md#conda)
         * python
-    * Connect Git Codespace to local VSCode 
-* Virtual Environment
-    Create a virtual conda environment (both on local and git server) 
-    ```bash
-       conda create --prefix ./.my_env python=3.9.1 pip 
-       conda init
-       cd ~
-       source .bashrc
-       cd /workspaces/ny_taxi/
-       conda activate .my_env
-    ```
+        
+* Conda Initialization & Virtual Environment
+    Create a virtual conda environment to work on the project (both on local and git server). [Source](https://github.com/sanyassyed/SeafoodProject/blob/main/documentation.md#local-system) 
+    * Local Server - Windows
+        * Open Gitbash
+        * Initialize conda for Git Bash as follows to view base conda environment   
+            ```bash
+                cd /d/Documents/SeafoodProject
+                # initialize conda for gitbash as follows
+                conda init bash
+                # close the terminal and reopen it you should now see (base)
+            ```
+        * Create the virtual environment as follows:
+            ```bash
+                # Path to install the virtual env in the current project directory with python 3.10 and pip
+                conda create --prefix ./.my_env python=3.10.9 pip 
+                # Activate the virtual env as follows
+                conda activate .my_env 
+                # to de-activate the virtual env my_env use the below 
+                conda activate 
+                # don't use deactivate just use activate to go to base
+            ```
+    * Remote Server - Linux
+        Create the virtual env as follows
+        ```bash
+            conda create --prefix ./.my_env python=3.9.1 pip 
+            conda init
+            cd ~
+            source .bashrc
+            cd /workspaces/ny_taxi/
+            conda activate .my_env
+        ```
 * Git Ignore
     Updated `.gitignore` file to add the files to be ignored for eg:
     * `.env` files
     * `vscode env files`
 
 * Conda & Python Packages 
-The packages installed on git server and if required on local server too
+    The packages installed on git server and if required on local server too
+
     * pandas
     * pyarrow
     * `pip install pgcli`
     * `pip install jupyter`
     * `pip install ipykernel`-> if not already installed
     * `pip install sqlalchemy psycopg2`
+    
+    Install the required packages using pip
+    ```bash
+        # Check packages intalled already
+        pip list
+        # Install pandas, datetime, pytz
+        pip install pandas datetime pytz
+    ```
 
 ## Prework
 The tasks performed in the course prework can be found in this section.
