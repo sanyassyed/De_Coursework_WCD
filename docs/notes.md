@@ -29,13 +29,21 @@ Here I will be documenting all the steps I followed during the learning of this 
     ```
 
 ### Codespace Server
-Connect the course repo to git codespace. [Source Documentation](https://docs.github.com/en/codespaces/developing-in-a-codespace/creating-a-codespace-for-a-repository#creating-a-codespace-for-a-repository)
+Connect the course repo to git codespace. 
+[Source Documentation](https://docs.github.com/en/codespaces/developing-in-a-codespace/creating-a-codespace-for-a-repository#creating-a-codespace-for-a-repository)
 
 * Goto the remote repo on GitHub
 * Click on the `CODE <>` button
 * Select the `codespace` tab
 * Select `Create codespace on master` button
-
+* This will open the codespace in an online VSCode
+* Connect this to the Desktop VSCode as follows [Video Reference](https://www.youtube.com/watch?v=XOSUt8Ih3zA&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=15)
+    * Click on the hamburger menu on the left in the online VSCode
+    * Select `Open in VSCode desktop`
+    * Select `Open VSCode Desktop` in the pop up window
+    * This will open the VSCode on your local system
+    * Here install the `GitHub Codespace` extension if it does not happen automatically
+    * Now we can use the `Git Codespace server` to work on our project
 
 ### Systems Used
 * Local System 
@@ -47,13 +55,19 @@ Connect the course repo to git codespace. [Source Documentation](https://docs.gi
         * VSCode
         * GIT Bash
 * GIT Codespace
-    * OS:
+    * OS: Use the following commands to find out the information about the Git Codespace Server OS
+        * `uname` -> to find the kernal name which in this case is `Linux`
+        * `uname -r` -> kernal and version which is `6.2.0-1019-azure`
+        * `cat /etc/os-release` -> version of the OS installed `NAME="Ubuntu" VERSION="20.04.6 LTS (Focal Fossa)"`
+        * `lsmem` -> to print the memory information 
+        * `free -m` -> to find how much memory is free
+
     * Apps Installed: Git Codespace server already has installed the following:
         * Docker
         * docker
         * conda
         * python
-    * Connect Git Codespace to local VSCode [Video Reference](https://www.youtube.com/watch?v=XOSUt8Ih3zA&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=15)
+    * Connect Git Codespace to local VSCode 
 * Virtual Environment
     Create a virtual conda environment (both on local and git server) 
     ```bash
