@@ -50,6 +50,167 @@ The tasks performed in the course prework can be found in this section.
         1. To design and implement relational data warehouses and manage regular data loads into the table
         1. Being proficient in Spark, using notebooks and other code artifacts to process data in the data lake and prepare it for modelling and analyasis
 
+### Data Engineering Terminologies
+
+A
+- **ACID (Atomicity, Consistency, Isolation, Durability)**: These are the properties that ensure database transactions are processed reliably.
+- **Atomicity**: If one part of a task fails, the whole task fails, and the database is left unchanged.
+- **Avro**: A type of data format that's compact, easy to read, and commonly used for storing data.
+- **Azkaban**: A tool used for scheduling and running big data processing tasks, like those in Hadoop.
+
+B
+- **Big Data**: Large sets of data that are too complex or large to be handled by traditional data processing software.
+- **BI (Business Intelligence)**: Technologies and processes that help businesses analyze data and make informed decisions.
+- **Batch Processing**: Doing many tasks all at once, usually involving large volumes of data.
+- **BigQuery**: A cloud-based data warehousing service by Google, used for analyzing big data sets.
+- **BigTable**: A high-performance NoSQL database system designed to handle large volumes of data.
+
+C
+- **Cassandra**: A distributed NoSQL database management system known for its ability to handle large amounts of data across many commodity servers.
+- **CTE (Common Table Expression)**: A temporary result set that can be referenced within a SELECT, INSERT, UPDATE, or DELETE statement.
+- **Caching**: Storing frequently accessed data in memory to speed up future retrieval.
+- **Column Oriented Database**: A type of database where data is stored and retrieved by columns rather than rows.
+- **Cloud Composer**: Google Cloud's managed workflow orchestration service, based on Apache Airflow.
+- **Cube**: A multi-dimensional structure used to analyze data in data warehousing environments.
+
+D
+- **DynamoDB**: A fully managed NoSQL database service provided by AWS, known for its scalability and low latency.
+- **Druid**: A high-performance, real-time analytics database designed for fast query performance on large datasets.
+- **Drill**: An Apache open-source SQL query engine designed for interactive analysis of large-scale datasets.
+- **Dremel**: Google's large-scale, distributed database querying engine used for interactive analysis of large datasets.
+- **Distributed Processing**: Splitting tasks and processing them across multiple computers or servers to speed up data processing.
+- **DataFrame**: A data structure used for storing and manipulating structured data in programming languages like Python and R.
+- **DW (Data Warehouse)**: A centralized repository for storing and analyzing large volumes of data from various sources.
+
+E
+- **Elasticsearch**: A distributed, RESTful search and analytics engine commonly used for full-text search capabilities.
+- **EMR (Elastic MapReduce)**: A cloud-based big data processing service provided by AWS, based on the Apache Hadoop framework.
+- **Enrichment**: The process of enhancing or adding more information to existing data.
+- **ETL (Extract, Transform, Load)**: A process for moving data from one system to another, transforming it along the way to fit the target system's requirements.
+- **ELT (Extract, Load, Transform)**: Similar to ETL, but the data is loaded into the target system first before being transformed.
+- **ER Diagram (Entity-Relationship Diagram)**: A visual representation of the relationships between entities in a database.
+
+F
+- **Flume**: A distributed, reliable, and available service for efficiently collecting, aggregating, and moving large amounts of log data.
+- **Flink**: An open-source stream processing framework for building real-time applications on top of Apache Hadoop.
+- **Flat File**: A file format that contains records with no structured relationships between the data.
+- **Fact**: A measurement or event that can be analyzed in a data warehouse or business intelligence system.
+- **Failover**: The process of automatically switching to a redundant or standby system in the event of a failure.
+
+G
+- **Glue**: AWS Glue is a fully managed extract, transform, and load (ETL) service that makes it easy to prepare and load data for analytics.
+- **Golden Record**: A single, authoritative version of the truth for a particular data element or entity.
+
+H
+- **Hadoop**: An open-source framework for distributed storage and processing of large datasets across clusters of computers.
+- **Hive**: A data warehouse infrastructure built on top of Hadoop for providing data summarization, query, and analysis.
+- **HBase**: An open-source, non-relational, distributed database modeled after Google's Bigtable and designed to run on top of Hadoop.
+- **HDFS (Hadoop Distributed File System)**: A distributed file system designed to store large volumes of data reliably and efficiently.
+
+I
+- **InfluxDB**: An open-source time series database designed to handle high write and query loads.
+- **Ingestion**: The process of bringing data into a system for processing and analysis.
+- **Integration**: Bringing together data from different sources to work together cohesively.
+- **In-memory**: Storing data in memory for faster access and processing.
+
+J
+- **JSON (JavaScript Object Notation)**: A lightweight data interchange format commonly used for transmitting data between a server and a web application.
+- **Jobs**: software programs
+
+K
+- **Kafka**: An open-source distributed event streaming platform used for building real-time data pipelines and streaming applications.
+- **Kinesis**: Amazon Kinesis is a platform for streaming data on AWS, offering capabilities for collecting, processing, and analyzing real-time, streaming data.
+- **Kibana**: An open-source data visualization plugin for Elasticsearch that provides visualization capabilities on top of the content indexed on an Elasticsearch cluster.
+- **Key-Value Store**: A type of database where data is stored and retrieved using keys.
+- **Kubernetes**: An open-source container orchestration platform for automating the deployment, scaling, and management of containerized applications.
+
+L
+- **Looker**: A business intelligence and data visualization platform that helps organizations explore, analyze, and share insights from their data.
+- **Luigi**: A Python package that helps you build complex pipelines of batch jobs.
+- **Lake**: A central location for storing all structured and unstructured data at any scale.
+- **Lambda**: AWS Lambda is a serverless computing service that lets you run code without provisioning or managing servers.
+- **Logstash**: A server-side data processing pipeline that ingests data from multiple sources, transforms it, and then sends it to a "stash" like Elasticsearch.
+
+M
+- **MySQL**: A popular open-source relational database management system known for its reliability, ease of use, and performance.
+- **MongoDB**: A popular open-source NoSQL database known for its flexibility, scalability, and ease of use.
+- **MariaDB**: An open-source relational database management system and a MySQL fork maintained by the original developers of MySQL.
+- **MapReduce**: A programming model and processing framework for parallel and distributed computing on large datasets.
+- **MLlib**: Spark’s machine learning library for scalable and distributed machine learning algorithms.
+- **Metabase**: An open-source business intelligence and analytics tool that makes it easy to explore, visualize, and share insights from your data.
+- **MDM (Master Data Management)**: The processes, governance, policies, standards, and tools that consistently define and manage the critical data of an organization.
+- **MDX (MultiDimensional eXpressions)**: A query language for OLAP databases, specifically Microsoft SQL Server Analysis Services.
+
+N
+- **NoSQL**: A category of databases that do not rely on the traditional row-and-column schema used by relational databases.
+- **Neo4j**: An open-source, NoSQL graph database known for its performance and scalability in handling connected data.
+- **Nomad**: A cluster manager and scheduler designed for microservices and batch workloads.
+
+O
+- **ORC (Optimized Row Columnar)**: An optimized columnar storage format for Hadoop-based data processing engines.
+- **Oozie**: A workflow scheduler system to manage Apache Hadoop jobs.
+- **OLAP (Online Analytical Processing)**: A computing approach to quickly answer multi-dimensional analytical queries.
+- **OLTP (Online Transaction Processing)**: A computing approach to manage transaction-oriented applications, such as order processing and customer service.
+- **ODS (Operational Data Store)**: A centralized database that provides a consistent view of core business data for operational reporting and analysis.
+
+P
+- **PostgreSQL**: An open-source relational database management system known for its reliability, robust feature set, and extensibility.
+- **PostGIS**: An extension for PostgreSQL that adds support for geographic objects, allowing location queries to be run in SQL.
+- **Percona**: A company that provides software and services for MySQL, MongoDB, and other open-source databases.
+- **Parquet**: An open-source columnar storage format for Hadoop-based data processing engines.
+- **Protobuf (Protocol Buffers)**: A method of serializing structured data that's more efficient than XML or JSON.
+- **PySpark**: The Python API for Apache Spark, a fast and general-purpose cluster computing system.
+
+Q
+- **Query Engine**: The software component responsible for executing queries against a dataset.
+- **Query Optimizer**: A database component that analyzes SQL queries and chooses the most efficient way to execute them.
+- **Query Plan**: A detailed outline of how a database will execute a particular query.
+- **Query Cost**: The computational resources required to execute a query.
+
+R
+- **RDS (Relational Database Service)**: A managed database service provided by AWS that supports multiple relational database engines.
+- **RBAC (Role-Based Access Control)**: A security model that restricts system access based on a user's role and permissions.
+- **RabbitMQ**: An open-source message broker software that implements the Advanced Message Queuing Protocol.
+- **Redshift**: A fully managed data warehouse service provided by AWS that allows you to analyze large datasets using SQL.
+- **Redis**: An open-source, in-memory data structure store commonly used as a database, cache, or message broker.
+- **Redash**: An open-source data visualization and dashboarding tool that connects to various data sources for real-time analytics.
+- **Replication**: The process of copying data from one database to another to ensure data availability, reliability, and fault tolerance.
+- **RDD (Resilient Distributed Dataset)**: A fundamental data structure in Spark that represents a collection of immutable distributed elements.
+
+S
+- **S3 (Simple Storage Service)**: A cloud-based object storage service provided by AWS.
+- **SQL (Structured Query Language)**: A domain-specific language used in programming and managing relational databases.
+- **Sqoop**: A tool designed for efficiently transferring bulk data between Apache Hadoop and structured data stores.
+- **Snappy**: A fast compression/decompression library developed by Google.
+- **Spark**: An open-source, distributed computing system that provides an interface for programming entire clusters with implicit data parallelism and fault tolerance.
+- **Storm**: An open-source distributed real-time computation system used for processing large streams of data.
+- **Superset**: An open-source business intelligence web application developed by Airbnb.
+
+T
+- **Terraform**: An open-source infrastructure as code software tool created by HashiCorp.
+- **Thrift**: An open-source software framework for building cross-language services.
+- **TLA (Three-letter acronym)**: Abbreviation that consists of three letters representing an entity or concept.
+
+U
+- **Unstructured Data**: Data that does not have a predefined data model or is not organized in a pre-defined manner.
+  
+V
+- **Vertica**: A columnar database management system designed to handle large volumes of data and complex queries.
+- **VoltDB**: An in-memory, scale-out SQL database designed for modern applications that require real-time analytics.
+
+W
+- **Wrangling**: The process of cleaning, structuring, and enriching raw data into a usable format for analysis.
+- **Window Function**: A function applied to a set of rows in a table that performs a calculation across a subset of the rows.
+
+X
+- Empty
+
+Y
+- **YARN (Yet Another Resource Negotiator)**: The resource management layer of Hadoop, responsible for managing and scheduling resources across the cluster.
+
+Z
+- **Zookeeper**: A centralized configuration management service that provides distributed synchronization, configuration, and naming registry services.
+
 
 ## Software Installation:
 Additional softwares intalled include:
