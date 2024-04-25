@@ -29,12 +29,15 @@ The tasks performed in the course prework can be found in this section.
     * Streaming Data
         * Streaming data refers to perpetual sources of data that generate data values in real-time, often relating to specific events
         * Sources like IOT, social media feed are examples of streaming data source
-    * Core Responsibilities of a DE ***(DIM or ETL)***
+    * Data Pipelines
+        * Data pipelines are used to orchestrate activities that transfer and transform data
+        * They allow DE's to perform repeated ETL which could be trigerred based on schedules or in response to an event
+    * Core Responsibilities of a DE ***(DIM or ETL or CI)***
         1. Design, Implement, and Manage solutions that integrate operational and analytical data sources or
         1. Extract operational data from multiple systems, Transform it into appropriate structures for analytics, and Load it into an analytical data store (usually referred to as ETL solutions).
         1. Implement solutions that 
             1. Capture real-time stream of data
-            2. ingest them into analytical data systems, often combining the real-time data with other application data that is processed in batches.
+            2. Ingest them into analytical data systems, often combining the real-time data with other application data that is processed in batches.
 
 
 
