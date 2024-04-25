@@ -3,7 +3,7 @@ The tasks performed in the course prework can be found in this section.
 
 ## Guideline and basics
 
-### Data Engineering [Source](https://s3.amazonaws.com/weclouddata/data/data/data%20engineering%20concepts.pdf)
+### Data Engineering Foundation Concepts [Source](https://s3.amazonaws.com/weclouddata/data/data/data%20engineering%20concepts.pdf)
 * Data
     * Structured - data with rows and cols that can fit in a table
     * Semi-Structured - data that required flattening to fit into a source system. This data does not fit neatly into a table Eg: Json, YML,
@@ -32,13 +32,23 @@ The tasks performed in the course prework can be found in this section.
     * Data Pipelines
         * Data pipelines are used to orchestrate activities that transfer and transform data
         * They allow DE's to perform repeated ETL which could be trigerred based on schedules or in response to an event
-    * Core Responsibilities of a DE ***(DIM or ETL or CI)***
+    * Data Lakes
+        * Is a **storage repository** that holds large amounts of data in native, raw formats which could be structured, semi-structured or un-structured
+        * They are designed or built for scaling
+    * Data Warehouse
+        * Is a **centralized repository** of integrated data from various different sources.
+        * Both current and historical data is stored in relational tables with schema which is optimized for analytical queries
+    * Apache Spark
+        * Is a parallel processing framework that takes advantage of in-memory processing and distributed file storage.
+        * It is an OSS (Open Source Software) tool for big data scenarios
+    * Core Responsibilities of a DE ***(DIM or ETL or CI or DW or BigData)***
         1. Design, Implement, and Manage solutions that integrate operational and analytical data sources or
         1. Extract operational data from multiple systems, Transform it into appropriate structures for analytics, and Load it into an analytical data store (usually referred to as ETL solutions).
         1. Implement solutions that 
-            1. Capture real-time stream of data
-            2. Ingest them into analytical data systems, often combining the real-time data with other application data that is processed in batches.
-
+            + Capture real-time stream of data
+            + Ingest them into analytical data systems, often combining the real-time data with other application data that is processed in batches.
+        1. To design and implement relational data warehouses and manage regular data loads into the table
+        1. Being proficient in Spark, using notebooks and other code artifacts to process data in the data lake and prepare it for modelling and analyasis
 
 
 ## Software Installation:
