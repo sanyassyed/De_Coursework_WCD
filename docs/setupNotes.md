@@ -88,13 +88,14 @@ Connect the course repo to git codespace.
 For this course I will be using my Local Windows PC, Git Codespace Server (as Docker is already installed in it and my Windows machine craches when docker is installed on it) and other servers as required
 * Local System 
     * OS: MS Windows 10 x-64 based PC
-    * Course related apps intalled
+    * Apps intalled - course related
         * Anaconda
             * TODO:
         * MySQL
         * PowerBI
         * VSCode
         * GIT Bash
+        * Dbeaver from [here](https://dbeaver.io/files/dbeaver-ce-latest-x86_64-setup.exe)
 * GIT Codespace
     * OS: Use the following commands to find out the information about the Git Codespace Server OS
         * `uname` -> to find the kernal name which in this case is `Linux`
