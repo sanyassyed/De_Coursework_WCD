@@ -61,7 +61,7 @@ A
 B
 - **Big Data**: Large sets of data that are too complex or large to be handled by traditional data processing software.
 - **BI (Business Intelligence)**: Technologies and processes that help businesses analyze data and make informed decisions.
-- **Batch Processing**: Doing many tasks all at once, usually involving large volumes of data.
+- **Batch Processing**: Executing/Processing software programs called jobs in batches, usually involving large volumes of data.
 - **BigQuery**: A cloud-based data warehousing service by Google, used for analyzing big data sets.
 - **BigTable**: A high-performance NoSQL database system designed to handle large volumes of data.
 
@@ -187,7 +187,7 @@ S
 - **Superset**: An open-source business intelligence web application developed by Airbnb.
 
 T
-- **Terraform**: An open-source infrastructure as code software tool created by HashiCorp.
+- **Terraform**: An open-source infrastructure as code software tool created by HashiCorp used for provisioning resources.
 - **Thrift**: An open-source software framework for building cross-language services.
 - **TLA (Three-letter acronym)**: Abbreviation that consists of three letters representing an entity or concept.
 
