@@ -19,9 +19,9 @@ credentials/*
 !credentials/.gitkeep
 
 # Data files
-# exclude everything
-*/data/*
-aq_upload/*
+# exclude any folder named data anywhere in the repo
+data/
+
 # exception to the rule to keep the folder itself
 !data/.gitkeep 
 !aq_upload/.gitkeep
