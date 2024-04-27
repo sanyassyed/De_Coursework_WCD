@@ -20,7 +20,7 @@ credentials/*
 
 # Data files
 # exclude everything
-data/*
+*/data/*
 aq_upload/*
 # exception to the rule to keep the folder itself
 !data/.gitkeep 
