@@ -220,14 +220,15 @@ Additional softwares intalled include:
 
 ## SQL
 Practiced the assessment from the [Udemy Course](https://www.udemy.com/course/the-complete-sql-bootcamp)
-* Dvd Rental Database Practice
+* Dvd Rental Database Practice - **IGNORE**
     - [Data for Postgres DB](https://drive.google.com/file/d/1oBxiJkST9-7IjOMY-8aMXEMbrL6XcX49/view)
     - [Data for MySql DB](https://dev.mysql.com/doc/sakila/en/sakila-installation.html)
-* Exercise Database
+* Exercise Database - **IGNORE**
     - [Data for Postgres DB](https://drive.google.com/file/d/1wDqIK6zt5twWnCOx97ywipaiWR2d0OfT/view)
-* WeCloudData SQL Practice Exercises [In this file](../prework/sql/mysqlsampledatabaseAndSqlExercises.sql)
-    - Retail Sale Dataset
-    - Movie Rental Dataset
+* WeCloudData SQL Practice Exercises 
+    - Retail Sale Dataset [In this file](../prework/sql/mysqlsampledatabaseAndSqlExercises1n2.sql)
+    - Movie Rental Dataset [In this file](../prework/sql/mysqlsampledatabaseAndSqlExercises1n2.sql)
+    - Superstore Dataset [In this file](../prework/sql/dataSuperStoreDBWindowFunctionsSqlExercise3.sql)
 * 
 ### Important Points:
 * When you use SQL functions like MAX(), MIN() etc they return ***null*** values as answer if no answer available. Besause if a function receives NULL as an input parameter it returns NULL. But if the query return no value the answer is empty and not NULL.

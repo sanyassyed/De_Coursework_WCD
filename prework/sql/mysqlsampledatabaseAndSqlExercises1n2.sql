@@ -601,3 +601,158 @@ FROM film f,
 WHERE f.film_id = fc.film_id AND
       fc.category_id = c.category_id;
 
+# 5 - Select films with rental_rate > 2 and then combine the results with films with rating G, PG-13 or PG
+SELECT *
+FROM film
+WHERE rental_rate > 2
+UNION 
+SELECT * 
+FROM film
+WHERE rating IN ('G', 'PG-13', 'PG');
+
+# Exercise Day 3
+# 1 - How many rentals (basically, the sales volume) happened from 2005-05 to 2005-08? Hint: use date between '2005-05-01' and '2005-08-31';
+SELECT COUNT(rental_id) salesVolume
+FROM rental
+WHERE rental_date BETWEEN '2005-05-01' AND '2005-08-31';
+
+SELECT COUNT(rental_id) as volume 
+FROM rental
+WHERE rental_date between '2005-05-01 00:00:00' AND '2005-08-31 23:59:59';
+
+# 2 - I want to see the rental volume by month. Hint: you need to use substring function to create a month column
+SELECT EXTRACT(YEAR_MONTH FROM rental_date) month_name,
+       COUNT(DISTINCT rental_id) totalRentals
+FROM rental
+WHERE rental_date BETWEEN '2005-05-01' AND '2005-08-31'
+GROUP BY month_name
+ORDER BY 1;
+
+SELECT SUBSTRING(rental_date, 1,7) as rental_month, 
+       COUNT(rental_Id) as volume 
+FROM rental
+WHERE rental_date BETWEEN '2005-05-01 00:00:00' AND '2005-08-31 23:59:59' 
+GROUP BY 1;
+
+# 3 - Rank the staff by total rental volumes for all time period. I need the staff’s names, so you have to join with staff table
+SELECT r.staff_id,
+       CONCAT(s.last_name, ' ', s.first_name) staffName,
+       COUNT(DISTINCT r.rental_id) totalRentals
+FROM rental r,
+     staff s 
+WHERE r.staff_id = s.staff_id
+GROUP BY r.staff_id, staffName
+ORDER BY totalRentals DESC;
+
+# 4 - Create the current inventory level report for each film in each store?
+SELECT * FROM inventory LIMIT 5;
+
+SELECT film_id,
+       store_id,
+       COUNT(inventory_id) inventoryLevel
+FROM inventory
+GROUP BY film_id,
+		 store_id
+ORDER BY inventoryLevel DESC;
+
+# 5 - When you show the inventory level to your manager, your manager definitely wants to know the film name. Please add film name for the inventory report.
+# 6 - After you show the inventory level again to your manager, your manager still wants to know the category for each film. Please add the category for the inventory report.
+
+SELECT f.title filmName,
+       i.film_id,
+       i.store_id,
+       fc.category_id,
+       c.name categoryName,
+       COUNT(i.inventory_id) volume
+FROM film f,
+     inventory i,
+     film_category fc,
+     category c
+WHERE f.film_id = i.film_id AND
+      fc.film_id = i.film_id AND
+      fc.category_id = c.category_id
+GROUP BY filmName,
+		 i.film_id,
+         i.store_id,
+         fc.category_id,
+         categoryName;
+         
+# 7 - Your manager is happy now, but you need to save the query result to a table, just in case your manager wants to check again, and you may need the table to do some analysis in the future.
+CREATE TABLE inventory_volume AS
+(SELECT f.title filmName,
+       i.film_id,
+       i.store_id,
+       fc.category_id,
+       c.name categoryName,
+       COUNT(i.inventory_id) volume
+FROM film f,
+     inventory i,
+     film_category fc,
+     category c
+WHERE f.film_id = i.film_id AND
+      fc.film_id = i.film_id AND
+      fc.category_id = c.category_id
+GROUP BY filmName,
+		 i.film_id,
+         i.store_id,
+         fc.category_id,
+         categoryName);
+         
+DESCRIBE inventory_volume;
+
+# 8 - Use your report to identify the film which is not available in any store, and the next step will be to notify the supply chain team to add the film into the store
+SELECT f.film_id,
+       f.title,
+       i.store_id
+FROM film f LEFT JOIN inventory_volume i ON f.film_id = i.film_id 
+WHERE i.store_id IS NULL;
+
+-- These are the anwers given in the solution but my understanding is that they are not correct.
+SELECT f.film_id,
+       f.title,
+       i.volume
+FROM film f LEFT JOIN inventory_volume i ON f.film_id = i.film_id 
+WHERE i.volume = 0;
+
+SELECT * FROM inventory_volume WHERE volume = 0;
+
+# 9 - How much revenue was made from 2005-05 to 2005-08 by month?
+SELECT EXTRACT(YEAR_MONTH FROM payment_date) yearMonth,
+       SUM(amount) revenue
+FROM payment
+WHERE payment_date BETWEEN '2005-05-01' AND '2005-08-31'
+GROUP BY 1
+ORDER BY 2;
+
+# 10 - How much revenue was made from 2005-05 to 2005-08 by each store?
+
+SELECT store_id, 
+	   sum(amount) as revenue 
+FROM payment p JOIN staff s
+    ON p.staff_id=s.staff_id
+WHERE payment_date BETWEEN '2005-05-01 00:00:00' AND '2005-08-31 23:59:59' 
+GROUP BY 1;
+
+# 11 - Say the movie rental store wants to offer unpopular movies for sale to free up shelf space for newer ones. 
+# Help the store to identify unpopular movies by counting the number of rental times for each film.
+WITH rentalsTbl AS (
+					SELECT i.film_id,
+						   f.title filmName,
+						   c.name categoryName,
+						   COUNT(DISTINCT r.rental_id) totalRentals
+					FROM rental r,
+						 inventory i,
+						 film f,
+						 film_category fc,
+						 category c
+					WHERE r.inventory_id = i.inventory_id AND
+						  i.film_id = f.film_id AND
+						  fc.film_id = f.film_id AND
+						  fc.category_id = c.category_id
+					GROUP BY 1, 2, 3
+					ORDER by 4 ASC)
+SELECT *,
+       DENSE_RANK() OVER (ORDER BY totalRentals ASC) unpopularRank
+FROM rentalsTbl
+ORDER BY unpopularRank ASC;
+
