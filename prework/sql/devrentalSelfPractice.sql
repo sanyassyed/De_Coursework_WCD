@@ -45,14 +45,20 @@ WHERE first_name LIKE 'E%' AND
 ORDER BY customer_id DESC
 LIMIT 1;
 
+
 # Question source https://dev.mysql.com/doc/sakila/en/sakila-usage.html
 # Find Overdue dvd's
-SELECT DISTINCT rental_id
+SELECT DISTINCT CONCAT(c.last_name, ',', c.first_name) customer,
+	            a.phone phone,
+                f.title title
 FROM rental r INNER JOIN inventory i ON r.inventory_id = i.inventory_id
+	 INNER JOIN customer c on r.customer_id = c.customer_id 
+     INNER JOIN address a on c.address_id = a.address_id 
      INNER JOIN film f ON i.film_id = f.film_id
-WHERE r. return_date IS NULL OR
-      r.return_date > date_add(r.rental_date, INTERVAL f.rental_duration DAY);
-      
-SELECT *
-FROM film
+WHERE r. return_date IS NULL AND
+      current_date() >= date_add(r.rental_date, INTERVAL f.rental_duration DAY)
+ORDER BY f.title
 LIMIT 5;
+    
+
+
