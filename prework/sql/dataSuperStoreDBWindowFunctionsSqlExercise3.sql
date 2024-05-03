@@ -82,7 +82,7 @@ INSERT INTO `products` VALUES (657768,'\"While you Were Out\" Message Book, One 
 /**********************************
 SOLUTIONS
 **********************************/
-
+use superstore;
 # 1. The owner of superstore company X wants to know how many customers brought in more than 3000$ in sales on their first purchase.
 WITH totalSalesTab AS (
 						SELECT customerId,
@@ -98,3 +98,131 @@ SELECT COUNT(*)
 FROM totalSalesTab
 WHERE orderRnk =1 AND totalSales > 3000;
 	
+# 2. Return the top 3 most ordered ProductSubCategory within each Product Category
+WITH prod_totals_tbl AS (
+							SELECT p.ProductId,
+								   p.ProductCategory,
+								   p.ProductSubCategory,
+								   SUM(o.OrderQuantity) totalQuantity
+							FROM orders o,
+								 products p 
+							WHERE o.ProductID = p.ProductID
+							GROUP BY p.ProductID,
+									 ProductCategory,
+									 ProductSubCategory
+							ORDER BY ProductCategory),
+rank_tbl AS (
+			SELECT *,
+				   DENSE_RANK() OVER (PARTITION BY ProductCategory ORDER BY totalQuantity DESC) rnk
+			FROM prod_totals_tbl
+			ORDER BY ProductCategory)
+SELECT *
+FROM rank_tbl
+WHERE rnk <= 3;
+
+# 3. How many customers had a time gap of less than 30 days between their first and second order?
+WITH customer_order_date_tbl 
+AS (
+	SELECT customerId,
+		   OrderId,
+		   MAX(OrderDate) OrderDate
+	FROM orders
+	GROUP BY customerId,
+			 OrderId),
+cust_order_ranked_tbl 
+AS (
+	SELECT customerId,
+		   OrderDate,
+		   RANK() OVER (PARTITION BY customerId ORDER BY OrderDate ASC) rnk,
+           datediff(LEAD(OrderDate) OVER (PARTITION BY customerId ORDER BY OrderDate ASC), OrderDate) DaysDiff
+	FROM customer_order_date_tbl
+	ORDER BY customerId)
+SELECT COUNT(*)TotalCustomers
+FROM cust_order_ranked_tbl
+WHERE rnk = 1 AND -- because we only want to compare the difference between the 1st and 2nd order
+      DaysDiff < 30
+ORDER BY customerId;
+
+/* Optional Functions
+timestampdiff(day, OrderDate, LEAD(OrderDate) OVER (PARTITION BY customerId ORDER BY OrderDate ASC)) timeStmpDiff
+(bigger_date, smaller_date)
+*/
+
+# 4 . Superstore company X wants to know after how many purchases does it most commonly take for a customer to reach over a $5000 life time value.
+WITH orderTotalTabl 
+AS (
+	SELECT customerId,
+		   orderId,
+		   MAX(orderDate) orderDate,
+		   SUM(Sales) totalSales
+	FROM orders
+	GROUP BY customerId,
+			 orderId),
+cummSalesTabl 
+AS (
+	SELECT *,
+		   RANK() OVER (PARTITION BY customerId ORDER BY orderDate ASC) rnk,
+		   SUM(totalSales) OVER (PARTITION BY customerId ORDER BY orderDate ASC) cummTotalSales
+	FROM orderTotalTabl
+	ORDER BY customerId,
+			 orderDate),
+minPurchaseTabl 
+AS (
+	SELECT customerId,
+		   MIN(rnk) orderNumber
+	FROM cummSalesTabl
+	WHERE cummTotalSales >= 5000
+	GROUP BY customerId)
+SELECT orderNumber,
+       COUNT(customerId)
+FROM minPurchaseTabl
+GROUP BY orderNumber;
+
+WITH cummSalesTbl 
+AS (
+	SELECT customerID,
+       orderDate,
+       orderId,
+       SUM(sales) totalSales,
+       SUM(SUM(sales)) OVER (PARTITION BY customerId ORDER BY orderDate ASC) cummSales,
+       RANK() OVER (PARTITION BY customerId ORDER BY orderDate ASC) rnk
+	FROM orders
+	GROUP BY customerId,
+             orderDate,
+			 orderId),
+orderTo5000Tbl 
+AS (
+	SELECT customerId,
+		   MIN(rnk) orderNumberTo5000
+	FROM cummSalesTbl
+	WHERE cummSales > 5000
+	GROUP BY customerId)
+SELECT orderNumberTo5000,
+       COUNT(customerId) totalOrdersByCustomers
+FROM orderTo5000Tbl
+GROUP BY orderNumberTo5000;
+
+
+select w.CustomerID, w.order_number
+from (select *, row_number() over (Partition by CustomerID) order_counts
+from (select *, row_number() over (Partition by CustomerID) order_number
+from (select *, sum(Sales) over (Partition by CustomerID ORDER BY Sales ROWS BETWEEN 1 PRECEDING AND Current Row) running_sales
+from (select CustomerId, OrderDate, OrderID, sum(Sales) Sales
+from orders
+group by CustomerId, OrderDate, OrderID) as t
+) as u
+) as v
+where v.running_Sales > 5000) w
+where w.order_counts = 1
+;
+
+SELECT customerID,
+       orderDate,
+       orderId,
+       SUM(sales) totalSales,
+       SUM(SUM(sales)) OVER (PARTITION BY customerId ORDER BY orderDate ASC) cummSales,
+       RANK() OVER (PARTITION BY customerId ORDER BY orderDate ASC) rnk
+	FROM orders
+	GROUP BY customerId,
+             orderDate,
+			 orderId;

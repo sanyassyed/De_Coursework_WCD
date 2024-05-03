@@ -232,6 +232,11 @@ Practiced the assessment from the [Udemy Course](https://www.udemy.com/course/th
 * 
 ### Important Points:
 * When you use SQL functions like MAX(), MIN() etc they return ***null*** values as answer if no answer available. Besause if a function receives NULL as an input parameter it returns NULL. But if the query return no value the answer is empty and not NULL.
+* WINDOW FUNCTIONS:
+    * LAG() - Referring to the previous value, use LAG(col_name, 2) to refer to two rows before, default in 1 row before
+    * LEAD() - Referring the the next value
+    * DATEDIFF(date_col, LAG(date_col) OVER (PARTITION BY col2 ORDER BY date_col ASC))
+    * SUM(SUM(col)) OVER () cummulative sum
 
 ## Python
 ## Networking & Linux
