@@ -270,38 +270,63 @@ Report generation in Snowflake
 * *args (arguments) and **kwargs (key-word arguments)
     - `def my_func(*args):` : where `args` is a tuple with any number of values
         ```python
-           def my_func(*args):
-                for item in args:
-                    print(item)
-            
-            # Calling the function   
-            my_func([1, 2, 3])
-            my_func([1, 2, 3, 4])
+        def my_func(*args):
+            for item in args:
+                print(item)
+        
+        # Calling the function   
+        my_func([1, 2, 3])
+        my_func([1, 2, 3, 4])
         ```
     - `def my_func(**kwargs):` : where `kwargs` is a dictionary with any number of key value pairs
         ```python
-           def my_func(**kwargs):
-                for k,w in kwargs:
-                    print(f'Key value is {k} and Value is {v}')
-                
-                if 'fruit' in kwargs:
-                    print(f'My fruit of choice is: {kwargs['fruit']}')
-                else:
-                    print('Did not find the key fruit in here')
+        def my_func(**kwargs):
+            for k,w in kwargs:
+                print(f'Key value is {k} and Value is {v}')
+            
+            if 'fruit' in kwargs:
+                print(f'My fruit of choice is: {kwargs['fruit']}')
+            else:
+                print('Did not find the key fruit in here')
 
-            # Calling the function        
-            my_func({'fruit':'apple', 'veggie':'eggplant'})
+        # Calling the function        
+        my_func({'fruit':'apple', 'veggie':'eggplant'})
         ```
     - `def my_func(*args, **kwargs):` : where `args` is a tuple and `kwargs` is a dictionary with any number of key value pairs
         ```python
-           def my_func(*args, **kwargs):
-                print(args)
-                print(kwargs)
-                print(f'I would like {args[0]} {kwargs['food']}')
+        def my_func(*args, **kwargs):
+            print(args)
+            print(kwargs)
+            print(f'I would like {args[0]} {kwargs['food']}')
 
-            # Calling the function   
-            my_func(10, 20, 30 , fruit='apple', food= 'eggs', veggie='eggplant')
+        # Calling the function   
+        my_func(10, 20, 30 , fruit='apple', food= 'eggs', veggie='eggplant')
         ```
+* `map()` function: maps a function to every single element in an iterable and stores the result as an iterable syntax: `map(function, list)`
+    ```python
+    def square(num):
+        return num*num
+    
+    # calling the function
+    my_nums = [1,2,3,4]
+    for item in map(square, my_nums):
+        print(item)
+    
+    # convert to a list
+    list(map(square, my_nums))
+    ```
+
+* `filter()` function: takes a function that returns true false value and filters the list based on the function result. syntax: `filter(function, list)`
+* `Lambda` function: eg: lambda x: x*x
+    ```python
+    mynums = [1, 2, 3, 4]
+    # apply square function using map to all items in the list mynums
+    list(map(lambda num: num **2, mynums))
+    # filter the list to only have even numbers
+    list(filter(lambda x: x%2==0, mynums))
+    ```
+### Todo: 
+OOP in Udemy
 
 ## Networking & Linux
 ## AWS
