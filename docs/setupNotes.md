@@ -182,7 +182,7 @@ Remember to follow these steps when working on the local and remote server respe
 ### Server - Git Codespace
 * Start Steps
     * Goto VSCode app on Desktop and select `remote:codespaces-reimaginedGarbanzo` server to work on the remote codespace server  
-    * Activate the virtual env 
+    * Activate the virtual env using `conda activate .my_env/`
     * Git Fetch to check for any changes made to the repo
     * Git pull if required
 * Stop Steps
