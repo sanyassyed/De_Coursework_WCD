@@ -149,80 +149,168 @@ timestampdiff(day, OrderDate, LEAD(OrderDate) OVER (PARTITION BY customerId ORDE
 */
 
 # 4 . Superstore company X wants to know after how many purchases does it most commonly take for a customer to reach over a $5000 life time value.
-WITH orderTotalTabl 
+
+WITH detailOrderTbl 
 AS (
-	SELECT customerId,
-		   orderId,
-		   MAX(orderDate) orderDate,
-		   SUM(Sales) totalSales
+	SELECT CustomerID,
+		   OrderDate,
+		   OrderID,
+		   SUM(Sales) totalSales,
+		   SUM(SUM(Sales)) OVER (PARTITION BY CustomerID ORDER BY OrderDate ASC) CummSales,
+		   ROW_NUMBER() OVER (PARTITION BY CustomerID ORDER BY OrderDate ASC) rowNum1
 	FROM orders
-	GROUP BY customerId,
-			 orderId),
-cummSalesTabl 
+	GROUP BY CustomerID,
+			 OrderDate,
+			 OrderID),
+OrderTo5000Tbl 
 AS (
 	SELECT *,
-		   RANK() OVER (PARTITION BY customerId ORDER BY orderDate ASC) rnk,
-		   SUM(totalSales) OVER (PARTITION BY customerId ORDER BY orderDate ASC) cummTotalSales
-	FROM orderTotalTabl
-	ORDER BY customerId,
-			 orderDate),
-minPurchaseTabl 
+		   ROW_NUMBER() OVER (PARTITION BY CustomerID ORDER BY OrderDate ASC) rowNum2
+	FROM detailOrderTbl
+	WHERE CummSales > 5000)
+SELECT rowNum1 OrderToReach5000,
+       COUNT(*)
+FROM OrderTo5000Tbl
+WHERE rowNum2 = 1
+GROUP BY rowNum1;
+
+/****************************************************
+Lab Exercises - Classicmodels DB
+*****************************************************/
+use classicmodels;
+
+# 1. How many orders contain more than a 50% revenue contribution made by a single product which belongs either to Vintage Cars or Classic cars product line (productLine column)
+# Show the count of products for each of this category ie. Vintage and Classic cars
+
+WITH ordTbl
 AS (
-	SELECT customerId,
-		   MIN(rnk) orderNumber
-	FROM cummSalesTabl
-	WHERE cummTotalSales >= 5000
-	GROUP BY customerId)
-SELECT orderNumber,
-       COUNT(customerId)
-FROM minPurchaseTabl
-GROUP BY orderNumber;
-
-WITH cummSalesTbl 
+	SELECT orderNumber,
+		   productCode,
+		   quantityOrdered * priceEach prodTotal,
+		   SUM(quantityOrdered * priceEach) OVER (PARTITION BY orderNumber) orderTotal
+	FROM orderdetails
+    ),
+ordTbl2 
 AS (
-	SELECT customerID,
-       orderDate,
-       orderId,
-       SUM(sales) totalSales,
-       SUM(SUM(sales)) OVER (PARTITION BY customerId ORDER BY orderDate ASC) cummSales,
-       RANK() OVER (PARTITION BY customerId ORDER BY orderDate ASC) rnk
-	FROM orders
-	GROUP BY customerId,
-             orderDate,
-			 orderId),
-orderTo5000Tbl 
+	SELECT *,
+		   ROUND((prodTotal / orderTotal) * 100, 2) prodPercent # single product percentage
+	FROM ordTbl
+    )
+SELECT ProductLine,
+       COUNT(*)
+FROM ordTbl2 o,
+	 products p 
+WHERE o.productCode = p.productCode AND
+	  p.ProductLine IN ('Vintage Cars', 'Classic Cars') AND
+	  prodPercent > 50
+GROUP BY ProductLine;
+
+# Alternate Question:
+# How many orders have vintage or classic cars contributing to over 50% of the order cost
+
+# Method 1
+WITH ordTbl
 AS (
-	SELECT customerId,
-		   MIN(rnk) orderNumberTo5000
-	FROM cummSalesTbl
-	WHERE cummSales > 5000
-	GROUP BY customerId)
-SELECT orderNumberTo5000,
-       COUNT(customerId) totalOrdersByCustomers
-FROM orderTo5000Tbl
-GROUP BY orderNumberTo5000;
+	SELECT orderNumber,
+		   productCode,
+		   quantityOrdered * priceEach prodTotal,
+		   SUM(quantityOrdered * priceEach) OVER (PARTITION BY orderNumber) orderTotal
+	FROM orderdetails
+    ),
+ordTbl2 
+AS (
+	SELECT *,
+		   ROUND((prodTotal / orderTotal) * 100, 2) prodPercent
+	FROM ordTbl
+    ),
+ordTbl3 
+AS (
+	SELECT orderNumber,
+		   productLine,
+		   SUM(prodPercent) totalPercent
+	FROM ordTbl2 o,
+		 products p 
+	WHERE o.productCode = p.productCode AND
+		  p.ProductLine IN ('Vintage Cars', 'Classic Cars')
+	GROUP BY orderNumber,
+			 productLine
+	HAVING SUM(prodPercent) > 50)
+SELECT productLine,
+       COUNT(*)
+FROM ordTbl3
+GROUP BY productLine;
 
+# Method 2
+WITH allProdLine
+AS 
+	(
+	SELECT orderNumber,
+		   SUM(priceEach * quantityOrdered) orderSale
+	FROM orderDetails
+	GROUP BY orderNumber
+	),
+vinProdLine
+AS (
+	SELECT orderNumber,
+		  SUM(priceEach * quantityOrdered) orderSaleVin
+	FROM orderdetails o,
+		 products p
+	WHERE o.productCode = p.productCode AND
+		  p.productLine IN ('Vintage Cars')
+	GROUP BY orderNumber),
+clasProdLine
+AS (
+	SELECT orderNumber,
+		  SUM(priceEach * quantityOrdered) orderSaleClas
+	FROM orderdetails o,
+		 products p
+	WHERE o.productCode = p.productCode AND
+		  p.productLine IN ('Classic Cars')
+	GROUP BY orderNumber),
+mainTbl 
+AS (
+	SELECT a.orderNumber,
+		   a.orderSale,
+		   CASE WHEN orderSaleVin IS NULL THEN 0 ELSE orderSaleVin END orderSaleVin,
+           CASE WHEN orderSaleClas IS NULL THEN 0 ELSE orderSaleClas END orderSaleClas
+	FROM allProdLine a LEFT JOIN vinProdLine v ON a.orderNumber = v.orderNumber
+         LEFT JOIN clasProdLine c ON a.orderNumber = c.orderNumber),
+mainTbl2
+AS (
+	SELECT *,
+		   ROUND((orderSaleVin / orderSale) * 100 , 2) VinPer,
+		   ROUND((orderSaleClas / orderSale) * 100 , 2) ClasPer
+	FROM mainTbl
+	WHERE ROUND((orderSaleVin / orderSale) * 100 , 2) > 50 OR
+		  ROUND((orderSaleClas / orderSale) * 100 , 2) > 50),
+mainTbl3
+AS (
+SELECT CASE WHEN VinPer > 50 THEN 'Vinatge'
+            WHEN ClasPer > 50 THEN 'Classic'
+            ELSE 'None'
+            END ProdLine
+FROM mainTbl2)
+SELECT ProdLine,
+       COUNT(*)
+FROM mainTbl3
+GROUP BY ProdLine;
 
-select w.CustomerID, w.order_number
-from (select *, row_number() over (Partition by CustomerID) order_counts
-from (select *, row_number() over (Partition by CustomerID) order_number
-from (select *, sum(Sales) over (Partition by CustomerID ORDER BY Sales ROWS BETWEEN 1 PRECEDING AND Current Row) running_sales
-from (select CustomerId, OrderDate, OrderID, sum(Sales) Sales
-from orders
-group by CustomerId, OrderDate, OrderID) as t
-) as u
-) as v
-where v.running_Sales > 5000) w
-where w.order_counts = 1
-;
-
-SELECT customerID,
-       orderDate,
-       orderId,
-       SUM(sales) totalSales,
-       SUM(SUM(sales)) OVER (PARTITION BY customerId ORDER BY orderDate ASC) cummSales,
-       RANK() OVER (PARTITION BY customerId ORDER BY orderDate ASC) rnk
-	FROM orders
-	GROUP BY customerId,
-             orderDate,
-			 orderId;
+# 2. Calculate the year over year growth generated by Company X
+WITH tbl 
+AS (
+	SELECT YEAR(o.orderDate) orderYear,
+		   SUM(od.quantityOrdered * od.priceEach) totalSalesCurrYear
+	FROM orders o,
+		 orderdetails od
+	WHERE o.orderNumber = od.orderNumber
+	GROUP BY YEAR(o.orderDate)
+    ),
+tbl2 
+AS (
+	SELECT *,
+		   LAG(totalSalesCurrYear) OVER (ORDER BY orderYear) totalSalesLastYear
+	FROM tbl)
+SELECT *,
+       ((totalSalesCurrYear - totalSalesLastYear)/ totalSalesLastYear) * 100 yOyGrowth
+FROM tbl2;
+       

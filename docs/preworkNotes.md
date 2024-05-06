@@ -237,6 +237,10 @@ Practiced the assessment from the [Udemy Course](https://www.udemy.com/course/th
     * LEAD() - Referring the the next value
     * DATEDIFF(date_col, LAG(date_col) OVER (PARTITION BY col2 ORDER BY date_col ASC))
     * SUM(SUM(col)) OVER () cummulative sum
+    * SUM(SUM(col)) OVER (PARTITION BY colA ORDER BY colB ROWS UNBOUNDED PRECEDING) - default frame
+    * SUM(SUM(col)) OVER (PARTITION BY colA ORDER BY colB ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) - variation 1 frame
+    * SUM(SUM(col)) OVER (PARTITION BY colA ORDER BY colB ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) - variation 2 frame
+
 
 ## Python
 ## Networking & Linux
