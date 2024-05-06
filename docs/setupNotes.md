@@ -168,7 +168,7 @@ Remember to follow these steps when working on the local and remote server respe
 ### Local System
 * Start Steps
     * Goto deCourse local repo & open it in VSCode
-    * Activate the virtual env 
+    * Activate the virtual env using `conda activate .my_env/`
     * Git Fetch to check for any changes made to the repo
     * Git pull if required
 * Stop Steps

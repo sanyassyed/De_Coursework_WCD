@@ -241,8 +241,68 @@ Practiced the assessment from the [Udemy Course](https://www.udemy.com/course/th
     * SUM(SUM(col)) OVER (PARTITION BY colA ORDER BY colB ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) - variation 1 frame
     * SUM(SUM(col)) OVER (PARTITION BY colA ORDER BY colB ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) - variation 2 frame
 
+### Todo:
+Report generation in Snowflake
 
-## Python
+
+## Python:
+* Dictionaries
+* Tuples - Similar to lists but immutable and use () rather than []
+* Sets - unordered collection of unique elements. 
+    * myset = set(1, 2)
+    * myset.add(3) # to add an element
+* List Comprehension
+    * for: alphabets_in_string_a = [x for x in string_a]
+    * for-if: even_nums = [x for x in list_a if x%2==0]
+    * if-else-for: num_type = [x if x%2==0 else 'ODD' for x in list_a]
+    * nested-loops: 
+        ```python
+            mylist = []
+            for x in [2, 4, 6]:
+                for y in [1, 10, 1000]:
+                    mylist.append(x*y)
+
+            mylist = [x*y for x in [2, 4, 6] for y in [1, 10, 1000]]
+        ```
+* Built-in help: 
+    * `dir(object)` - eg: dir(list): returns all the methods of the object or `Shift + Tab` in jupyter notebooks
+    * `help(object.method)`  - eg: help(l_list.count) : returns a description and how the method `count` is to be used
+* *args (arguments) and **kwargs (key-word arguments)
+    - `def my_func(*args):` : where `args` is a tuple with any number of values
+        ```python
+           def my_func(*args):
+                for item in args:
+                    print(item)
+            
+            # Calling the function   
+            my_func([1, 2, 3])
+            my_func([1, 2, 3, 4])
+        ```
+    - `def my_func(**kwargs):` : where `kwargs` is a dictionary with any number of key value pairs
+        ```python
+           def my_func(**kwargs):
+                for k,w in kwargs:
+                    print(f'Key value is {k} and Value is {v}')
+                
+                if 'fruit' in kwargs:
+                    print(f'My fruit of choice is: {kwargs['fruit']}')
+                else:
+                    print('Did not find the key fruit in here')
+
+            # Calling the function        
+            my_func({'fruit':'apple', 'veggie':'eggplant'})
+        ```
+    - `def my_func(*args, **kwargs):` : where `args` is a tuple and `kwargs` is a dictionary with any number of key value pairs
+        ```python
+           def my_func(*args, **kwargs):
+                print(args)
+                print(kwargs)
+                print(f'I would like {args[0]} {kwargs['food']}')
+
+            # Calling the function   
+            my_func(10, 20, 30 , fruit='apple', food= 'eggs', veggie='eggplant')
+        ```
+
 ## Networking & Linux
 ## AWS
 ## Docker
