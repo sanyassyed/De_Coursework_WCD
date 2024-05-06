@@ -26,3 +26,7 @@ data/
 !data/.gitkeep 
 !aq_upload/.gitkeep
 
+# ipyb checkpoints
+.ipynb_checkpoints
+
+
