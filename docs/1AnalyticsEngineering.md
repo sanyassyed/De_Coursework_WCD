@@ -29,6 +29,7 @@
         - `useradd -a -G family jane`: Add user to group family.
 
     * File System Operations
+        - `pwd` : print working directory
         - `ls -l` : lists the file in long format 
         - `ls --help`: View flags for `ls` command.
         - `journalctl --help`: View system logs.
@@ -62,7 +63,16 @@
             - `u` : user. Use `g` for group permission and `a` for all users
             - `-` : minus so take away. Use `+` to give permission
             - `r` : read permission. You can also use w and x
+        - `chmod g-r file_name` : from group take away read permission
+        - `chmod a-w file_name` : from all other users take away write permission
         - `./file_name` : to execute a file if it is an executable file
+        - `sudo chmod 755 file_name` : 
+            - 7 - at position one is total permissions for owner
+            - 5 - at position two is total permissions for group
+            - 5 - at position three is total permissions for all other users
+            - `1`: execute; `2`: write; `4` : read --> 4+5+1 = 7 rwx
+        - `sudo chown new_owner_username file_name` : to change the owner of a file
+        - `sudo chgrp new_group_name file_name` : to change the group of a file 
 
     * Package Management
         
@@ -132,6 +142,7 @@
             - GUI or Web Console on the AWS Website
             - Python API
         - 
+
 #### [ ] Lab 1 : AWS and Linux Workshop (2023-07-29):
 
 ### Practice

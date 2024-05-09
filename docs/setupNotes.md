@@ -190,3 +190,6 @@ Remember to follow these steps when working on the local and remote server respe
     * Commit changes and push to remote repo
     * Exit the server using `Ctrl+D`
 
+### Useful tools used
+* OneNote: to take screen shots, random notes etc
+* Google Keep: scribble pad
