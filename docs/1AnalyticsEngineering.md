@@ -245,7 +245,8 @@
             - Terraform
             - GUI or Web Console on the AWS Website
             - Python API
-        - 
+* AWS Lecture by WeClodData-Humza:
+    - 
 
 #### [ ] Lab 1 : AWS and Linux Workshop (2023-07-29):
 
