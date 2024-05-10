@@ -79,7 +79,7 @@
             - 7 - at position one is total permissions for owner
             - 5 - at position two is total permissions for group
             - 5 - at position three is total permissions for all other users
-            - `1`: execute; `2`: write; `4` : read --> 4+5+1 = 7 rwx
+            - `4` : read; `2`: write; `1`: execute--> 4+2+1 = 7 rwx
         - `sudo chown new_owner_username file_name` : to change the owner of a file
         - `sudo chgrp new_group_name file_name` : to change the group of a file 
         
@@ -174,7 +174,7 @@
         - `command --help` : gives you info about a command
         - `man command_name` : to print the manual of the command
         - `whoami` : prints the username
-        -  `sudo npm install tldr -g` : npm is a package manager, tldr is the package which gives cleaner manual descriptions and -g is global flag i.e to install it globally so it can be run from anywhere
+        - `sudo npm install tldr -g` : npm is a package manager, tldr is the package which gives cleaner manual descriptions and -g is global flag i.e to install it globally so it can be run from anywhere
     
     * Downloads
         - `wget www.website.com/file_name.jar`: simpler form of curl
@@ -216,17 +216,17 @@
     - Common Shells: Bash, Zsh, Fish
 
 * Terminal:
-    - Definition: A terminal is a program that allows users to interact with the shell. It provides a text-based interface where users can type commands and view the output produced by those commands.
+    - Definition: A terminal is **a program that allows users to interact with the shell**. It provides a text-based interface where users can type commands and view the output produced by those commands.
     - Usage: Users typically open a terminal application to access the shell.
     - Examples: GNOME Terminal, macOS Terminal, Windows Command Prompt, PowerShell
     - 
 * Subshell:
-    - Definition: A subshell is a separate instance of the shell created within an existing shell. It inherits the environment and settings of the parent shell but operates independently. Subshells are often created to execute commands or scripts without affecting the parent shell.
+    - Definition: A subshell is a **separate instance of the shell** created within an existing shell. It inherits the environment and settings of the parent shell but operates independently. Subshells are often created to execute commands or scripts without affecting the parent shell.
     - Creation: Subshells are created using parentheses ( ) or by spawning a new shell process.
     -  Use Cases: Running scripts, executing commands in a temporary environment
 
 * Child Process:
-    - Definition: A child process is a process created by another process, known as the parent process. When a process spawns another process, the spawned process becomes a child process of the parent process. Child processes inherit certain attributes from the parent process, such as environment variables and file descriptors.
+    - Definition: A child process is **a process created by another process, known as the parent process**. When a process spawns another process, the spawned process becomes a child process of the parent process. Child processes inherit certain attributes from the parent process, such as environment variables and file descriptors.
     - Identification: Each child process is assigned a unique Process ID (PID) by the operating system.
     - Examples: When running a command from a shell, each command executed spawns a child process.
 * Here's a simple analogy:
@@ -250,6 +250,55 @@
 #### [ ] Lab 1 : AWS and Linux Workshop (2023-07-29):
 
 ### Practice
+#### Exercise 1: Linux Basics:
+- Finish the following questions in your Terminal. If you don't know the commands, please search on the internet.
+
+- How to get the OS name and version? 
+    - `cat /etc/os-release`
+
+- How to get Kernal version?
+    - `uname -r`
+
+- How to get your user and group information?
+    - `id`
+    - `id <username>`
+
+- How to shows a real-time view of running processes in Linux? : 
+    - `top`
+
+- How to exit a running application?
+    - `"hotkey: ctr+z"` (to pause the process) 
+    - `CTRL + C` (to terminate the process)
+
+- How to check the disk usage? 
+    - `df -h` - disk free -h to show in human redable format
+
+- How to check the IP address?
+    - `hostname -i`
+    - `ifconfig | grep "inet"`
+
+- How to check the memory usage? 
+    - `lsmem`-
+    - `lsmem -h`
+    - `free` : free memory
+    - `vmstat`
+
+- How to check the different options of a command?
+    - `command --help`
+    - `man command`
+
+- Set a environment variable PARAM = TEST temporarily in Linux? `export PARAM="TEST"`
+
+- printout the environment variable PARAM = TEST? `echo "$PARAM"`
+
+- How to check what environment variables we have in the system? `printenv`
+
+- How to list all the available shells in your system? `cat /etc/shells`
+
+- How to check what shell you are using? `echo "$SHELL"` or `echo $0`
+
+#### Exercise 2: Linux:
+
 
 ### Self Study
 
