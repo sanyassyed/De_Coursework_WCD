@@ -193,3 +193,9 @@ Remember to follow these steps when working on the local and remote server respe
 ### Useful tools used
 * OneNote: to take screen shots, random notes etc
 * Google Keep: scribble pad
+
+## Daily Practice
+* [100LinuxBasicCommands](../analytical/100LinuxBasicCommands.md)
+* [LeetCode-SQL](https://leetcode.com/problemset/database/) [WeCloudDataDataFundamentals](C:/Users/sanya/Documents/wecloudproject/lessons/sql/LeetCode_SQL.xlsx) [UnlockedLeetCodeProblems](https://leetcode.ca/all/problems.html)
+* [LeetCode-SQLTop50](https://leetcode.com/studyplan/top-sql-50/)
+* [LeetCode-PythonTop75](https://leetcode.com/studyplan/leetcode-75/)

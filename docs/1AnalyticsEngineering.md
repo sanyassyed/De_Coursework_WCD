@@ -236,7 +236,7 @@
     - Child Process: Think of a child process as a new employee (process) hired by an existing employee (parent process), who follows instructions and performs tasks independently but still reports to the original employee.
 
 #### [ ] Lecture 2 : AWS Basics (2023-07-27):
-* [AWS Introduction](https://www.youtube.com/watch?v=ZW4o08WjwYg)
+* [AWS Introduction -Youtube](https://www.youtube.com/watch?v=ZW4o08WjwYg)
     * IaaS - Infrastructure - eg: Virtual Machine or Servers like `Compute Engine service` on GCP where we will have to install all the applications we want to use
     * PaaS - Platform - eg: `Cloud Functions` on GCP which  is a serverless compute service on GCP that allows you to run event-driven code without provisioning or managing servers. It automatically scales based on demand and executes code in response to events from various GCP services or HTTP requests.  
     * SaaS - `Google Workspace (Google Suits)` where gmail, docs, drive etc are provided and maintained for you. A company can use this to create their company email (GMAIL), manage documents(), file system etc 
@@ -245,8 +245,17 @@
             - Terraform
             - GUI or Web Console on the AWS Website
             - Python API
-* AWS Lecture by WeClodData-Humza:
-    - 
+* AWS Lecture by WeClodData -Course:
+    - Regions consisting of AZ's (Availability Zones)
+    - Availability : A second machine is on a standby and if machine 1 fails, work is transferred to the stand by machine. This will take some time as work needs to be transferred. High availability means a system will almost always maintain uptime, albeit sometimes in a degraded state. About AWS, a system has high availability when it has 99.999% uptime, also known as "five nines." To put that in perspective, the system would be down for a mere five minutes and fifteen seconds a year. 
+    - Fault Tolerance : The work is executed on two systems simultaneously. So if one system fails, the second machine is immediately available. Think of fault tolerance as high availability's older brother. Fault tolerance means that a system will almost always maintain uptime — and users will not notice any differences during a primary system outage. If high availability was expensive in pre-AWS days, fault tolerance was exceedingly expensive.
+    - S3 (Simple Storage Service) - Storage
+        - Object Storage
+        - There is no folder structure, links are used rather than folder structure. The links store the path to an object.
+    - EC2 (Elastic Compute Cloud) - Compute
+        - Systems with super compute power
+    - Redshift - Data Warehouse
+    - EMR (Elastic Map Reduce) - Distributed Computing using Spark
 
 #### [ ] Lab 1 : AWS and Linux Workshop (2023-07-29):
 
