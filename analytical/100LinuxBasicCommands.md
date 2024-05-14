@@ -1,22 +1,44 @@
 ### User Management:
 
+1. List all the users on the Linux system.
+    - Answer: `getent passwd`
+
+1. List all the groups on the Linux system.
+    - Answer: `getent group`
+
 1. How do you add a new user to the server with a home directory using `useradd`?
    - Answer: `sudo useradd -m new_user_name`
    
+1. How do you add a password for the new user?
+   - Answer: `sudo passwd new_user_name` Then you will be prompted to enter the password
+
 2. What command is used to create a new group in Linux?
    - Answer: `sudo groupadd group_name`
+
+2. Check which groups the user belongs to?
+    - Answer: `groups user_name`
    
 3. How do you add a user to an existing group using `usermod`?
    - Answer: `sudo usermod -aG group_name username`
+
+3. How do you remove a user from a user group?
+    - Answer: `sudo gpasswd -d user_name group_name`
+
+3. How do you remove a user?
+    - Answer: `sudo userdel -r user_name` r flag removes the home directory
    
 4. Explain the difference between `sudo su - new_user_name` and `su new_user_name`.
-   - Answer: `sudo su - new_user_name` switches to the `new_user_name` account with a shell, while `su new_user_name` requires entering the user's password.
+   - Answer: `sudo su - new_user_name` switches to the `new_user_name` account with a new shell
+   - `su new_user_name` requires entering the user's password and then you are switched to the new_user_name account but are in the same working directory as before
    
 5. What command allows you to switch to another user?
    - Answer: `su username`
 
+5. What command allows you to switch to the root user?
+    - Answer: `sudo su -` but enviro
+
 6. How do you list all groups a user belongs to?
-   - Answer: `groups`
+   - Answer: `groups user_name`
 
 7. How do you switch to the root user in Linux?
    - Answer: `sudo su -` or `sudo -s`

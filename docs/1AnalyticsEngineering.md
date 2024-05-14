@@ -23,12 +23,31 @@
         - `groups` : shows the groups
         - `sudo usermod -aG group_name username` : This command adds the username to the group group_name. The -aG flags ensure that the user is appended (-a) to the specified group (-G).
         - `sudo useradd -m -G group_name user_name` : Creates a new user and adds the user to the user to the group. The group_name can be an existing group or new group is created if it does not exist.
-        - `sudo su - new_user_name` : to switch to the new_user_name account with shell. This ensures that you enter the new user's environment as if you had logged in directly as that user.   It's useful when you need to execute commands or perform tasks as that user without fully logging out and logging back in as them. 
-        - `su username`: Switch to another user, where you will have to enter the password
+        - `sudo su - new_user_name` : 
+            - to switch to the new_user_name account with shell
+            - no password asked
+            - no env variables passed
+            - goes to the new_user_name home directory
+            - this ensures that you enter the new user's environment as if you had logged in directly as that user.   
+            - it's useful when you need to execute commands or perform tasks as that user without fully logging out and logging back in as them. 
+        - `sudo su -` 
+            - switches to the sudo/admin user, which starts a new login shell as the root user
+            - previous user set env variables lost
+            - The - option ensures that the environment variables and settings are set as they would be for a full login session as the root user.
+            - goes to the root folder
+        - `su username`: 
+            - switch to another user
+            - you will have to enter the password 
+            - env variables from previous shell will be avialble
+            - stays in the current directory
+        - `sudo -s`: 
+            - this command starts a new shell session with root privileges
+            - all environment variable created in previous shell are lost
+            - stays in the same directory
+        - `sudo -Es`: 
+            - this command starts a new shell session with root privileges
+            - -E flag passes the env variables
         - `sudo -u username command`: Execute command as another user.
-        - `sudo su -` switches to the sudo/admin user 
-        - `sudo -s`: This command starts a new shell session with root privileges, but it doesn't change the environment variables to simulate a full login as the root user. It essentially gives you a root shell within your current environment.
-        - `sudo su -`:  This command uses sudo to execute the su - command, which starts a new login shell as the root user. The - option ensures that the environment variables and settings are set as they would be for a full login session as the root user.
         - `useradd -a -G family aaron`: Add user to group family.
         - `useradd -a -G family jane`: Add user to group family.
 
@@ -252,11 +271,46 @@
     - S3 (Simple Storage Service) - Storage
         - Object Storage
         - There is no folder structure, links are used rather than folder structure. The links store the path to an object.
-    - EC2 (Elastic Compute Cloud) - Compute
-        - Systems with super compute power
     - Redshift - Data Warehouse
     - EMR (Elastic Map Reduce) - Distributed Computing using Spark
-
+    - IAM (Identity Access Management)
+        - User 
+            - only have login privilages
+            - `Account Owner /Root User` or `IAM user`
+            - `Security Credentials (Access Key ID /Secret Key ID)` All users have them
+            - 2 Access Types
+                - `Access Key`
+                - `Password` 
+        - Group - Multiple Roles can be added to a user group and multiple users can be added to a user group(s)
+        - Role - Multiple policies can be attached to a role and role(s) can be attached to a user
+        - Policies - a document with set of rules they are simply permissions which gives privilage to access a resource
+            - Effect: Allow 
+            - Actions: What privilages to give eg: read, write or all
+            - Resources: Which resources or files to give this privilage to e.g: only s3 bucket 1 & 2 etc
+            - Policies can be given to other resources too.
+            - Are assigned to `User` - `Group` - `Roles` - `Other AWS Sevice`
+            - `Self-Created` or `AWS Standard`
+    - Security Groups
+        - Inbound
+        - Outbound
+    - EC2 (Elastic Compute Cloud) - Compute
+        - Systems with super compute power
+        - also known as Instance
+        - Create an EC2 instance, generate a secure key pair of type `.pem` and download it to your system
+        - Connect to EC2 instance via CLI
+            - Open VSCode
+            - Have the extension `Remote Development` installed
+            - Goto the Open Remote Window button on the bottom left corner of VSCode
+            - Select `Connect to Host`
+            - Select `Add New SSH Host`
+            - Write the command to ssh into the remote EC2 as follows `ssh -i "absolute_path_to_.pem_key" user@hostame` eg: `ssh -i "C:/Downloads/de-demo-ec2.pem" ubuntu@ec2-34-239-182.compute-1.amazonaws.com` Press Enter
+            - Then goto the .config file and you will find the config for this remote machine appended automatically, you can change the host if required.
+            - Then Goto the `Remote Explorer icon` on the left panel of VSCode
+            - Now you can connect to the remote server you just created via VSCode
+            - Access config file to change the public ip address by clicking on the `connect to new Window` button next to the ssh server connection in the `Remote Explorer icon` on the left panel of VSCode
+        - to avoid changing the public IP repeatedly user `Elastic IP's`
+            - Allocate Elastic IP address
+            - And attach this to your EC2 instance
 #### [ ] Lab 1 : AWS and Linux Workshop (2023-07-29):
 
 ### Practice
