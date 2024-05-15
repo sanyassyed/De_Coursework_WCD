@@ -3,6 +3,7 @@ __pycache__/
 
 # Credential
 credentials/*
+.env
 
 # Data
 *.csv

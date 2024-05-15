@@ -309,7 +309,7 @@
             - Select `Connect to Host`
             - Select `Add New SSH Host`
             - Write the command to ssh into the remote EC2 as follows `ssh -i "absolute_path_to_.pem_key" user@hostame` eg: `ssh -i "C:/Downloads/de-demo-ec2.pem" ubuntu@ec2-34-239-182.compute-1.amazonaws.com` Press Enter
-            - Then goto the .config file and you will find the config for this remote machine appended automatically, you can change the host if required.
+            - Then goto the .config file and you will find the config for this remote machine appended automatically, you can change the host if required to something simpler like `de-demo` etc.
             - Then Goto the `Remote Explorer icon` on the left panel of VSCode
             - Now you can connect to the remote server you just created via VSCode
             - Access config file to change the public ip address by clicking on the `connect to new Window` button next to the ssh server connection in the `Remote Explorer icon` on the left panel of VSCode
@@ -439,9 +439,9 @@
     - `command --help`
     - `man command`
 
-- Set a environment variable PARAM = TEST temporarily in Linux? `export PARAM="TEST"`
+- Set a environment variable PARAM=TEST temporarily in Linux? `export PARAM="TEST"`
 
-- printout the environment variable PARAM = TEST? `echo "$PARAM"`
+- printout the environment variable PARAM=TEST? `echo "$PARAM"`
 
 - How to check what environment variables we have in the system? `printenv`
 
@@ -449,8 +449,25 @@
 
 - How to check what shell you are using? `echo "$SHELL"` or `echo $0`
 
-#### Exercise 2: Linux:
+#### Exercise 2 & 3: Linux & HAckerrank:
+Questions and asnswes available on WeCloud course app
 
+#### Exercise 4 : AWS Workshop
+* Create AWS account
+* Goto EC2 and setup `Network & Security`
+    - Create Security Groups
+    - Create Key Pairs
+    - Launch an instance 
+        - Option 1: Local system
+            - Use VSCode and the steps in the EC2 bullet point [here](#--lecture-2--aws-basics-2023-07-27) to connect to the remote server just launched on AWS
+            - use the command `ssh -i "/c/Users/sanya/.ssh/demo.pem" ubuntu@ec2-3-17-208-31.us-east-2.compute.amazonaws.com`
+        - Option 2: AWS Cloud Shell [access from here](https://us-east-2.console.aws.amazon.com/console/home?nc2=h_ct&src=header-signin&region=us-east-2)
+            - Method 1 via .pem key: 
+                - Upload the .pem file to cloud shell via Actions -> Upload file and then use the command `ssh -i "./demo.pem" ubuntu@ec2-3-17-208-31.us-east-2.compute.amazonaws.com`
+                - Add the ip address of the Cloud Shell (use the command `curl https://icanhazip.com/v4`) to the inbound security rule
+            - Method 2 via IAM role: Create a role and attach it to cloud shell
+
+#### Exercise
 
 ### Self Study
 

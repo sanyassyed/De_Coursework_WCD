@@ -35,7 +35,7 @@
    - Answer: `su username`
 
 5. What command allows you to switch to the root user?
-    - Answer: `sudo su -` but enviro
+    - Answer: `sudo su -` but environment variables are not passed
 
 6. How do you list all groups a user belongs to?
    - Answer: `groups user_name`
@@ -44,7 +44,7 @@
    - Answer: `sudo su -` or `sudo -s`
 
 8. What command is used to delete a user from the system?
-   - Answer: `sudo userdel username`
+   - Answer: `sudo userdel username` user -r flag to remove the user home directory too
 
 9. How do you remove a group in Linux?
    - Answer: `sudo groupdel group_name`
@@ -73,7 +73,7 @@
     - Answer: `cd -`
     
 17. How do you navigate to the home directory?
-    - Answer: `cd`
+    - Answer: `cd` or `cd ~`
     
 18. How do you create a symbolic link to a file?
     - Answer: `ln -s /path/to/target /path/to/link`
