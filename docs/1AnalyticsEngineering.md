@@ -268,9 +268,6 @@
     - Regions consisting of AZ's (Availability Zones)
     - Availability : A second machine is on a standby and if machine 1 fails, work is transferred to the stand by machine. This will take some time as work needs to be transferred. High availability means a system will almost always maintain uptime, albeit sometimes in a degraded state. About AWS, a system has high availability when it has 99.999% uptime, also known as "five nines." To put that in perspective, the system would be down for a mere five minutes and fifteen seconds a year. 
     - Fault Tolerance : The work is executed on two systems simultaneously. So if one system fails, the second machine is immediately available. Think of fault tolerance as high availability's older brother. Fault tolerance means that a system will almost always maintain uptime — and users will not notice any differences during a primary system outage. If high availability was expensive in pre-AWS days, fault tolerance was exceedingly expensive.
-    - S3 (Simple Storage Service) - Storage
-        - Object Storage
-        - There is no folder structure, links are used rather than folder structure. The links store the path to an object.
     - Redshift - Data Warehouse
     - EMR (Elastic Map Reduce) - Distributed Computing using Spark
     - IAM (Identity Access Management)
@@ -283,6 +280,14 @@
                 - `Password` 
         - Group - Multiple Roles can be added to a user group and multiple users can be added to a user group(s)
         - Role - Multiple policies can be attached to a role and role(s) can be attached to a user
+            - Demo to create a role to give the EC2 instance rights to access a S3 bucket
+            - Trusted entity type `AWS Service`
+            - Use Case `EC2 instance`
+            - Policy added `AmazonS3FullAccess` to this role
+            - Role name `de-b8-demo-ec2`
+            - Add a tag optionally
+            - Role created
+            - 
         - Policies - a document with set of rules they are simply permissions which gives privilage to access a resource
             - Effect: Allow 
             - Actions: What privilages to give eg: read, write or all
@@ -308,9 +313,92 @@
             - Then Goto the `Remote Explorer icon` on the left panel of VSCode
             - Now you can connect to the remote server you just created via VSCode
             - Access config file to change the public ip address by clicking on the `connect to new Window` button next to the ssh server connection in the `Remote Explorer icon` on the left panel of VSCode
-        - to avoid changing the public IP repeatedly user `Elastic IP's`
+        - `Elastic IP's`: to avoid changing the public IP repeatedly user 
             - Allocate Elastic IP address
             - And attach this to your EC2 instance
+        - Security Groups (Inbound & Outbound)
+        - Public IPV4 address: use this to access the UI available on any port of the EC2's IP address. Eg: Accessing jupyter notebook running on 8080 port of the EC2
+        - IAM Role: to let EC2 access other resources like s3 or airbyte etc.
+    - S3 (Simple Storage Service) - Storage
+        - Object Storage
+        - There is no folder structure, links are used rather than folder structure. The links store the path to an object
+        - Object Ownership- ACLs disabled is the preferred option use IAM Roles instead to give access
+        - Layers of Data Storage:
+            - Landing
+            - Raw 
+            - Curated  (Eg Emp Salary data)
+                - Tier 1 - Most Sensitive Data
+                - Tier 2
+                - .....
+                - Tier N - Least Sensitve Data
+            - Aggregated
+        - Sensitive Data should be stored in apropriate Tier Level and Tier should be assigned to a bucket
+        - Use Cases
+            - Data Lake
+            - Code
+            - Audit files
+            - Log files
+            - ML Model files
+            - etc
+    - ACCESS
+        - CLI: 
+            - Output in 3 formats json, text & table
+                - `aws --output json ec2 describe-instances` - example command to access information about all the ec2 instances the `user` has access to (using the service key)
+                    - `--ouput` is an option
+                    - `ec2 ` is service name
+                    - `describe-instances` is command name
+            - Access Option 1: Access from a local system or (could also be an EC2 instance)
+                - First give the user access by creating an access key connected to him/her
+                    - Goto IAM -> 
+                    - Users -> Select the `user` connected to your EC2 instance -> 
+                    - Security Credentials -> Create an Access Key -> 
+                    - Select `Use it to use CLI` -> 
+                    - Give a tag to the access key which will be added to the user and shown alongside the access key [Video](https://learn.weclouddata.com/programs/2/courses/159d75b6-f529-492e-9c48-8d16f33a8183/weeks/2483/materials/19499?topic_id=6513) @ 2:49
+                - Now use this access key value pair on your server in the following steps:
+                    - install aws cli in your system using the command `sudo apt install aws-cli` or `sudo apt install aws-cli --classic`
+                    - `aws configure` -> to configure the login to AWS for the user (similar to username pwd login in GCP)
+                    - copy paste the access key
+                    - copy paste the secret access key
+                    - region `us-east-1`
+                    - Default output format : Just Enter to ignore it
+                - Now you can use this system to interact with AWS and to get and send information about and to AWS services. Some examples are below
+                    - `aws ec2 describe-instances` : returns info about all the ec2 instances accessible to the `user` which was connected to the access key
+                    - `aws ec2 describe-instances | grep "b8"` to filter and only return info about ec2 instance that has the string `b8`
+                    - `aws s3 ls` -> check if this works (it will depend on what access the user has or what policies are available to him/her)
+                - NOTE: The access key for a user if forgotten can be retrieved or deleted as follows:
+                    - IAM Roles -> Users -> Goto the user -> Security Credentials  (View it here) or delete as follows -> Actions -> Deactivate  -> Delete
+                    - If removing access keys and trying to access the AWS service via the IAM roles then you need to remove the access key from the system too
+                     - `cd .aws`
+                     - `nano config` and delete the region but leave the default
+                     - `nano credentials` and delete the all the access key value pair
+            - Access Option 2: Access from other AWS services:
+                - Give an EC2 instance IAM permission to access CLI via roles as follows:
+                    - Asuming you have already created a role from above called `de-b8-demo-ec2` (which had the policy of accessing S3 bucket added to it already)
+                    - Goto EC2 
+                    - Select by ticking the check box of the Instance of choice
+                    - Actions -> Security -> Modify IAM Role 
+                    - Select the role created before `de-b8-demo-ec2`
+                    - Update IAM role
+                    - Now this EC2 instance has access to the S3 bucket
+                - Now goto your EC2 instance (remove any access keys if you were using CLI via USER to access AWS as explained in Option 1 above)
+                    - `aws s3 ls` -> to list all the s3 bucket names
+                    - `aws ec2 describe-instances` -> Check if this works or not
+                    - Create an S3 bucket
+                        - `aws s3 mb s3://wcd-de-s3-demo-2` -> this command creates an s3 bucket called wcd-de-s3-demo-2
+                    - Download something S3 bucket
+                        - `aws s3 cp s3://wcd-de-b8-s3-demo/city.csv .` -> this command downloads the city.csv file
+        - API -Python
+            - we use `boto3` package
+            - Check if your server has python and pip
+            - `python --version`
+            - `sudo apt update`
+            - `sudo apt upgrade`
+            - `sudo apt install python3-pip`
+            - `pip --version`
+            - `pip install boto3`
+            - `pip show boto3`
+            - `python3`
+            - Now write the code to access AWS via code
 #### [ ] Lab 1 : AWS and Linux Workshop (2023-07-29):
 
 ### Practice
