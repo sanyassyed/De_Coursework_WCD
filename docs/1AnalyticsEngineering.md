@@ -298,7 +298,8 @@
     - Security Groups
         - Inbound
         - Outbound
-    - EC2 (Elastic Compute Cloud) - Compute
+    - `AWS Systems Manager Session Manager` is a fully managed service provided by Amazon Web Services (AWS) that enables interactive management of your Amazon EC2 instances, on-premises instances, and virtual machines (VMs) through a secure and browser-based shell. It allows you to establish a shell session with your instances without the need for SSH or RDP access, eliminating the requirement for inbound ports to be open or the use of bastion hosts.
+    - `EC2 (Elastic Compute Cloud)` - Compute
         - Systems with super compute power
         - also known as Instance
         - Create an EC2 instance, generate a secure key pair of type `.pem` and download it to your system
@@ -342,6 +343,7 @@
             - etc
     - ACCESS
         - CLI: 
+            - Cloud Shell by default has AWS-CLI installed and the root users Cloud shell access to the AWS account by default
             - Output in 3 formats json, text & table
                 - `aws --output json ec2 describe-instances` - example command to access information about all the ec2 instances the `user` has access to (using the service key)
                     - `--ouput` is an option
@@ -364,6 +366,7 @@
                 - Now you can use this system to interact with AWS and to get and send information about and to AWS services. Some examples are below
                     - `aws ec2 describe-instances` : returns info about all the ec2 instances accessible to the `user` which was connected to the access key
                     - `aws ec2 describe-instances | grep "b8"` to filter and only return info about ec2 instance that has the string `b8`
+                    - `aws ec2 describe-instances --filters "Name=image-id,Values=ami-0f30a9c3a48f3fa79"` to view info about instances with ami id using filters
                     - `aws s3 ls` -> check if this works (it will depend on what access the user has or what policies are available to him/her)
                 - NOTE: The access key for a user if forgotten can be retrieved or deleted as follows:
                     - IAM Roles -> Users -> Goto the user -> Security Credentials  (View it here) or delete as follows -> Actions -> Deactivate  -> Delete
@@ -453,7 +456,18 @@
 Questions and asnswes available on WeCloud course app
 
 #### Exercise 4 : AWS Workshop
-* Create AWS account
+## TODO:
+* Use Cloud Shell to log into the EC@ instance created via `AWS System Management Session Management` service
+    - Step 1: Create a role with `Entity Type` as AWS Account and add `AmazonSSMManagedInstanceCore` policy to it. This will give the current account access to ASMSM service which you can use via Cloud Shell
+        - Create a Role
+        - Trusted Entity Type - AWS Account
+        - Select `This account`. Alternatively if you want to find the account id use the command `aws sts get-caller-identity --query "Account" --output text` in the Cloud Shell
+        - Permissions policies, select `AmazonSSMManagedInstanceCore` policy
+        - Role name `acessForDemoResources`
+    - Step 2: Use cloud shell with the AWS account you used in the previous step (this is the default accout for your cloud shell so no  need to change anything) and log into the EC2 instance using the ASMSM service as follows:
+        - `aws ssm start-session --target instance-id` : `aws ssm start-session --target  i-070505f9d6d145db1`
+        - 
+
 * Goto EC2 and setup `Network & Security`
     - Create Security Groups
     - Create Key Pairs
@@ -466,6 +480,8 @@ Questions and asnswes available on WeCloud course app
                 - Upload the .pem file to cloud shell via Actions -> Upload file and then use the command `ssh -i "./demo.pem" ubuntu@ec2-3-17-208-31.us-east-2.compute.amazonaws.com`
                 - Add the ip address of the Cloud Shell (use the command `curl https://icanhazip.com/v4`) to the inbound security rule
             - Method 2 via IAM role: Create a role and attach it to cloud shell
+                - IAM Roles -> Create a Role
+                -
 
 #### Exercise
 
