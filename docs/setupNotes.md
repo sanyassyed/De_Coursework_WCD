@@ -188,7 +188,8 @@ Remember to follow these steps when working on the local and remote server respe
 * Stop Steps
     * Save Chages to the files
     * Commit changes and push to remote repo
-    * Exit the server using `Ctrl+D`
+    * `Ctrl+D`: EXIT the EC2 instance or server
+    * `sudo shutdown now` : SHUTDOWN the EC2 instance or server
 
 ### Useful tools used
 * OneNote: to take screen shots, random notes etc
@@ -199,3 +200,6 @@ Remember to follow these steps when working on the local and remote server respe
 * [LeetCode-SQL](https://leetcode.com/problemset/database/) [WeCloudDataDataFundamentals](C:/Users/sanya/Documents/wecloudproject/lessons/sql/LeetCode_SQL.xlsx) [UnlockedLeetCodeProblems](https://leetcode.ca/all/problems.html)
 * [LeetCode-SQLTop50](https://leetcode.com/studyplan/top-sql-50/)
 * [LeetCode-PythonTop75](https://leetcode.com/studyplan/leetcode-75/)
+
+## Useful commands
+* `git status -u` : view the files in the untracker folders

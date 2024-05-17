@@ -1,9 +1,12 @@
 # VSCode files
 __pycache__/
 
-# Credential
-credentials/*
+# Environment Variables
 .env
+
+# Credentials Folder contents but not the folder
+credentials/*
+!credentials/.gitkeep
 
 # Data
 *.csv
@@ -15,9 +18,6 @@ credentials/*
 .env_main
 .env
 
-# Credentials Folder contents but not the folder
-credentials/*
-!credentials/.gitkeep
 
 # Data files
 # exclude any folder named data anywhere in the repo

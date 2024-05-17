@@ -299,7 +299,7 @@
         - Inbound
         - Outbound
     - `AWS Systems Manager Session Manager` is a fully managed service provided by Amazon Web Services (AWS) that enables interactive management of your Amazon EC2 instances, on-premises instances, and virtual machines (VMs) through a secure and browser-based shell. It allows you to establish a shell session with your instances without the need for SSH or RDP access, eliminating the requirement for inbound ports to be open or the use of bastion hosts.
-    - `EC2 (Elastic Compute Cloud)` - Compute
+    - `EC2 (Elastic Compute Cloud)` - Compute Instance
         - Systems with super compute power
         - also known as Instance
         - Create an EC2 instance, generate a secure key pair of type `.pem` and download it to your system
@@ -402,6 +402,38 @@
             - `pip show boto3`
             - `python3`
             - Now write the code to access AWS via code
+
+#### AWS CLI Commands
+- Setup AWS CLI USER CREDENTIALS
+    - `aws configure` : used to setup the default profile without a profile name
+    - `aws configure --profile sarah` : to configure aws cli with/for a profile
+    - `vim ./.aws/config` : to modify the default user or other user config. Delete entry here and in the credentials file to remove a user
+    - `vim ./.aws/credentials` :  to modify the default user or other user credentials. Delete entry here and the config file to remove a user
+    - `export AWS_PROFILE=sarah` : to set the default user profile for aws cli
+    - `export AWS_DEFAULT_PROFILE=sarah` : (DEPRICATED) this is automatically set in the aws config file by the above statement but incase you want to set it explicitly use this command
+    - `unset AWS_PROFILE` : to remove the default aws cli profile
+    - `unset AWS_DEFAULT_PROFILE` : to remove the default aws cli profile
+    - `aws configure list` : lists the default profile
+    - `aws configure list --profile sarah`: to list the configuration for a particular profile
+- Access S3 via AWS CLI
+    - `aws s3 mb s3://demo-bucket-sarah` : to make an s3 bucket
+    - `aws s3 rb s3://demo-bucket-sarah` : to remove an s3 bucket
+    - `aws s3 ls ` : to list all buckets in s3
+    - `aws s3 ls s3://demo-bucket-sarah/` : to list all objects in a particular s3 bucket
+    - `aws s3 cp test.csv s3://weclouddata-demo/` :to upload to s3 bucket
+    - `aws s3 cp s3://weclouddata-demo/ test.csv ` :to download from s3 bucket
+    - `aws s3 sync test s3://demo-bucket-sarah/test` : to link a local folder to one in s3
+    - `aws s3 rm --recursive s3://demo-bucket-sarah/test` : to delete the folder sarah
+    - `aws ec2 stop-instances --instance-ids i-1234567890abcdef0` : to stop an instance
+- Access EC2 via AWS CLI
+    - `aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId, Tags[?Key==`Name`].Value]'` : to filter out the instance ids and name from the describe-instances command
+    - `aws ec2 start-instances --instance-ids i-070505f9d6d145db1` : starts instance(s)
+    - `aws ec2 describe-instances --instance-ids i-070505f9d6d145db1 --query 'Reservations[*].Instances[*].PublicDnsName' --output text` : returns the public IPV4 address
+    - `aws ec2 describe-instances` : returns info about all the ec2 instances accessible to the `user` which was connected to the access key
+    - `aws ec2 describe-instances --filters "Name=image-id,Values=ami-0f30a9c3a48f3fa79"` to view info about instances with ami id using filters
+    - `aws ec2 describe-instances --query 'Reservations[*].Instances[*].InstanceId'` : to filter out the instance ids from the describe instance command
+    - `aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId, Tags[?Key==`Name`].Value]'` : to filter out the instance ids and name from the describe-instances command
+
 #### [ ] Lab 1 : AWS and Linux Workshop (2023-07-29):
 
 ### Practice
@@ -452,11 +484,12 @@
 
 - How to check what shell you are using? `echo "$SHELL"` or `echo $0`
 
-#### Exercise 2 & 3: Linux & HAckerrank:
-Questions and asnswes available on WeCloud course app
+#### Exercise 2 & 3: Linux & Hackerrank:
+Questions and answers available on WeCloud course app
 
 #### Exercise 4 : AWS Workshop
-## TODO:
+
+##### TODO: Log into EC2 instance from Cloud Shell by using policies and not ssh -i
 * Use Cloud Shell to log into the EC@ instance created via `AWS System Management Session Management` service
     - Step 1: Create a role with `Entity Type` as AWS Account and add `AmazonSSMManagedInstanceCore` policy to it. This will give the current account access to ASMSM service which you can use via Cloud Shell
         - Create a Role
@@ -468,20 +501,41 @@ Questions and asnswes available on WeCloud course app
         - `aws ssm start-session --target instance-id` : `aws ssm start-session --target  i-070505f9d6d145db1`
         - 
 
-* Goto EC2 and setup `Network & Security`
+#### Exercise 5: EC2 Lab
+- Aim:
+    - Create an EC2 instance along with its Security Group
+- Security Groups Creation:
+    - Goto EC2 and setup `Network & Security`
     - Create Security Groups
-    - Create Key Pairs
-    - Launch an instance 
-        - Option 1: Local system
-            - Use VSCode and the steps in the EC2 bullet point [here](#--lecture-2--aws-basics-2023-07-27) to connect to the remote server just launched on AWS
-            - use the command `ssh -i "/c/Users/sanya/.ssh/demo.pem" ubuntu@ec2-3-17-208-31.us-east-2.compute.amazonaws.com`
-        - Option 2: AWS Cloud Shell [access from here](https://us-east-2.console.aws.amazon.com/console/home?nc2=h_ct&src=header-signin&region=us-east-2)
-            - Method 1 via .pem key: 
-                - Upload the .pem file to cloud shell via Actions -> Upload file and then use the command `ssh -i "./demo.pem" ubuntu@ec2-3-17-208-31.us-east-2.compute.amazonaws.com`
-                - Add the ip address of the Cloud Shell (use the command `curl https://icanhazip.com/v4`) to the inbound security rule
-            - Method 2 via IAM role: Create a role and attach it to cloud shell
-                - IAM Roles -> Create a Role
-                -
+- Create Key Pairs
+- Launch an instance 
+    - Option 1: Local system
+        - Use VSCode and the steps in the EC2 bullet point [here](#--lecture-2--aws-basics-2023-07-27) to connect to the remote server just launched on AWS
+        - use the command `ssh -i "/c/Users/sanya/.ssh/demo.pem" ubuntu@ec2-3-17-208-31.us-east-2.compute.amazonaws.com`
+    - Option 2: AWS Cloud Shell [access from here](https://us-east-2.console.aws.amazon.com/console/home?nc2=h_ct&src=header-signin&region=us-east-2)
+        - Method 1 via .pem key: 
+            - Upload the .pem file to cloud shell via Actions -> Upload file and then use the command `ssh -i "./demo.pem" ubuntu@ec2-3-17-208-31.us-east-2.compute.amazonaws.com`
+            - Add the ip address of the Cloud Shell (use the command `curl https://icanhazip.com/v4`) to the inbound security rule
+        - Method 2 via IAM role: Create a role and attach it to cloud shell
+            - IAM Roles -> Create a Role
+
+#### Exercise 6: S3 Lab
+- Aim: 
+    - Create a new user sarah
+    - Add to this user `EC2FullAccessPolicy` & `S3FullAccessPolicy` policy DIRECTLY
+    - Then use this user to access EC2 instances and S3 storage buckets by using their credentials to log into AWS CLI from the `DE-Lab` EC2 instance created previously.
+    - The `DE-Lab` EC2 instance will be treated as sarah's PC henceforth
+- User Creation
+    - First create the user, add the policies and then add the Security Credentials as follows
+        - Goto the User and User's info
+        - Select `create access key`
+        - Select use case as `CLI`
+        - Download .csv file and save it in the credentials folder
+- Now use `DE-Lab` EC2 instance to do the rest of this lab
+    - To set up AWS credentials for sarah on the `DE-Lab` instance you will use the credentials in [this file](../credentials/sarah_accessKeys.csv)
+
+- Working wirh Boto3 S3 API
+    - 
 
 #### Exercise
 
