@@ -202,4 +202,4 @@ Remember to follow these steps when working on the local and remote server respe
 * [LeetCode-PythonTop75](https://leetcode.com/studyplan/leetcode-75/)
 
 ## Useful commands
-* `git status -u` : view the files in the untracker folders
+* `git status -u` : view the files in the untracked folders

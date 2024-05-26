@@ -534,7 +534,7 @@ Questions and answers available on WeCloud course app
 - Now use `DE-Lab` EC2 instance to do the rest of this lab
     - To set up AWS credentials for sarah on the `DE-Lab` instance you will use the credentials in [this file](../credentials/sarah_accessKeys.csv)
 
-- Working wirh Boto3 S3 API
+- Working with Boto3 S3 API
     - 
 
 #### Exercise
