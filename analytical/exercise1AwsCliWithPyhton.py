@@ -41,12 +41,13 @@ for key in s3_client.list_buckets()['Buckets']:
 
 # list all objects (including folders) in a bucket/folder
 # no sub-folder called datasets/social exists so this will throw an error
-objects = s3_client.list_objects(
-    Bucket='demo-bucket-python-sarah',
-    Prefix='datasets/social' #subfolder name
-)
-for key in objects['Contents']:
-    print(key['Key'])
+
+# objects = s3_client.list_objects(
+#     Bucket='demo-bucket-python-sarah',
+#     Prefix='datasets/social' #subfolder name
+# )
+# for key in objects['Contents']:
+#     print(key['Key'])
 
 # Create a folder object in a bucket
 response = s3_client.put_object(
@@ -79,3 +80,7 @@ for key in objects['Contents']:
     print(key['Key'])
 
 # Upload a file from local to s3
+s3_client.upload_file('test.csv', 'weclouddata-demo-bucket', 'tmp/demo_local.csv')
+
+# Download from s3
+s3_client.download_file('weclouddata-demo-bucket', 'tmp1/demo1.csv', 'demo1_s3.csv')

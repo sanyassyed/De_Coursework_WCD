@@ -163,6 +163,27 @@ Install the required packages using pip as follows:
     pip install pandas datetime pytz
 ```
 
+## EC2 Instance Setup
+### miniconda 
+* Install Miniconda as follows
+    - Download and install Anaconda 64-Bit (x86) Installer from [here](https://www.anaconda.com/products/distribution#Downloads)
+    ```bash
+        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+        bash bash Miniconda3-latest-Linux-x86_64.sh
+        # Accept yes
+        rm bash Miniconda3-latest-Linux-x86_64.sh
+    ```
+* Virtual Environment create as follows [Source: SeafoodProject](https://github.com/sanyassyed/SeafoodProject/blob/main/documentation.md#local-system) 
+    ```bash
+        # Path to install the virtual env in the current project directory with python 3.10 and pip
+        conda create --prefix ./.my_env python=3.10.9 pip 
+        # Activate the virtual env as follows
+        conda activate .my_env 
+        # to de-activate the virtual env my_env use the below 
+        conda activate 
+        # don't use deactivate just use activate to go to base
+    ```
+
 ## Start-Stop Steps
 Remember to follow these steps when working on the local and remote server respectively
 ### Local System
