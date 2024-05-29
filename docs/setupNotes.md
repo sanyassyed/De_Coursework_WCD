@@ -183,6 +183,10 @@ Install the required packages using pip as follows:
         conda activate 
         # don't use deactivate just use activate to go to base
     ```
+### Important Packages
+* `pip install jupyter` - open using `jupyter notebook` command
+* `pip install boto3`
+
 
 ## Start-Stop Steps
 Remember to follow these steps when working on the local and remote server respectively
@@ -212,6 +216,12 @@ Remember to follow these steps when working on the local and remote server respe
     * `Ctrl+D`: EXIT the EC2 instance or server
     * `sudo shutdown now` : SHUTDOWN the EC2 instance or server
 
+### EC2 instance - DELab
+* Start Steps
+    * Goto AWS Console
+    * List all instances by instance id `aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId, Tags[?Key==`Name`].Value]'`
+    * Start instance using the instance id `i-070505f9d6d145db1`using the command `aws ec2 start-instances --instance-ids i-070505f9d6d145db1`
+    * Get the instance Public IPv4 DNS using the command `aws ec2 describe-instances --instance-ids i-070505f9d6d145db1 --query 'Reservations[*].Instances[*].PublicDnsName' --output text`
 ### Useful tools used
 * OneNote: to take screen shots, random notes etc
 * Google Keep: scribble pad

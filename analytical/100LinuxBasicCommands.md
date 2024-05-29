@@ -6,7 +6,7 @@
 1. List all the groups on the Linux system.
     - Answer: `getent group`
 
-1. How do you add a new user to the server with a home directory using `useradd`?
+1. How do you add a new user to the server with a home directory ?
    - Answer: `sudo useradd -m new_user_name`
    
 1. How do you add a password for the new user?
@@ -18,7 +18,7 @@
 2. Check which groups the user belongs to?
     - Answer: `groups user_name`
    
-3. How do you add a user to an existing group using `usermod`?
+3. How do you add a user to an existing group?
    - Answer: `sudo usermod -aG group_name username`
 
 3. How do you remove a user from a user group?
