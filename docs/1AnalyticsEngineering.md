@@ -412,49 +412,134 @@
 #### [ ] Lecture 3 / Lab 1 : AWS and Linux Workshop (2023-07-29)
 Same content for [Exercise 7: EC2 & Linux](#exercise-7-lab-ec2--linux)
 - Aim: 
+    - Create a project folder called `ae_project` in all the servers below with the virtual env `.my_env` with `Python 3.12.3`
+        1. DE-LabSarah
+        2. Project-Dbt
+        3. Project-Metabase
+        4. Project-Airbyte
     - Task 1:
         - Create three EC2 instances. 
         - One t2.small size - `Project-Metabase`
-        - One t2.medium size - `Project-DBT`
+        - One t2.medium size - `Project-Dbt`
         - One t2.large - `Project-Airbyte`
     - Task 2:
         - [Exercise 6: Workshop DB2 Installation](#exercise-6-workshop-db2-installation)
+        - Step 0- Copy the EC2 Key pair named `demo.pem` from local system to DE-LabSarah EC2 intance as follows
+            ```bash
+                # from local system
+                cd /c/users/sanya/.ssh
+                sftp DE-LabSarah
+                put demo.pem /home/ubuntu/.ssh/
+                # from DE-LabSarah EC2 intance
+                chmod 400 /home/ubuntu/.ssh/demo.pem
+                # add the Project-Dbt server details to config for easy ssh connection
+                vim /home/ubuntu/.ssh/config
+                # write the below into the config file
+                Host Project-Dbt
+                    HostName ec2-3-139-75-67.us-east-2.compute.amazonaws.com
+                    IdentityFile /home/ubuntu/.ssh/demo.pem
+                    User ubuntu
+            ```
+        - `ssh -i "/home/ubuntu/.ssh/demo.pem" ubuntu@ec2-18-188-12-133.us-east-2.compute.amazonaws.com`: alternate SSH into the Project-Dbt instance
+        - Step 1 - Update packages
+            ```bash
+                sudo apt update # refreshes package list on the local server
+                sudo apt upgrade -y # updates the packages
+                sudo reboot #Run this and wait a few moments for the system to reboot before logging back in.
+            ```
+            After running upgrade-y you may see a pink screen that says requiring kernel and daemons needing updating. 
+        - Step 2 - ~~Install pip `sudo apt install python3-pip`~~
+            The above is not working so we will do it in the following steps
+            - Install miniconda [Instructions here](./setupNotes.md#miniconda)
+            - Install conda virtual env with python and pip as follows
+            ```bash
+                # goto project folder
+                cd ae_project
+                # Path to install the virtual env in the current project directory with python 3.10 and pip
+                conda create --prefix ./.my_env python=3.12.3 pip 
+                # Activate the virtual env as follows
+                conda activate .my_env 
+                # to de-activate the virtual env my_env use the below 
+            ```
+        - Step 3 - Install DBT
+            - When you install DBT, you have the option to install just DBT-Core, or DBT-Core with connectors for specific databases
+            - We will install DBT to be used with Postgres
+            ```bash
+                # install the necessary PostgreSQL development libraries using the following command:
+                sudo apt-get install libpq-dev
+                #Install dbt-core and dbt-postgres
+                pip install dbt-postgres
+            ```
+            - At this point. You may see a number of warnings indicating that certain scripts that are needed to run dbt are installed in '/home/ubuntu/.local/bin' which is not on PATH.
+            ```bash
+                # Add this line to the end of your .bashrc and save
+                export PATH="$HOME/.local/bin:$PATH"
+                # After saving run the following to instantiate the changes
+                source ~/.bashrc
+            ```
+            - Validate DBT is installed
+            ```bash
+                conda activate .my_env
+                dbt --version
+                # if installed properly you should see something like the following
+                Core:
+                - installed: 1.5.2
+                - latest:    1.5.2 - Up to date!
+            ```
+            Plugins:
+            - postgres: 1.5.2 - Up to date!
     - Task 3:
         - [Exercise 1: Linux Basic](#exercise-1-linux-basics)
     - Task 4:
         - Do some setups in the ~~Cloud Shell~~ DELab Server (I will use this instead) for the future project use. 
-            1. Please type a command to check which directory we are at. 
-            2. Please list the files we have in the directory. You should see the EC2 key already under this directory. 
-            3. Please create a directory called ae_project, we will use this directory to save all the files we need. But please don't move the EC2 key, keep where it is. 
-            4. Please check the python3 version in this CloudShell terminal. 
-            5. Please check the aws cli version. (aws --version)
+            1. Please type a command to check which directory we are at. `pwd`
+            2. Please list the files we have in the directory. You should see the EC2 key already under this directory. `ls -lah`
+            3. Please create a directory called ae_project, we will use this directory to save all the files we need. But please don't move the EC2 key, keep where it is. `mkdir ae_project`
+            4. Please check the python3 version in this CloudShell terminal. `python --version`
+            5. Please check the aws cli version. `aws --version`
     - Task 5:
         - On the ~~Cloud Shell~~ DELab Server (I will use this instead) install the `psql` 
             1. Please find out the distributions of the linux system `cat /etc/*-release`. Please note that the Cloud Shell is using CentOS, it does not support apt.
-            2. Since this is the AWS linux, we need use the aws way to install psql. as the following:
-                1. List the available PostgreSQL topics from the Extras Library
-                `sudo amazon-linux-extras | grep postgresql`
-                2. Enable the desired latest PostgreSQL topic
-                `sudo amazon-linux-extras enable postgresql13 | grep postgresql`
-                3. Install PostgreSQL topic
-                `sudo yum clean metadata && sudo yum install -y postgresql`
-                4. Verify the installation and confirm the PostgreSQL Client version:
-                `sudo yum list installed postgresql`
-                The above steps will install psql into the Cloud Shell, it is one time installation, which means even when you turn off the Cloud Shell, next time, you will still have this installed package on the terminal as well. The psql will be used to connect to Postgres database if necessary.
+            2. `sudo apt install postgresql`The psql will be used to connect to Postgres database if necessary.
+            3. `pg_config --version`: check postgreSql Server version
+            4. `psql --version`: to check Client version
+            5. `sudo -i -u postgres` : Switch over to the postgres account on your server by typing this
+            6. `psql`: You can now access the PostgreSQL prompt immediately by typing this
+            7. `\d`: to view tables
+            8. `\q`: Exit out of the PostgreSQL prompt by typing this
+            9. `Ctrl+D` : to log out of the postgres server
     - Task 6:
-        - Install `snowsql` in the Cloud Shell. This is the tool we are going to use in the future weeks in the Snowflake session.
-            - Download the installation package from internet with command curl.
-            `curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.27-linux_x86_64.bash`
-            - Please list the directory(you should know which command to list), to see if the installation package `snowsql-1.2.27-linux_x86_64.bash` has been downloaded on the directory.
-            - The downloaded package is not runable, you should give the file permission to run, use command chmod, only give it the execute permission will be enough. Try to write this command, if you still don't know, use the following command line. `chmod u+x snowsql-1.2.27-linux_x86_64.bash`
-            You have given the package the 'execute' permission, you can run it. Please consider how to run the .bash file. Think about it and try. If you still don't know, use the following command line.
-            `./snowsql-1.2.27-linux_x86_64.bash`
-            - You will see 2 interaction lines: Specify the directory in which the SnowSQL components will be installed. [~/bin]. -- Type "Enter" to go to the next step. Do you want to add /home/cloudshell-user/bin to PATH in /home/cloudshell-user/.zshrc? [y/N] -- Type "y" to go to the next step.
-            - bThe installation should be finished. 
-            - List all the files in the files under the directory "~" to see if you have the hidden folder .snowsql. You should know the command how to list all the files including hidden files. If not, please see the below command line. `ls -al`
-            - Go to the .snowsql folder, and check if there is a file called config in this folder.
-            Open the config file. Review it, and close it. This is the config file you are going to use to store the Snowflake database connection parameters.
+        - On the ~~Cloud Shell~~ DELab Server (I will use this instead) install `snowsql` in the Cloud Shell. This is the tool we are going to use in the future weeks in the Snowflake session.
+            ```bash
+                sudo apt-get install unzip` # this is needed for the snowsql package to install
+                
+                # Download the installation package from internet with command curl.
+                curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.27-linux_x86_64.bash
 
+                # List the directory(you should know which command to list), to see if the installation package `snowsql-1.2.27-linux_x86_64.bash` has been downloaded on the directory.
+                
+                # The downloaded package is not runable, you should give the file permission to run, use command chmod, only give it the execute permission will be enough. Try to write this command, if you still don't know, use the following command line. 
+                chmod u+x snowsql-1.2.27-linux_x86_64.bash #or 
+                chmod 764 chmod u+x snowsql-1.2.27-linux_x86_64.bash
+
+                # You have given the package the 'execute' permission, you can run it. Please consider how to run the .bash file. Think about it and try. If you still don't know, use the following command line.
+                ./snowsql-1.2.27-linux_x86_64.bash # or
+                bash ./snowsql-1.2.27-linux_x86_64.bash
+
+                # You will see 2 interaction lines: Specify the directory in which the SnowSQL components will be installed. [~/bin]. -- Type "Enter" to go to the next step. Do you want to add /home/cloudshell-user/bin to PATH in /home/cloudshell-user/.zshrc? [y/N] -- Type "y" to go to the next step. The installation should be finished. 
+
+                # Add PATH to .bashrc
+                nano ~/.bashrc
+
+                # Append this line to the end of the file
+                # export PATH=/home/ubuntu/bin:$PATH
+
+                # restart the server
+                source ~/.bashrc
+            ```
+            - List all the files in the files under the directory "~" to see if you have the hidden folder .snowsql. You should know the command how to list all the files including hidden files. If not, please see the below command line. `ls -al`
+            - Go to the .snowsql folder, and check if there is a file called config in this folder. Open the config file. Also view config files at `/home/ubuntu/.snowsql/1.2.27/snowsql.cnf`. Review it, and close it. This is the config file you are going to use to store the Snowflake database connection parameters.
+            
 #### AWS CLI Commands
 - Setup AWS CLI USER CREDENTIALS
     - `aws configure` : used to setup the default profile without a profile name

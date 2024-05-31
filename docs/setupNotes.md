@@ -169,9 +169,11 @@ Install the required packages using pip as follows:
     - Download and install Anaconda 64-Bit (x86) Installer from [here](https://www.anaconda.com/products/distribution#Downloads)
     ```bash
         wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-        bash bash Miniconda3-latest-Linux-x86_64.sh
+        bash Miniconda3-latest-Linux-x86_64.sh
         # Accept yes
         rm bash Miniconda3-latest-Linux-x86_64.sh
+        # restart server to see the (base) text appear
+        source .bashrc
     ```
 * Virtual Environment create as follows [Source: SeafoodProject](https://github.com/sanyassyed/SeafoodProject/blob/main/documentation.md#local-system) 
     ```bash
