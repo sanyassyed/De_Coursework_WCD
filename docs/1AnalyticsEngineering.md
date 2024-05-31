@@ -21,7 +21,8 @@
         - `sudo useradd -m new_user_name` : to add a new user to the server. -m makes sure a home directory is created for the user. By default the user gets added to the group which is the same  name as the username
         - `sudo groupadd group_name` : to create a group
         - `groups` : shows the groups
-        - `sudo usermod -aG group_name username` : This command adds the username to the group group_name. The -aG flags ensure that the user is appended (-a) to the specified group (-G).
+        - `sudo usermod -aG group_name username` : This command adds the username to the group group_name. The -aG flags ensure that the user is appended (-a) to the specified group (-
+        G.
         - `sudo useradd -m -G group_name user_name` : Creates a new user and adds the user to the user to the group. The group_name can be an existing group or new group is created if it does not exist.
         - `sudo su - new_user_name` : 
             - to switch to the new_user_name account with shell
@@ -113,10 +114,14 @@
         - `apt remove package_name`: Remove a package.
         - `apt search package_name`: Search for a package.
         - `apt list | grep package_name`: List available packages matching a pattern.
-        - `apt-get install package_name.deb`: Install a package (APT-GET).
-        - `apt-get remove package_name`: Remove a package (APT-GET).
-        - `apt-get update`: Update package manager (APT-GET).
-        - `apt-get upgrade`: Upgrade installed packages (APT-GET).
+        - `apt-get install package_name.deb`: Install a package (APT-GE
+        T.
+        - `apt-get remove package_name`: Remove a package (APT-GE
+        T.
+        - `apt-get update`: Update package manager (APT-GE
+        T.
+        - `apt-get upgrade`: Upgrade installed packages (APT-GE
+        T.
         - `sudo apt install dnf` : alternate to yum
         - `sudo apt update` 
         - `sudo apt install tree`: package tree displays the file structure in tree format
@@ -249,7 +254,8 @@
     - Identification: Each child process is assigned a unique Process ID (PID) by the operating system.
     - Examples: When running a command from a shell, each command executed spawns a child process.
 * Here's a simple analogy:
-    - Shell: Think of the shell as a manager in an office who takes commands (tasks) from employees (users) and executes them, delegating tasks to various departments (system functions).
+    - Shell: Think of the shell as a manager in an office who takes commands (tasks) from employees (users) and executes them, delegating tasks to various departments (system function
+    s.
     - Terminal: Imagine the terminal as the desk or workspace where employees (users) interact with the manager (shell), submitting tasks (commands) and receiving feedback.
     - Subshell: Picture a manager (shell) who temporarily delegates tasks to an assistant manager (subshell) to handle specific duties, while still overseeing the overall operation.
     - Child Process: Think of a child process as a new employee (process) hired by an existing employee (parent process), who follows instructions and performs tasks independently but still reports to the original employee.
@@ -403,6 +409,52 @@
             - `python3`
             - Now write the code to access AWS via code
 
+#### [ ] Lecture 3 / Lab 1 : AWS and Linux Workshop (2023-07-29)
+Same content for [Exercise 7: EC2 & Linux](#exercise-7-lab-ec2--linux)
+- Aim: 
+    - Task 1:
+        - Create three EC2 instances. 
+        - One t2.small size - `Project-Metabase`
+        - One t2.medium size - `Project-DBT`
+        - One t2.large - `Project-Airbyte`
+    - Task 2:
+        - [Exercise 6: Workshop DB2 Installation](#exercise-6-workshop-db2-installation)
+    - Task 3:
+        - [Exercise 1: Linux Basic](#exercise-1-linux-basics)
+    - Task 4:
+        - Do some setups in the ~~Cloud Shell~~ DELab Server (I will use this instead) for the future project use. 
+            1. Please type a command to check which directory we are at. 
+            2. Please list the files we have in the directory. You should see the EC2 key already under this directory. 
+            3. Please create a directory called ae_project, we will use this directory to save all the files we need. But please don't move the EC2 key, keep where it is. 
+            4. Please check the python3 version in this CloudShell terminal. 
+            5. Please check the aws cli version. (aws --version)
+    - Task 5:
+        - On the ~~Cloud Shell~~ DELab Server (I will use this instead) install the `psql` 
+            1. Please find out the distributions of the linux system `cat /etc/*-release`. Please note that the Cloud Shell is using CentOS, it does not support apt.
+            2. Since this is the AWS linux, we need use the aws way to install psql. as the following:
+                1. List the available PostgreSQL topics from the Extras Library
+                `sudo amazon-linux-extras | grep postgresql`
+                2. Enable the desired latest PostgreSQL topic
+                `sudo amazon-linux-extras enable postgresql13 | grep postgresql`
+                3. Install PostgreSQL topic
+                `sudo yum clean metadata && sudo yum install -y postgresql`
+                4. Verify the installation and confirm the PostgreSQL Client version:
+                `sudo yum list installed postgresql`
+                The above steps will install psql into the Cloud Shell, it is one time installation, which means even when you turn off the Cloud Shell, next time, you will still have this installed package on the terminal as well. The psql will be used to connect to Postgres database if necessary.
+    - Task 6:
+        - Install `snowsql` in the Cloud Shell. This is the tool we are going to use in the future weeks in the Snowflake session.
+            - Download the installation package from internet with command curl.
+            `curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.27-linux_x86_64.bash`
+            - Please list the directory(you should know which command to list), to see if the installation package `snowsql-1.2.27-linux_x86_64.bash` has been downloaded on the directory.
+            - The downloaded package is not runable, you should give the file permission to run, use command chmod, only give it the execute permission will be enough. Try to write this command, if you still don't know, use the following command line. `chmod u+x snowsql-1.2.27-linux_x86_64.bash`
+            You have given the package the 'execute' permission, you can run it. Please consider how to run the .bash file. Think about it and try. If you still don't know, use the following command line.
+            `./snowsql-1.2.27-linux_x86_64.bash`
+            - You will see 2 interaction lines: Specify the directory in which the SnowSQL components will be installed. [~/bin]. -- Type "Enter" to go to the next step. Do you want to add /home/cloudshell-user/bin to PATH in /home/cloudshell-user/.zshrc? [y/N] -- Type "y" to go to the next step.
+            - bThe installation should be finished. 
+            - List all the files in the files under the directory "~" to see if you have the hidden folder .snowsql. You should know the command how to list all the files including hidden files. If not, please see the below command line. `ls -al`
+            - Go to the .snowsql folder, and check if there is a file called config in this folder.
+            Open the config file. Review it, and close it. This is the config file you are going to use to store the Snowflake database connection parameters.
+
 #### AWS CLI Commands
 - Setup AWS CLI USER CREDENTIALS
     - `aws configure` : used to setup the default profile without a profile name
@@ -434,9 +486,8 @@
     - `aws ec2 describe-instances --query 'Reservations[*].Instances[*].InstanceId'` : to filter out the instance ids from the describe instance command
     - `aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId, Tags[?Key==`Name`].Value]'` : to filter out the instance ids and name from the describe-instances command
 
-#### [ ] Lab 1 : AWS and Linux Workshop (2023-07-29):
+### Practice Exercises
 
-### Practice
 #### Exercise 1: Linux Basics:
 - Finish the following questions in your Terminal. If you don't know the commands, please search on the internet.
 
@@ -487,21 +538,7 @@
 #### Exercise 2 & 3: Linux & Hackerrank:
 Questions and answers available on WeCloud course app
 
-#### Exercise 4 : AWS Workshop
-
-##### TODO: Log into EC2 instance from Cloud Shell by using policies and not ssh -i
-* Use Cloud Shell to log into the EC@ instance created via `AWS System Management Session Management` service
-    - Step 1: Create a role with `Entity Type` as AWS Account and add `AmazonSSMManagedInstanceCore` policy to it. This will give the current account access to ASMSM service which you can use via Cloud Shell
-        - Create a Role
-        - Trusted Entity Type - AWS Account
-        - Select `This account`. Alternatively if you want to find the account id use the command `aws sts get-caller-identity --query "Account" --output text` in the Cloud Shell
-        - Permissions policies, select `AmazonSSMManagedInstanceCore` policy
-        - Role name `acessForDemoResources`
-    - Step 2: Use cloud shell with the AWS account you used in the previous step (this is the default accout for your cloud shell so no  need to change anything) and log into the EC2 instance using the ASMSM service as follows:
-        - `aws ssm start-session --target instance-id` : `aws ssm start-session --target  i-070505f9d6d145db1`
-        - 
-
-#### Exercise 5: EC2 Lab
+#### Exercise 4: Workshop AWS EC2 Lab
 - Aim:
     - Create an EC2 instance along with its Security Group
 - Security Groups Creation:
@@ -519,7 +556,7 @@ Questions and answers available on WeCloud course app
         - Method 2 via IAM role: Create a role and attach it to cloud shell
             - IAM Roles -> Create a Role
 
-#### Exercise 6: S3 Lab
+#### Exercise 5: Workshop AWS S3 Lab
 - Aim: 
     - Create a new user sarah
     - Add to this user `EC2FullAccessPolicy` & `S3FullAccessPolicy` policy DIRECTLY
@@ -534,10 +571,19 @@ Questions and answers available on WeCloud course app
 - Now use `DE-Lab` EC2 instance to do the rest of this lab
     - To set up AWS credentials for sarah on the `DE-Lab` instance you will use the credentials in [this file](../credentials/sarah_accessKeys.csv)
 
-- Working with Boto3 S3 API
-    - 
+- Working with Boto3 S3 API using Python
+  Find the exercises in these files
+    * [AWS using Python .py file](../analytical/exercise1AwsCliWithPyhton.py)
+    * [AWS using Python Jupyter notbook](../analytical/exercise1AwsCliWithPyhton.ipynb)
 
-#### Exercise
+
+#### Exercise 6: Workshop DB2 Installation
+
+#### Exercise 7: Lab EC2 & Linux 
+Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
+
+
+
 
 ### Self Study
 
