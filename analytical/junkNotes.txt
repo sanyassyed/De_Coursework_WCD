@@ -1,0 +1,20 @@
+https://api.weather.gc.ca/collections/climate-daily/items?datetime=2006-01-01%2000:00:00/2006-01-31%2000:00:00&STN_ID=48549&sortby=PROVINCE_CODE,STN_ID,LOCAL_DATE&f=csv&limit=150000&startindex=0
+
+
+
+https://api.weather.gc.ca/collections/climate-daily/items?datetime=1840-03-01%2000:00:00/2024-06-09%2000:00:00&STN_ID=48549&sortby=PROVINCE_CODE,STN_ID,LOCAL_DATE&f=csv&limit=150000&startindex=0
+
+
+format="csv"
+stationId=48549
+year=(2020 2021 2022)
+month=2
+day=14
+timeframe=3 
+
+wget  -q --content-disposition "https://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=48549&Year=${year}&Month=2&Day=14&timeframe=2&submit= Download+Data " -O ./test.csv
+
+website="https://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=${format}&stationID=${stationId}&Year=${year}&Month=${month}&Day=${day}&timeframe=${timeframe}&submit= Download+Data " 
+
+wget -q --content-disposition ${website} -O ./test2.csv
+
