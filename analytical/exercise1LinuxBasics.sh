@@ -25,6 +25,7 @@ df -h
 #7 How to check the IP address?
     
 hostname -i
+curl "https://icanhazip.com/v4"
     
 #8 How to check the memory usage?
     
@@ -35,6 +36,8 @@ vmstat
 #9 How to check the different options of a command?
     
 man <command>
+<command> --help
+tldr <command>
     
 #10 Set a environment variable PARAM = TEST temporarily in Linux?
     

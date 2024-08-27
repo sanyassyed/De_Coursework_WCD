@@ -8,21 +8,22 @@
 #### [ ] Lecture 1 : Linux (2023-07-25):
 * Linux 
     - Hardware (Chips-Integrated Circuit)
-    - Kernel - The core component of OS(UNIX)  & helps communication happen between the Hardware and Software
+    - Kernel - The core component of OS(UNIX) & helps communication happen between the Hardware and Software
     - Software - Command Line (LINUX)
-    - Linux is a UNIX like OS has a lot of distributions 
+    - Linux is a UNIX like OS that has a lot of distributions. Linux is both an OS & Kernal
         - Debian
         - UBUNTU
         - CentosOS
         - Amazon Linux
 * Shell Commands for bash shell:  
     
+    
     * User Management
         - `sudo useradd -m new_user_name` : to add a new user to the server. -m makes sure a home directory is created for the user. By default the user gets added to the group which is the same  name as the username
         - `sudo groupadd group_name` : to create a group
         - `groups` : shows the groups
         - `sudo usermod -aG group_name username` : This command adds the username to the group group_name. The -aG flags ensure that the user is appended (-a) to the specified group (-
-        G.
+        G)
         - `sudo useradd -m -G group_name user_name` : Creates a new user and adds the user to the user to the group. The group_name can be an existing group or new group is created if it does not exist.
         - `sudo su - new_user_name` : 
             - to switch to the new_user_name account with shell
@@ -37,9 +38,10 @@
             - The - option ensures that the environment variables and settings are set as they would be for a full login session as the root user.
             - goes to the root folder
         - `su username`: 
+            - starts a non-login shell that doesn't fully reinitialize the environment
             - switch to another user
             - you will have to enter the password 
-            - env variables from previous shell will be avialble
+            - env variables from previous shell will be available
             - stays in the current directory
         - `sudo -s`: 
             - this command starts a new shell session with root privileges
@@ -84,10 +86,10 @@
     * File Permission Management
         - `-rwxrwxrw- 1 user_name user_group_name file_size date filename`:
             - `-` : means a regular file, `d` will mean a directory `l` would mean it's a link like a shortcut
-            - `rwx` - read write execute(if the file can be run as a code) permission
-            - `1st rwx` - rules for file owner
-            - `2nd rwx` - rules for group owner
-            - `3rd rwx` - rules for all other users
+            - `rwx` : read write execute(if the file can be run as a code) permission
+            - `1st rwx` : rules for file owner
+            - `2nd rwx` : rules for group owner
+            - `3rd rwx` : rules for all other users
         - `chmod u-r file_name` : from user take away reading permission. 
             - `u` : user. Use `g` for group permission and `a` for all users
             - `-` : minus so take away. Use `+` to give permission
@@ -114,14 +116,10 @@
         - `apt remove package_name`: Remove a package.
         - `apt search package_name`: Search for a package.
         - `apt list | grep package_name`: List available packages matching a pattern.
-        - `apt-get install package_name.deb`: Install a package (APT-GE
-        T.
-        - `apt-get remove package_name`: Remove a package (APT-GE
-        T.
-        - `apt-get update`: Update package manager (APT-GE
-        T.
-        - `apt-get upgrade`: Upgrade installed packages (APT-GE
-        T.
+        - `apt-get install package_name.deb`: Install a package (APT-GET)
+        - `apt-get remove package_name`: Remove a package (APT-GET)
+        - `apt-get update`: Update package manager (APT-GET)
+        - `apt-get upgrade`: Upgrade installed packages (APT-GET)
         - `sudo apt install dnf` : alternate to yum
         - `sudo apt update` 
         - `sudo apt install tree`: package tree displays the file structure in tree format
@@ -133,7 +131,7 @@
         - `echo $SHELL`: View default shell.
         - `echo $0 ` : to find which shell type it is
         - `ps -p $$`: View current shell.
-        - `uname -r`: View kernel version.
+        - `uname -r`: unix name - View kernel version.
         - `ifconfig` : to view the config or ethernet network which also has info about the ip address
         - `getent hosts` : prints the host ip address
         - `dmesg | grep -I usb`: Display USB-related kernel messages.
@@ -142,7 +140,7 @@
         - `lsblk`: List block devices.
         - `lscpu`: List CPU architecture.
         - `lsmem --summary`: Print memory information.
-        - `free -m`: View free memory.
+        - `free -m`: View free memory in RAM and swap memory.
         - `sudo lshw`: View entire hardware configuration.
         - `source ~/.bashrc` : to update your shell configuration without needing to log out and log back in again
         - `top` : show Linux tasks using the CPU
@@ -150,8 +148,15 @@
         - `kill -9 Process_ID` : force a process to close and kill it
         - `kill -1 Process_ID` : force a process to reload the configuration
         - `lsof -p $$` : show a list of files opened by processes
+        - `df` vs `free` command
+            - `df` is used to find the free memory for the file system or provides information about disk space usage (hard disk eg: C in windows)
+            - `free` is used to find the free memory on RAM and swap space usage (eg: Task Manager-> Performance -> Mem or System Info)
 
     * File Operations
+        - Archive vs Compress: 
+            - Archiving: Combines multiple files into one without reducing size (e.g., .tar).
+            - Compressing: Reduces the size of files or archives (e.g., .gz, .zip).
+            - Together: Often used in tandem to create compressed archives like .tar.gz or .zip.
 
         - `du -sh file`: Display file size.
         - `ls -lh file`: List file details in human-readable format.
@@ -173,8 +178,8 @@
 
         - `touch file_name` : creates a file name
         - `nano file`: Open file in Nano text editor.
-        - `Ctrl O` - Save in Nano
-        - `Ctrl X` - Exit in Nano
+        - `Ctrl O` : Save in Nano
+        - `Ctrl X` : Exit in Nano
         - `vim file`: Open file in Vim text editor.
         - `:x` : to save and exit in vim
         - `:q` : to exit from vim
@@ -192,6 +197,7 @@
     * Local Variable VS Environment Variables:
         - `VARIABLE_NAME=xyz`: Local variables : The scope of this variable is within the enviroment it is created in, if created in script file then it is only available in that file. If created outside its available only outside the file 
         - `export VARIABLE_NAME=xyz`: Environmental Variables : Available throughout the terminal, both inside and outside script file but if you want to change it's value from inside a script file then run that .sh script file as `source ./script_file.sh`
+        - `echo "${VARIABLE_NAME}"` : to print the value of the env variable
         - `unset VARIABLE_NAME` : to delete the variable name
 
     * Help and Manuals
@@ -199,6 +205,7 @@
         - `man command_name` : to print the manual of the command
         - `whoami` : prints the username
         - `sudo npm install tldr -g` : npm is a package manager, tldr is the package which gives cleaner manual descriptions and -g is global flag i.e to install it globally so it can be run from anywhere
+        - `tldr command` : gives a short description of the command
     
     * Downloads
         - `wget www.website.com/file_name.jar`: simpler form of curl
@@ -266,14 +273,15 @@
     * PaaS - Platform - eg: `Cloud Functions` on GCP which  is a serverless compute service on GCP that allows you to run event-driven code without provisioning or managing servers. It automatically scales based on demand and executes code in response to events from various GCP services or HTTP requests.  
     * SaaS - `Google Workspace (Google Suits)` where gmail, docs, drive etc are provided and maintained for you. A company can use this to create their company email (GMAIL), manage documents(), file system etc 
     * Popular AWS services:
-        - EC2 - Elasctic Compute IaaS. You can launch it via
+        - EC2 - Elas
+        tic Cloud Compute IaaS. You can launch it via
             - Terraform
             - GUI or Web Console on the AWS Website
             - Python API
 * AWS Lecture by WeClodData -Course:
     - Regions consisting of AZ's (Availability Zones)
-    - Availability : A second machine is on a standby and if machine 1 fails, work is transferred to the stand by machine. This will take some time as work needs to be transferred. High availability means a system will almost always maintain uptime, albeit sometimes in a degraded state. About AWS, a system has high availability when it has 99.999% uptime, also known as "five nines." To put that in perspective, the system would be down for a mere five minutes and fifteen seconds a year. 
-    - Fault Tolerance : The work is executed on two systems simultaneously. So if one system fails, the second machine is immediately available. Think of fault tolerance as high availability's older brother. Fault tolerance means that a system will almost always maintain uptime — and users will not notice any differences during a primary system outage. If high availability was expensive in pre-AWS days, fault tolerance was exceedingly expensive.
+        - Availability : A second machine is on a standby and if machine 1 fails, work is transferred to the stand by machine. This will take some time as work needs to be transferred. High availability means a system will almost always maintain uptime, albeit sometimes in a degraded state. About AWS, a system has high availability when it has 99.999% uptime, also known as "five nines." To put that in perspective, the system would be down for a mere five minutes and fifteen seconds a year. 
+        - Fault Tolerance : The work is executed on two systems simultaneously. So if one system fails, the second machine is immediately available. Think of fault tolerance as high availability's older brother. Fault tolerance means that a system will almost always maintain uptime — and users will not notice any differences during a primary system outage. If high availability was expensive in pre-AWS days, fault tolerance was exceedingly expensive.
     - Redshift - Data Warehouse
     - EMR (Elastic Map Reduce) - Distributed Computing using Spark
     - IAM (Identity Access Management)
@@ -282,10 +290,11 @@
             - `Account Owner /Root User` or `IAM user`
             - `Security Credentials (Access Key ID /Secret Key ID)` All users have them
             - 2 Access Types
-                - `Access Key`
-                - `Password` 
-        - Group - Multiple Roles can be added to a user group and multiple users can be added to a user group(s)
+                - `Access Key`- Programactic access via CLI
+                - `Password` - AWS Management Console Access (GUI)
+        - User Group - Multiple Roles can be added to a user group and multiple users can be added to a user group(s)
         - Role - Multiple policies can be attached to a role and role(s) can be attached to a user
+            - EC2 Instance ----GIVE RIGHTS TO ACCESS---> S3 Bucket
             - Demo to create a role to give the EC2 instance rights to access a S3 bucket
             - Trusted entity type `AWS Service`
             - Use Case `EC2 instance`
@@ -293,11 +302,14 @@
             - Role name `de-b8-demo-ec2`
             - Add a tag optionally
             - Role created
-            - 
-        - Policies - a document with set of rules they are simply permissions which gives privilage to access a resource
+            - IAM Role: It is an identity you can create that has specific permissions with credentials that are valid for short durations. An IAM role can be assigned to an identity, such as :
+                - user or 
+                - user group or an 
+                - aws service (eg. EC2)
+        - Policies - a document with set of rules they are simply permissions which gives privilage to access a resource. Different policies available for each AWS resource can be found [here](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazons3.html)
             - Effect: Allow 
             - Actions: What privilages to give eg: read, write or all
-            - Resources: Which resources or files to give this privilage to e.g: only s3 bucket 1 & 2 etc
+            - Resources: Which resources or files to give this privilage to. I.e on which resources the actions can be performed. e.g: only s3 bucket 1 & 2 etc.
             - Policies can be given to other resources too.
             - Are assigned to `User` - `Group` - `Roles` - `Other AWS Sevice`
             - `Self-Created` or `AWS Standard`
@@ -593,8 +605,8 @@ Same content for [Exercise 7: EC2 & Linux](#exercise-7-lab-ec2--linux)
     - `"hotkey: ctr+z"` (to pause the process) 
     - `CTRL + C` (to terminate the process)
 
-- How to check the disk usage? 
-    - `df -h` - disk free -h to show in human redable format
+- How to check the disk usage in files? 
+    - `df -h` - disk free to see disk space usage. -h to show in human redable format
 
 - How to check the IP address?
     - `hostname -i`
