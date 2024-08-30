@@ -680,7 +680,21 @@ Questions and answers available on WeCloud course app
 Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
 
 
-
+### Errors:
+- Changing the permission of .ssh folder in Windows
+    - Left click on the .ssh folder to open `Properties`
+    - Select `Security` tab and then `Advanced`
+    - Select `Advanced` agian
+    - Select `Disable Inheritance`
+    - Say `ok` in the command box
+    - Click `ok`
+    - In the Security tab select SYSTEM in the Group/Username section and press `Edit`
+    - Then select `Deny` for all 
+    - Do this for all group usernames except yours
+    - Remove any unnecessary users
+    - Selct ok
+    - Make sure for you all the Persmissions are selected
+    - Then click ok
 
 ### Self Study
 
