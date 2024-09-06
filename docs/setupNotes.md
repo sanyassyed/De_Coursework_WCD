@@ -222,6 +222,7 @@ Remember to follow these steps when working on the local and remote server respe
 * Start Steps
     * Goto AWS Console
     * List all instances by instance id `aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId, Tags[?Key==`Name`].Value]'`
+    * List all the instance by instance id along with the state `aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId, Tags[?Key==`Name`].Value, State]'`
     * Start instance using the instance id `i-070505f9d6d145db1`using the command `aws ec2 start-instances --instance-ids i-070505f9d6d145db1`
     * Get the instance Public IPv4 DNS using the command `aws ec2 describe-instances --instance-ids i-070505f9d6d145db1 --query 'Reservations[*].Instances[*].PublicDnsName' --output text`
 ### Useful tools used

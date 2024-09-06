@@ -339,3 +339,162 @@
 
 100. What is the difference between pressing `CTRL+c` and `CTRL+z` in Linux?
      - Answer: `CTRL+c` sends a SIGINT signal to terminate the process, while `CTRL+z` suspends the process and puts it in the background.
+
+## Linux Symbols & Their Usage:
+1. Dollar Sign $
+    - Variable Expansion: Expands the value of a variable.
+    ```bash
+
+        name="Sam"
+        echo $name  # Output: Sam
+    ```
+    - Command Substitution: Captures the output of a command.
+
+    ```bash
+
+        date_today=$(date)
+        echo $date_today  # Output: (current date)
+    ```
+    - Special Variables:
+
+        * $0: Script name.
+        * $1, $2, etc.: Arguments passed to the script.
+        * $?: Last command's exit status.
+        * $$: Process ID of the current shell.
+
+2. Double Quotes "
+    - Preserve Spaces and Special Characters: Allows variable expansion while preserving spaces and special characters.
+    ```bash
+
+        greeting="Hello, world"
+        echo "$greeting"  # Output: Hello, world
+    ```
+
+3. Parentheses ()
+    - Subshell: Runs commands in a separate subshell.
+
+    ```bash
+    (cd /tmp && ls)  # Changes directory in subshell, doesn't affect the main shell.
+    ```
+    - Arrays: Used to define arrays.
+
+    ```bash
+    fruits=("apple" "banana" "cherry")
+    echo "${fruits[1]}"  # Output: banana
+    ```
+4. Curly Braces {}
+    Curly braces are highly versatile in Linux, serving multiple purposes.
+
+    - Variable Expansion with Curly Braces (${})
+    Basic Usage: Used to expand variables with clarity or when adjacent to other text.
+    ```bash
+    var="name"
+    echo "Hello ${var}man!"  # Output: Hello nameman!
+    ```
+
+    - Length of a String:
+    ``` bash
+    var="hello"
+    echo ${#var}  # Output: 5
+    ```
+
+    - Substring Extraction:
+    ```bash
+    var="hello"
+    echo ${var:1:3}  # Output: ell
+    ```
+
+    - Default Value if Empty:
+    ```bash
+    echo ${name:-"Guest"}  # Output: Guest (if $name is empty or not set)
+    ```
+
+    - Remove Prefix/Suffix:
+
+        - Remove Prefix:
+        ```bash
+        path="/home/user/file.txt"
+        echo ${path#*/}  # Output: home/user/file.txt
+        ```
+
+        - Remove Suffix:
+        ```bash
+        echo ${path%.txt}  # Output: /home/user/file
+        Brace Expansion ({})
+        ```
+
+    - Create Numeric Ranges:
+    ```bash
+    echo {1..5}  # Output: 1 2 3 4 5
+    ```
+
+    - Create Alphabetical Ranges:
+    ```bash
+    echo {a..e}  # Output: a b c d e
+    ```
+
+    - Create Lists:
+    ```bash
+    echo {apple,banana,orange}  # Output: apple banana orange
+    ```
+
+    - Batch File Commands:
+    ```bash
+    touch file{1..3}.txt  # Creates file1.txt, file2.txt, file3.txt
+    rm file{1..3}.txt     # Deletes file1.txt, file2.txt, file3.txt
+    ```
+
+    - Nested Brace Expansion:
+    ```bash
+    echo {A,B}{1,2}  # Output: A1 A2 B1 B2
+    ```
+
+    - Grouping Commands with {}: Execute Multiple Commands in the Same Shell:
+    ```bash
+    { echo "Hello"; echo "World"; }  # Output: Hello (newline) World
+    ```
+    Spacing: Make sure there is space after the opening { and before the closing }. 
+    
+    - Arrays and Curly Braces: Access Specific Array Elements:
+
+    ```bash
+    fruits=("apple" "banana" "cherry")
+    echo "${fruits[1]}"  # Output: banana
+    ```
+
+    - Access All Elements:
+    ```bash
+    echo "${fruits[@]}"  # Output: apple banana cherry
+    ```
+
+    - Summary:
+        * $: Variable or command expansion.
+        * ": Preserve spaces, but allow variable expansion.
+        * (): Run in subshell or define arrays.
+        * {}:
+            - ${}: Variable manipulation (substring, length, etc.).
+            - {}: Brace expansion for sequences, lists, and batch operations.
+            - {} (for commands): Group commands to execute them sequentially in the same shell.
+            - Arrays: Access and manipulate array elements.
+
+## Linux command line perform calculations
+- echo $((4+5)) : to add numbers
+- var=$((4+5)) : to assign a calculated value to a variable
+
+## `$()` vs `$(())`
+
+- Use `$()` for command substitution (when you want the output of a command).
+    
+    Example: current_dir=$(pwd)
+    
+    Use case: Capturing the output of commands, passing results between commands.
+    ```bash
+    dirname "$(dirname "${BASH_SOURCE:-$0}")"
+    ```
+    You are capturing the output of the dirname command, so you should use `$(...)`, not `$((...))`, because you're working with command output, not arithmetic operations.
+
+- Use `$(( ))` for arithmetic operations (when you need to perform math).
+    
+    Example: sum=$((3 + 5))
+    
+    Use case: Basic arithmetic, evaluating expressions.
