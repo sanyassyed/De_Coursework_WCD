@@ -697,9 +697,79 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
     - Then click ok
 
 ### Self Study
-
+#### Mini Project : [Toronto Climate Data](https://github.com/sanyassyed/Toronto_Climate_Data/tree/main)
 
 ## Week 2 - Data Ingestion - Docker
+### Lectures and Lab
+#### [ ] Lecture 1: Docker Basic (2023-08-01):
+
+
+#### [ ] Lecture 2: Docker Compose and Demo(2023-08-03):
+- Docker: Docker's main purpose is to package and containerize applications and then ship them and run them anywhere and any number of times.
+- KERNEL - The kernel is a core component of an operating system that enables communication between software applications and the underlying hardware. It acts as a bridge, managing system resources (like CPU, memory, and I/O devices) and ensuring that applications can safely and efficiently interact with the hardware without needing to manage those resources directly.
+- Image: is a template/package used to create containers. They can be pulled from the repository or can be built from a `Dockerfile`.
+- Containers: are running instances of images that are isolated and have their own environments and set of processes.
+-   ```bash
+        # commands on the new docker demo instance
+        sudo apt-get update
+        docker --version
+        # if docker is installed delete the old version it as follows
+        sudo apt-get remove docker docker-engine docker.io
+        # download and install docker
+        sudo apt install docker.io
+        # start and enable docker
+        sudo systemctl start docker
+        sudo systemctl enable docker
+        sudo chmod 777 /var/run/docker.sock
+        docker pull hello-world
+    ```
+- Docker Commands:
+    * General
+        * `docker --version` : prints the docker version if installed
+    * Build
+        * `docker build .` : build a docker image from Dockerfile available in the current file path therefore the dot
+        * `docker build Dockerfile -t name_of_image:image_tag` : builds an image from the Dockerfile with the specified image name and tag
+        * `docker build . -t ssanya/my_image:v2` : creates an image with the name my_image along with the Docker Hub repo name prefixed as it is required when pushing to the repository
+        * `docker push ssanya/my_image:v2` : pushes the image built to the Docker Hub repository 
+    * Image
+        * `docker pull image_name:image_tag` : Pull a docker image form the Docker Hub Registry. Default tag is `latest`
+        * `docker run image_name:image_tag` : Creates a container from the image in the default attached mode.
+        * `docker run -it image_name:image_tag`: runs the container in an interactive mode which is also the default mode
+        * `docker run -d image_name:image_tag` : Creates a container in a detached mode using the image
+        * `docker run --name custom_conatiner_name -d image_name` : starts a container with the custom container name provided in a detached mode from the image specified
+        * `docker rmi image_id1 image_id2 image_idN` : deletes one or multiple docker image(s)
+        * `docker images -a` : lists the docker images available on the instance
+    * Container
+        * `docker attach container_id` : attaches back to a detached container
+        * `docker stop container_name/container_id` : stops a container. First two characters of the container_id are sufficient
+        * `docker start container_name/container_id` : starts a container that was previously stopped
+        * `docker rm container_id1 container_id2 container_idN` : removes or deletes one or multiple container(s)
+        * `docker ps -a` : lists the containers on the instance including stopped conatiners
+        * `docker exec container_id cat /etc/hosts` : executes a command on a running docker container that is in detached mode. Here we print the contents of the file /etc/hosts
+    * Volume
+        * `docker run -v /opt/host_folder:/var/lib/container_folder mysql` : maps the volume of the conatiner to the host system  
+        * Volume Mounting: Mounting the data in the container to standard volume folder provided by docker on the host system
+            * `docker volume create data_volume` : creates a folder called `data_volume` at the following location on the host server where docker is installed `/var/lib/docker/volumes/data_volume`
+            * `docker run -v data_volume:/var/lib/mysql mysql` : then this standard folder is mounted to connect to the required folder on the container. If the folder name `data_volume` is not available at `/var/lib/docker/volumes/` a new folder is created with the specified folder name.
+        * Bind Mounting: Mounting the data in the container to custom volume folder anywhere on the host system
+            * `docker volume create data_volume` : creates a folder called `data_volume` at the following location on the host server where docker is installed `/var/lib/docker/volumes/data_volume`
+            * `docker run -v /opt/host_folder:/var/lib/container_folder mysql` : then the custom folder is mounted to connect to the required folder on the container
+        * New Mounting Version
+            * `docker run --mount type=bind,source=/data/mysql,target=/var/lib/mysql mysql` : in this method if the folder /data/mysql does not exist already then it throws an error
+    * Porting
+
+    * Inspection
+    * Logs
+    * 
+
+### Practice Exercises
+#### [] Workshop 1: Docker Compose --Flask 
+#### [ ] Workshop 2: Docker Compose -- Spark Cluster
+#### [ ] Lab: Install Airbyte and Metabase with Docker
+
+### Self Study
+#### Mini Project : [Build Docker container to Process data]()
+
 ## Week 3 - Data Ingestion - Python in Data Engineering and Cloud
 ## Week 4 - Data Ingestion - Airbyte, Data Ingestion and Snowflake
 ## Week 5 - Data Transformation - Data Warehouse
