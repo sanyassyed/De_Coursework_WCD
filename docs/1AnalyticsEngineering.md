@@ -37,6 +37,7 @@
             - previous user set env variables lost
             - The - option ensures that the environment variables and settings are set as they would be for a full login session as the root user.
             - goes to the root folder
+        - `sudo -i` : used to switch to root user same as su -
         - `su username`: 
             - starts a non-login shell that doesn't fully reinitialize the environment
             - switch to another user
@@ -722,45 +723,127 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
         sudo systemctl enable docker
         sudo chmod 777 /var/run/docker.sock
         docker pull hello-world
+        # jupyter notebook
+        docker pull jupyter/datascience-notebook
+        # on the local system change the permissions for the current directory so the container user jovyn UID(1000) can assess the mounted directory "${PWD}" on the host system
+        # Changing ownership on the host ensures that the container's user can access and modify the files, avoiding permission errors when using mounted volumes.
+        sudo chown -R 1000:1000 ${PWD}
+        # run the jupyter notebook
+        docker run -it --rm -p 10000:8888 -v "${PWD}":/home/jovyan/work jupyter/datascience-notebook:latest
     ```
 - Docker Commands:
     * General
         * `docker --version` : prints the docker version if installed
+        * `docker login` : to log into Docker Hub
     * Build
-        * `docker build .` : build a docker image from Dockerfile available in the current file path therefore the dot
+        * `docker build .` : build a docker image from Dockerfile available in the current file path therefore the `dot`
         * `docker build Dockerfile -t name_of_image:image_tag` : builds an image from the Dockerfile with the specified image name and tag
-        * `docker build . -t ssanya/my_image:v2` : creates an image with the name my_image along with the Docker Hub repo name prefixed as it is required when pushing to the repository
-        * `docker push ssanya/my_image:v2` : pushes the image built to the Docker Hub repository 
+        * `docker build . -t sanyasyed/my_image:v2` : creates an image with the name my_image along with the Docker Hub repo name prefixed as it is required when pushing to the repository
+        * `docker push sanyasyed/my_image:v2` : pushes the image built to the Docker Hub repository 
     * Image
         * `docker pull image_name:image_tag` : Pull a docker image form the Docker Hub Registry. Default tag is `latest`
         * `docker run image_name:image_tag` : Creates a container from the image in the default attached mode.
-        * `docker run -it image_name:image_tag`: runs the container in an interactive mode which is also the default mode
+        * `docker run -it --rm image_name:image_tag`: runs the container in an interactive mode which is also the default mode and --rm means automatically remove the container as soon as it is stopped oe exited
         * `docker run -d image_name:image_tag` : Creates a container in a detached mode using the image
         * `docker run --name custom_conatiner_name -d image_name` : starts a container with the custom container name provided in a detached mode from the image specified
         * `docker rmi image_id1 image_id2 image_idN` : deletes one or multiple docker image(s)
         * `docker images -a` : lists the docker images available on the instance
+        * `docker run -u 1000 alpine sh -c 'echo "Hello user ID: $(id -u)"'`: 
+            - **`docker run`**: Runs a new Docker container.
+            - **`-u 1000`**: Specifies the user ID (UID) as `1000` inside the container, running as this user instead of root (UID 0).
+            - **`alpine`**: The base Docker image used, a lightweight Linux distribution.
+            - **`sh`**: The shell (`sh`) used to execute the command inside the container.
+            - **`-c`**: Allows passing a string as a command to the shell (`sh`).
+            - **`'echo "Hello user ID: $(id -u)"'`**: The command being executed:
+            - `echo`: Prints the message to standard output.
+            - `$(id -u)`: Gets the current user's UID (in this case, `1000`) and substitutes it in the message. 
     * Container
-        * `docker attach container_id` : attaches back to a detached container
+        * `docker attach container_id` : attaches back to a detached container. If the container was started with a shell (like bash or sh), you can interact with it. However, this can be tricky because it connects to the container's main process. If it's not a shell or something interactive, you might not be able to interact with it in the same way. So instead use `docker exec -it container_id bash`
         * `docker stop container_name/container_id` : stops a container. First two characters of the container_id are sufficient
-        * `docker start container_name/container_id` : starts a container that was previously stopped
+        * `docker start -a container_name/container_id` : starts and attaches a container that was previously stopped
         * `docker rm container_id1 container_id2 container_idN` : removes or deletes one or multiple container(s)
         * `docker ps -a` : lists the containers on the instance including stopped conatiners
+        *  * `docker ps -q`: This command retrieves the container IDs of all running containers
+        * `docker stop $(docker ps -q)` : This command retrieves the container IDs of all running containers and stops them all.
         * `docker exec container_id cat /etc/hosts` : executes a command on a running docker container that is in detached mode. Here we print the contents of the file /etc/hosts
+        * `docker exec -it container_id bash` : execute a command on the container to enter the bash shell of the container and interact with it
+        * `docker kill container_name/container_id` : kills a container and is unsafe compared to stop which is safer
+        * `docker rename <old_container_name> <new_container_name>` : rename a container
+        * `docker cp <container_id_or_name>:<source_path> <destination_path>` or `docker cp <source_path> <container_id_or_name>:<destination_path>`
+            * <container_id_or_name>: The ID or name of the container from which you want to copy files or to which you want to copy files.
+            * <source_path>: The path of the file or directory you want to copy. This can be from the container (in the first form) or from the host (in the second form).
+            * <destination_path>: The path where you want to copy the file or directory to. This can be to the host (in the first form) or to the container (in the second form).
     * Volume
-        * `docker run -v /opt/host_folder:/var/lib/container_folder mysql` : maps the volume of the conatiner to the host system  
-        * Volume Mounting: Mounting the data in the container to standard volume folder provided by docker on the host system
-            * `docker volume create data_volume` : creates a folder called `data_volume` at the following location on the host server where docker is installed `/var/lib/docker/volumes/data_volume`
-            * `docker run -v data_volume:/var/lib/mysql mysql` : then this standard folder is mounted to connect to the required folder on the container. If the folder name `data_volume` is not available at `/var/lib/docker/volumes/` a new folder is created with the specified folder name.
-        * Bind Mounting: Mounting the data in the container to custom volume folder anywhere on the host system
-            * `docker volume create data_volume` : creates a folder called `data_volume` at the following location on the host server where docker is installed `/var/lib/docker/volumes/data_volume`
-            * `docker run -v /opt/host_folder:/var/lib/container_folder mysql` : then the custom folder is mounted to connect to the required folder on the container
-        * New Mounting Version
-            * `docker run --mount type=bind,source=/data/mysql,target=/var/lib/mysql mysql` : in this method if the folder /data/mysql does not exist already then it throws an error
-    * Porting
+        * `docker volume ls` : list all the volumes that are present at `/var/lib/docker/volumes`. To find which volume a container is connected to use `docker inspect container_id`
+        * `docker run -v /opt/host_folder:/var/lib/container_folder mysql` : maps the volume of the conatiner to the host system 
+        * `docker volume create data_volume` : creates a folder called `data_volume` at the following location on the host server where docker is installed `/var/lib/docker/volumes/data_volume`
 
-    * Inspection
-    * Logs
-    * 
+        * Volume Mounting: Mounting the data in the container to standard volume folder provided by docker on the host system
+            * `docker run -v data_volume:/var/lib/mysql mysql` : then this standard folder is mounted to connect to the required folder on the container. If the folder name `data_volume` is not available at `/var/lib/docker/volumes/` a new folder is created with the specified folder name.
+            * `docker run -v /folder_loc/in_container nginx` : not specifying a location on the host system will create a folder with hash name at the location `/var/lib/docker/volumes/` and this will be connected to the container. You can find this connected folder using the inspect command as well.
+        * Bind Mounting: Mounting the data in the container to custom volume folder anywhere on the host system
+            * `docker run -v /opt/host_folder:/var/lib/container_folder mysql` : then the custom folder is mounted to connect to the required folder on the container
+        * New Mounting Version:
+            * `docker run --mount type=bind,source=/data/mysql,target=/var/lib/mysql mysql` : in this method if the folder /data/mysql does not exist already then it throws an error
+    * Ports
+
+    * Inspection:
+        * `docker inspect container_id`: use this command to find information about the container. Some useful information that can be found are as follows:
+            * Ports
+            * Ip address
+            * Environment Variables
+            * Mounted Volume location on the host system etc
+    * Logs: You can view logs command to view the logs being printed by the container that was started in a detached mode. Logs are nothing but the messages printed on the terminal by the container. Eg: the jupyter notebook container prints various info etc.
+        * `docker run -d alpine sh -c 'echo "HELLO"; sleep 500'`
+            * `docker run --rm alpine`: Runs a new Alpine container.
+            * `sh -c`: Executes a shell command inside the container.
+            * `'echo "HELLO"; sleep 500'`: This string contains two commands:`echo "HELLO"`: Prints "HELLO". `sleep 500`: Keeps the container running for 500 seconds after printing.
+        * `docker logs container_id`: to view the logs of the above container
+    * Network:
+        * `docker network create network_name` : to create a custom network in docker
+        * `docker network ls` : to view a list of all the docker networks
+        * 
+- Lecture Exercises: Docker Practice 
+    * mysql: log into mysql as follows `mysql -u root -h localhost -p` when prompted for password get in from the logs
+    * mysql commands: `show databases;`, `use database_name;`, `show tables;` etc
+
+- Docker Compose:
+    * Install Docker compose as follows [SOURCE](https://docs.docker.com/compose/install/linux/):
+        * `DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}`
+        * `mkdir -p $DOCKER_CONFIG/cli-plugins`
+        * `curl -SL https://github.com/docker/compose/releases/download/v2.29.6/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose`
+        *  `chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose`
+        * `docker compose version`
+    * Lets create mongo and mongo express containers and demonstrate how docker compose can be used when you require more than one container and want those containers to communicate with one another.
+        * `docker network mongo-network`
+        * `docker network ls`
+        * `docker run -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password --net mongo-network --name mongodb mongo`
+        * `docker run -it --rm --network mongo-network --name mongo-express -p 8081:8081 -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin -e ME_CONFIG_MONGODB_ADMINPASSWORD=password -e ME_CONFIG_MONGODB_SERVICE=mongodb mongo-express`
+    * Rather than the above we can create a single .yml docker compose file so the above can be done together
+        ```yml
+            version: '3'
+            service:
+                mongodb:
+                    image: mongo
+                    ports:
+                        - 27017:27017
+                    environment:
+                        - MONGO_INITDB_ROOT_USERNAME=admin 
+                        - MONGO_INITDB_ROOT_PASSWORD=password
+                mongo-express:
+                    image: mongo-express
+                    ports:
+                        - 8081:8081
+                    environment:
+                        - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+                        - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+                        - ME_CONFIG_MONGODB_SERVICE=mongodb
+        ```
+    * Commands
+        * `docker compose -f mongodb.yml up`
+        * `docker compose -f mongodb.yml down`
+        * `docker compose -d -f mongodb.yml up`
+
 
 ### Practice Exercises
 #### [] Workshop 1: Docker Compose --Flask 
