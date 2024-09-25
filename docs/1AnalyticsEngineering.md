@@ -806,20 +806,34 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
 - Lecture Exercises: Docker Practice 
     * mysql: log into mysql as follows `mysql -u root -h localhost -p` when prompted for password get in from the logs
     * mysql commands: `show databases;`, `use database_name;`, `show tables;` etc
-
-- Docker Compose:
+- Multi-container Application:
+    * Our application requires the following: 
+        1. Web-Front End
+        2. Database
+        3. Catalogue
+        4. Authentication
+    * Two ways to go about it
+        1. Put all applications in one container: Use Docker
+        2. Put each application in its own container: Use Docker-Compose
+    * Why do we need to have a seperate container for each service?     
+        - Because each service could require different levels of scaling up. 
+        - Eg: I we have more customers on the Web but fewer products to sell then; the Web-FE may require 3X (3 instances) scaling and the Database might require 1X.
+        - If we have all applications in 1 container all the applications will have to be scaled to the same level hence many times wasting resources.
+        - Version control is easier to manage in case of dependencies for each application seperately when they are in different containers.
+        - When using managed services on the cloud it becomes easier to integrate them when using docker-compose.
+- Docker Compose: Multi-container application
     * Install Docker compose as follows [SOURCE](https://docs.docker.com/compose/install/linux/):
         * `DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}`
         * `mkdir -p $DOCKER_CONFIG/cli-plugins`
         * `curl -SL https://github.com/docker/compose/releases/download/v2.29.6/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose`
         *  `chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose`
         * `docker compose version`
-    * Lets create mongo and mongo express containers and demonstrate how docker compose can be used when you require more than one container and want those containers to communicate with one another.
+    * Example use without .yml file: Lets create mongo and mongo express containers and demonstrate how docker compose can be used when you require more than one container and want those containers to communicate with one another.
         * `docker network mongo-network`
         * `docker network ls`
         * `docker run -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password --net mongo-network --name mongodb mongo`
         * `docker run -it --rm --network mongo-network --name mongo-express -p 8081:8081 -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin -e ME_CONFIG_MONGODB_ADMINPASSWORD=password -e ME_CONFIG_MONGODB_SERVICE=mongodb mongo-express`
-    * Rather than the above we can create a single .yml docker compose file so the above can be done together
+    * Example use without .yml file: Rather than the above we can create a single .yml docker compose file so the above can be done together
         ```yml
             version: '3'
             service:
@@ -840,13 +854,18 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
                         - ME_CONFIG_MONGODB_SERVICE=mongodb
         ```
     * Commands
-        * `docker compose -f mongodb.yml up`
-        * `docker compose -f mongodb.yml down`
-        * `docker compose -d -f mongodb.yml up`
+        * `docker compose -f mongodb.yml up` : flag f specifies the the docker-compose YAML file to use. By default docker compose looks for `docker-compose.yml` file to start the multi-container application. The up command starts the services defined in the mongodb.yml file.
+        * `docker compose -f mongodb.yml down`: down command is used to stop and remove the containers, networks, and volumes created by `docker compose up`. It essentially tears down the environment that was brought up by `docker compose up`. Removes volumes if the --volumes flag is specified. By default, volumes are not removed to prevent data loss.
+        * `docker compose -d -f mongodb.yml up`: 
+        * `docker compose down --volumes` : Removes any volumes created by docker compose up. This is important if you want to delete persistent data. Without this flag, volumes will be left intact, so data stored in them will persist for the next time you bring the services up.
+        * `docker compose stop`: Stops the running containers but does not remove them or the network. You can restart them later without rebuilding.
+        * `docker compose down --rmi all` : Removes all images built by Docker Compose or pulled from a registry.
 
+- Micro-services vs Macro-services:
+    * 
 
 ### Practice Exercises
-#### [] Workshop 1: Docker Compose --Flask 
+#### [ ] Workshop 1: Docker Compose --Flask 
 #### [ ] Workshop 2: Docker Compose -- Spark Cluster
 #### [ ] Lab: Install Airbyte and Metabase with Docker
 
