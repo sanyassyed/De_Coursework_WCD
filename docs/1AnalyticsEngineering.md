@@ -64,7 +64,7 @@
         - `q`: Exit pager.
         - `man command_name`: View manual for a command.
         - `apropos keyword`: Search manuals for a keyword.
-        - `cat > filename`: Write into a file.
+        - `cat > filename`: Write into a file. Press Ctrl + D to indicate the end of input (EOF), which will save the content and exit back to the command prompt.
         - `ls -al`: List all directories in long listing format.
         - `ls -h`: List files in human-readable format.
         - `cd -`: Navigate to previous location.
@@ -703,12 +703,9 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
 ## Week 2 - Data Ingestion - Docker
 ### Lectures and Lab
 #### [ ] Lecture 1: Docker Basic (2023-08-01):
-
-
-#### [ ] Lecture 2: Docker Compose and Demo(2023-08-03):
-- Docker: Docker's main purpose is to package and containerize applications and then ship them and run them anywhere and any number of times.
-- KERNEL - The kernel is a core component of an operating system that enables communication between software applications and the underlying hardware. It acts as a bridge, managing system resources (like CPU, memory, and I/O devices) and ensuring that applications can safely and efficiently interact with the hardware without needing to manage those resources directly.
-- Image: is a template/package used to create containers. They can be pulled from the repository or can be built from a `Dockerfile`.
+- **Docker**: Docker's main purpose is to package and containerize applications and then ship them and run them anywhere and any number of times.
+- **KERNEL**: The kernel is a core component of an operating system that enables communication between software applications and the underlying hardware. It acts as a bridge, managing system resources (like CPU, memory, and I/O devices) and ensuring that applications can safely and efficiently interact with the hardware without needing to manage those resources directly.
+- **Image**: is a template/package used to create containers. They can be pulled from the repository or can be built from a `Dockerfile`.
 - Containers: are running instances of images that are isolated and have their own environments and set of processes.
 -   ```bash
         # commands on the new docker demo instance
@@ -731,7 +728,7 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
         # run the jupyter notebook
         docker run -it --rm -p 10000:8888 -v "${PWD}":/home/jovyan/work jupyter/datascience-notebook:latest
     ```
-- Docker Commands:
+- **Commands**:
     * General
         * `docker --version` : prints the docker version if installed
         * `docker login` : to log into Docker Hub
@@ -803,11 +800,13 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
         * `docker network create network_name` : to create a custom network in docker
         * `docker network ls` : to view a list of all the docker networks
         * 
-- Lecture Exercises: Docker Practice 
+- **Lecture Exercises**: Docker Practice 
     * mysql: log into mysql as follows `mysql -u root -h localhost -p` when prompted for password get in from the logs
     * mysql commands: `show databases;`, `use database_name;`, `show tables;` etc
-- Multi-container Application:
-    * Our application requires the following: 
+
+#### [ ] Lecture 2: Docker Compose and Demo(2023-08-03):
+- **Multi-container Application:**
+    * Eg: Our application requires the following: 
         1. Web-Front End
         2. Database
         3. Catalogue
@@ -821,7 +820,7 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
         - If we have all applications in 1 container all the applications will have to be scaled to the same level hence many times wasting resources.
         - Version control is easier to manage in case of dependencies for each application seperately when they are in different containers.
         - When using managed services on the cloud it becomes easier to integrate them when using docker-compose.
-- Docker Compose: Multi-container application
+- **Docker Compose**: Used for Multi-container application
     * Install Docker compose as follows [SOURCE](https://docs.docker.com/compose/install/linux/):
         * `DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}`
         * `mkdir -p $DOCKER_CONFIG/cli-plugins`
@@ -846,12 +845,18 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
                         - MONGO_INITDB_ROOT_PASSWORD=password
                 mongo-express:
                     image: mongo-express
+                    restart: always #  ‘restart: always’ so the image is restarted whenever it goes down. Other options for restart are: no, on-failure, always, unless-stopped
                     ports:
                         - 8081:8081
                     environment:
                         - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
                         - ME_CONFIG_MONGODB_ADMINPASSWORD=password
                         - ME_CONFIG_MONGODB_SERVICE=mongodb
+                    depends-on: 
+                        - mongodb 
+                    command: 
+                        - 'npm run start' # execute actions once the container is started and act as a replacement for the CMD action in your Dockerfile
+
         ```
     * Commands
         * `docker compose -f mongodb.yml up` : flag f specifies the the docker-compose YAML file to use. By default docker compose looks for `docker-compose.yml` file to start the multi-container application. The up command starts the services defined in the mongodb.yml file.
@@ -860,14 +865,98 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
         * `docker compose down --volumes` : Removes any volumes created by docker compose up. This is important if you want to delete persistent data. Without this flag, volumes will be left intact, so data stored in them will persist for the next time you bring the services up.
         * `docker compose stop`: Stops the running containers but does not remove them or the network. You can restart them later without rebuilding.
         * `docker compose down --rmi all` : Removes all images built by Docker Compose or pulled from a registry.
+        * `docker compose up --scale mongodb=3`: is used to scale a specific service (in this case, mongodb) to run multiple instances (replicas) of that service within a Docker Compose setup. This command creates 3 MongoDB containers running in parallel.
+    * Docker Compose vs Kubernetes:
+        * DC is used only in development and not used in production environment because of any container fails it does not automatically start it up. 
+        * Whereas Kubernetes automatically takes care of such a situation. It handles container crashes and automatically tries to rerun it. 
+    * Docker / Docker Compose Best Practices:
+        * Use Normal Volume or Named Volume: as this allows Docker to manage any scaling. In Bind mounding the container may always not have access to the binded volume folder on the host system
+        * Don’t use ‘latest’ tag name instead use the actual tag name as the latest tag keeps changing as it’s attached to the latest version of the container
+        * For Multi-Container Application use Kubernetes for Production and Docker Compose for Development
+- **Micro-services vs Macro-services**:
+    In data engineering, **macroservices** and **microservices** are two architectural approaches for building and organizing data processing and management systems. While these terms are more commonly associated with software architecture, they have specific relevance in the context of data engineering when discussing the organization of data pipelines, services, and data flow management.
 
-- Micro-services vs Macro-services:
-    * 
+    1. **Macroservices (Monolithic Architecture)**:
+        - **Definition**: Macroservices, or monolithic services, refer to a large, unified architecture where all data processing components are tightly integrated into a single application or service.
+        - **Characteristics**:
+            - **Tightly Coupled**: All components—data ingestion, transformation, storage, and querying—are bundled into a single service.
+            - **Centralized Data Processing**: All data operations (ETL, analytics, storage) happen within the same environment or service.
+            - **Single Deployment Unit**: The entire system is deployed and scaled as one. For example, if the system needs to process more data, you scale the whole service, not just a specific part.
+            
+        - **Advantages**:
+            - **Simple Development**: A single codebase makes it easier to develop and debug.
+            - **Easier to Deploy**: There’s only one service to deploy, manage, and monitor.
+            - **Better for Small Systems**: Suitable when data volume and system complexity are low.
+
+        - **Disadvantages**:
+            - **Scalability Issues**: As data volume grows, scaling a monolithic service can become inefficient since all components are scaled together, regardless of whether they all need it.
+            - **Lack of Flexibility**: Modifying or upgrading parts of the system is harder because it affects the entire service.
+            - **Maintenance Challenges**: Over time, macroservices can become harder to maintain as new features or datasets are added.
+
+        - **Example in Data Engineering**:
+            - A **batch processing pipeline** where data is ingested, transformed, and loaded into a database in a single, unified system might be considered a macroservice. All components of the data processing pipeline are bundled together into one large service.
+
+    ---
+
+    2. **Microservices**:
+        - **Definition**: Microservices refer to a more distributed architecture where each component of the data pipeline is built as a small, independent service with a specific function. Each service communicates with others, typically through APIs, and is deployed and scaled independently.
+        - **Characteristics**:
+            - **Loosely Coupled**: Each service is responsible for a specific task, such as data ingestion, transformation, or storage, and can be developed, deployed, and scaled independently.
+            - **Distributed Data Processing**: Different services might handle various aspects of the data pipeline (e.g., ingestion, transformation, aggregation, storage, and analytics).
+            - **Independent Scaling**: Services can be scaled based on their individual resource needs. For example, a data ingestion service might need to scale separately from a data transformation service.
+
+        - **Advantages**:
+            - **Scalability**: You can scale individual services based on the demand. For example, if data ingestion requires more processing power but transformation doesn’t, you only scale the ingestion service.
+            - **Flexibility**: Services can be updated or replaced independently without affecting the whole system.
+            - **Fault Isolation**: If one service fails, it doesn’t necessarily bring down the entire data pipeline, improving reliability.
+            - **Technology Diversity**: Each service can be built using the best-suited technology for its specific task (e.g., different programming languages or frameworks for ingestion vs. analytics).
+
+        - **Disadvantages**:
+            - **Complexity**: Managing a large number of microservices can be complex. You need to handle communication, data consistency, and service orchestration.
+            - **Latency**: Since services communicate over a network, there can be added latency compared to in-memory operations within a monolithic service.
+            - **Monitoring and Debugging**: It can be more challenging to monitor and troubleshoot issues when data flows through multiple services.
+
+        - **Example in Data Engineering**:
+            - A data pipeline built using **Apache Kafka** for data ingestion, **Apache Flink** for real-time transformations, **Cassandra** for storage, and a custom API for data querying could be considered a microservices architecture. Each of these components is independently deployed and scaled.
+
+    ---
+
+    3. **Comparison in Data Engineering Context**:
+
+        | Feature                     | **Macroservices**                           | **Microservices**                           |
+        |-----------------------------|---------------------------------------------|---------------------------------------------|
+        | **Architecture**             | Unified, single service                     | Distributed, multiple small services        |
+        | **Scalability**              | Scales as one unit                          | Each service can be scaled independently    |
+        | **Flexibility**              | Harder to modify or replace components      | Easier to update or replace services        |
+        | **Complexity**               | Simpler to develop and manage               | More complex, requires service orchestration|
+        | **Fault Tolerance**          | Single point of failure                     | Fault isolation between services            |
+        | **Technology Choice**        | One technology stack for the whole system   | Services can use different technologies     |
+        | **Best Use Case**            | Smaller, simpler systems                    | Large, complex, and scalable systems        |
+
+    ---
+
+    4. Use Case Examples:
+
+        1. **Macroservices Example**:
+        - A simple **ETL pipeline** where all the components (ingestion, transformation, and loading) are handled within a single Spark job or in a tool like **Apache NiFi** or **Airflow**, which manages the full data pipeline.
+
+        2. **Microservices Example**:
+        - A **distributed data processing system** where one service handles **data ingestion** (like Kafka or RabbitMQ), another handles **data transformations** (like Flink or Spark Streaming), and another handles **data storage and querying** (like Cassandra, Elasticsearch, or a data warehouse).
+
+        ### Conclusion:
+        - **Macroservices** are simpler, more suited for smaller or less complex data engineering systems where scalability and fault isolation are less critical.
+        - **Microservices** offer greater flexibility and scalability, making them ideal for complex, large-scale data systems that need to handle high volumes of data or require independent scaling and fault tolerance. However, they come with added complexity in management and orchestration. 
 
 ### Practice Exercises
 #### [ ] Workshop 1: Docker Compose --Flask 
 #### [ ] Workshop 2: Docker Compose -- Spark Cluster
-#### [ ] Lab: Install Airbyte and Metabase with Docker
+#### [ ] Lab: Install Airbyte and Metabase with Docker:
+* **Airbyte**:
+    - 
+    -
+* **Metabase**:
+    -
+    -
 
 ### Self Study
 #### Mini Project : [Build Docker container to Process data]()
