@@ -90,7 +90,17 @@ For this course I will be using my Local Windows PC, Git Codespace Server (as Do
     * OS: MS Windows 10 x-64 based PC
     * Apps intalled - course related
         * Anaconda
-            * TODO:
+            * Download and install Anaconda 64-Bit (x86) Installer from [here](https://www.anaconda.com/products/distribution#Downloads)
+
+            ```bash
+                apt-get update
+                apt-get upgrade
+                wget https://repo.anaconda.com/archive/Anaconda3-2023.03-Linux-x86_64.sh
+                bash Anaconda3-2023.03-Linux-x86_64.sh
+                # Accept yes
+                rm Anaconda3-2023.03-Linux-x86_64.sh
+            ```
+            ~~echo 'export PATH="${HOME}/miniconda/bin:${PATH}"' >> ~/.bashrc~~
         * MySQL
         * PowerBI
         * VSCode
@@ -237,3 +247,29 @@ Remember to follow these steps when working on the local and remote server respe
 
 ## Useful commands
 * `git status -u` : view the files in the untracked folders
+
+## Transfering EC2 Instances to another account
+* Create Another AWS account
+    * s.anyashireen@gmail.com
+    * sanya_de
+    * sanya_iphone
+* [Main Source](https://repost.aws/questions/QUEdJa1fI6TUC1dfTm5Mu0yw/how-to-move-ec2-to-another-account)
+* [Creating an AMI Image of EC2 Instance](https://medium.com/@JohnxLe/how-to-create-an-amazon-machine-image-ami-2-ways-5f743c59a08b)
+* Modifying AMI Permissions:
+    * Goto AMI's from left pane of EC2 window
+    * Select the AMI 
+    * Goto Permissions Tab Below
+    * Edit AMI Permission
+    * Add the account number you want to share it with
+* Creating New Instance With the shared AMI:
+    * Method 1:
+        - Mentioned in the above medium artice via Launch Instance
+    * Method 2:
+        - If you cannot see the shared EMI in the Launch Instance then
+        - Goto the AMI from the left pane on the EC2 window
+        - In the drop down list select Private Images
+        - Select the AMI that was shared
+        - Select Launch instance from AMI
+        - Create a new security group
+        - Add a Key pair
+        - Create the instance

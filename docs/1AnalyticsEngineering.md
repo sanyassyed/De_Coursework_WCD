@@ -771,17 +771,21 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
             * <source_path>: The path of the file or directory you want to copy. This can be from the container (in the first form) or from the host (in the second form).
             * <destination_path>: The path where you want to copy the file or directory to. This can be to the host (in the first form) or to the container (in the second form).
     * Volume
-        * `docker volume ls` : list all the volumes that are present at `/var/lib/docker/volumes`. To find which volume a container is connected to use `docker inspect container_id`
-        * `docker run -v /opt/host_folder:/var/lib/container_folder mysql` : maps the volume of the conatiner to the host system 
-        * `docker volume create data_volume` : creates a folder called `data_volume` at the following location on the host server where docker is installed `/var/lib/docker/volumes/data_volume`
-
-        * Volume Mounting: Mounting the data in the container to standard volume folder provided by docker on the host system
+        * Named Mounting: Mounting the data in the container to standard volume folder provided by docker on the host system
             * `docker run -v data_volume:/var/lib/mysql mysql` : then this standard folder is mounted to connect to the required folder on the container. If the folder name `data_volume` is not available at `/var/lib/docker/volumes/` a new folder is created with the specified folder name.
             * `docker run -v /folder_loc/in_container nginx` : not specifying a location on the host system will create a folder with hash name at the location `/var/lib/docker/volumes/` and this will be connected to the container. You can find this connected folder using the inspect command as well.
-        * Bind Mounting: Mounting the data in the container to custom volume folder anywhere on the host system
+        * Volume Mounting (Bind Mounts): Mounting the data in the container to custom volume folder anywhere on the host system
             * `docker run -v /opt/host_folder:/var/lib/container_folder mysql` : then the custom folder is mounted to connect to the required folder on the container
         * New Mounting Version:
             * `docker run --mount type=bind,source=/data/mysql,target=/var/lib/mysql mysql` : in this method if the folder /data/mysql does not exist already then it throws an error
+        * `docker volume ls` : list all the volumes that are present at `/var/lib/docker/volumes`. To find which volume a container is connected to use `docker inspect container_id`
+        * `docker run -v /opt/host_folder:/var/lib/container_folder mysql` : maps the volume of the conatiner to the host system 
+        * `docker volume create data_volume` : creates a folder called `data_volume` at the following location on the host server where docker is installed `/var/lib/docker/volumes/data_volume`
+        * `docker ps -a --filter volume=<volume_name>`:  To check if a volume is in use. If any containers are listed, that means the volume is still in use.
+        * `docker volume rm <volume_name>`: You can manually remove named volume
+        *`docker volume prune`: focuses on volumes that are not associated with any containers at all
+        * `docker volume inspect <volume_name>`: To understand more about a specific volume and its usage, you can inspect it.
+        
     * Ports
 
     * Inspection:
@@ -799,7 +803,24 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
     * Network:
         * `docker network create network_name` : to create a custom network in docker
         * `docker network ls` : to view a list of all the docker networks
-        * 
+
+    * Prune
+        * `docker system prune`: Removes unused containers, networks, dangling images, and build cache.
+
+        * `docker system prune --volumes`: Removes unused containers, networks, dangling images, build cache, and volumes.
+
+        * `docker container prune`: Removes all stopped containers.
+
+        * `docker image prune`: Removes dangling (unused) images.
+
+        * `docker image prune -a`: Removes all unused images, not just dangling ones.
+
+        * `docker network prune`: Removes networks not used by any containers.
+
+        * `docker volume prune`: Removes volumes not used by any containers.
+
+        * `docker system prune --all --volumes`: Removes unused containers, networks, all images (not just dangling), build cache, and volumes.
+
 - **Lecture Exercises**: Docker Practice 
     * mysql: log into mysql as follows `mysql -u root -h localhost -p` when prompted for password get in from the logs
     * mysql commands: `show databases;`, `use database_name;`, `show tables;` etc
@@ -873,6 +894,7 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
         * Use Normal Volume or Named Volume: as this allows Docker to manage any scaling. In Bind mounding the container may always not have access to the binded volume folder on the host system
         * Don’t use ‘latest’ tag name instead use the actual tag name as the latest tag keeps changing as it’s attached to the latest version of the container
         * For Multi-Container Application use Kubernetes for Production and Docker Compose for Development
+
 - **Micro-services vs Macro-services**:
     In data engineering, **macroservices** and **microservices** are two architectural approaches for building and organizing data processing and management systems. While these terms are more commonly associated with software architecture, they have specific relevance in the context of data engineering when discussing the organization of data pipelines, services, and data flow management.
 
