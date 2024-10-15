@@ -976,6 +976,7 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
 * 
 #### [ ] Workshop 2: Docker Compose -- Spark Cluster
 
+
 #### [ ] Lab: Install Airbyte and Metabase with Docker :
 * Airbyte:
 * Metabase:
