@@ -250,11 +250,13 @@ Remember to follow these steps when working on the local and remote server respe
 
 ## Transfering EC2 Instances to another account
 * Create Another AWS account
-    * s.anyashireen@gmail.com
-    * sanya_de
-    * sanya_iphone
+    * s.********@gmail.com
+    * s**ya_de - root user
+    * sar**_de - user of Admin group
 * [Main Source](https://repost.aws/questions/QUEdJa1fI6TUC1dfTm5Mu0yw/how-to-move-ec2-to-another-account)
-* [Creating an AMI Image of EC2 Instance](https://medium.com/@JohnxLe/how-to-create-an-amazon-machine-image-ami-2-ways-5f743c59a08b)
+* [Creating an AMI Image of EC2 Instance](https://medium.com/@JohnxLe/how-to-create-an-amazon-machine-image-ami-2-ways-5f743c59a08b):
+    * To create an AMI image, we’ll navigate to 
+    * EC2 -> Instances -> Select the instance you want to create an image of -> right-click ->Image and Templates -> Create Image.
 * Modifying AMI Permissions:
     * Goto AMI's from left pane of EC2 window
     * Select the AMI 
@@ -273,3 +275,6 @@ Remember to follow these steps when working on the local and remote server respe
         - Create a new security group
         - Add a Key pair
         - Create the instance
+* Keys:
+    - `demo.pem` : s***08 account on aws
+    - `s****_new_aws.pem` : s.***** account on aws

@@ -585,7 +585,7 @@ Same content for [Exercise 7: EC2 & Linux](#exercise-7-lab-ec2--linux)
     - `aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId, Tags[?Key==`Name`].Value]'` : to filter out the instance ids and name from the describe-instances command
 
 ### Practice Exercises
-
+Find the files [here](../analytical/week1/)
 #### Exercise 1: Linux Basics:
 - Finish the following questions in your Terminal. If you don't know the commands, please search on the internet.
 
@@ -706,7 +706,7 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
 - **Docker**: Docker's main purpose is to package and containerize applications and then ship them and run them anywhere and any number of times.
 - **KERNEL**: The kernel is a core component of an operating system that enables communication between software applications and the underlying hardware. It acts as a bridge, managing system resources (like CPU, memory, and I/O devices) and ensuring that applications can safely and efficiently interact with the hardware without needing to manage those resources directly.
 - **Image**: is a template/package used to create containers. They can be pulled from the repository or can be built from a `Dockerfile`.
-- Containers: are running instances of images that are isolated and have their own environments and set of processes.
+- **Containers**: are running instances of images that are isolated and have their own environments and set of processes.
 -   ```bash
         # commands on the new docker demo instance
         sudo apt-get update
@@ -823,7 +823,10 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
 
 - **Lecture Exercises**: Docker Practice 
     * mysql: log into mysql as follows `mysql -u root -h localhost -p` when prompted for password get in from the logs
-    * mysql commands: `show databases;`, `use database_name;`, `show tables;` etc
+    * mysql commands: 
+        - `show databases;`, 
+        - `use database_name;`, 
+        - `show tables;` etc
 
 #### [ ] Lecture 2: Docker Compose and Demo(2023-08-03):
 - **Multi-container Application:**
@@ -837,7 +840,7 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
         2. Put each application in its own container: Use Docker-Compose
     * Why do we need to have a seperate container for each service?     
         - Because each service could require different levels of scaling up. 
-        - Eg: I we have more customers on the Web but fewer products to sell then; the Web-FE may require 3X (3 instances) scaling and the Database might require 1X.
+        - Eg: If we have more customers on the Web but fewer products to sell then; the Web-FE may require 3X (3 instances) scaling and the Database might require 1X.
         - If we have all applications in 1 container all the applications will have to be scaled to the same level hence many times wasting resources.
         - Version control is easier to manage in case of dependencies for each application seperately when they are in different containers.
         - When using managed services on the cloud it becomes easier to integrate them when using docker-compose.
@@ -882,19 +885,18 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
     * Commands
         * `docker compose -f mongodb.yml up` : flag f specifies the the docker-compose YAML file to use. By default docker compose looks for `docker-compose.yml` file to start the multi-container application. The up command starts the services defined in the mongodb.yml file.
         * `docker compose -f mongodb.yml down`: down command is used to stop and remove the containers, networks, and volumes created by `docker compose up`. It essentially tears down the environment that was brought up by `docker compose up`. Removes volumes if the --volumes flag is specified. By default, volumes are not removed to prevent data loss.
-        * `docker compose -d -f mongodb.yml up`: 
+        * `docker compose -d -f mongodb.yml up`: detached mode
         * `docker compose down --volumes` : Removes any volumes created by docker compose up. This is important if you want to delete persistent data. Without this flag, volumes will be left intact, so data stored in them will persist for the next time you bring the services up.
         * `docker compose stop`: Stops the running containers but does not remove them or the network. You can restart them later without rebuilding.
         * `docker compose down --rmi all` : Removes all images built by Docker Compose or pulled from a registry.
         * `docker compose up --scale mongodb=3`: is used to scale a specific service (in this case, mongodb) to run multiple instances (replicas) of that service within a Docker Compose setup. This command creates 3 MongoDB containers running in parallel.
-    * Docker Compose vs Kubernetes:
-        * DC is used only in development and not used in production environment because of any container fails it does not automatically start it up. 
+    * Docker Compose (DC) vs Kubernetes:
+        * DC is used only in development and not used in production environment because if any container fails it does not automatically start it up. 
         * Whereas Kubernetes automatically takes care of such a situation. It handles container crashes and automatically tries to rerun it. 
     * Docker / Docker Compose Best Practices:
         * Use Normal Volume or Named Volume: as this allows Docker to manage any scaling. In Bind mounding the container may always not have access to the binded volume folder on the host system
-        * Don’t use ‘latest’ tag name instead use the actual tag name as the latest tag keeps changing as it’s attached to the latest version of the container
+        * Don’t use ‘latest’ tag name instead use the actual tag name; as the latest tag keeps changing as it’s attached to the latest version of the container
         * For Multi-Container Application use Kubernetes for Production and Docker Compose for Development
-
 - **Micro-services vs Macro-services**:
     In data engineering, **macroservices** and **microservices** are two architectural approaches for building and organizing data processing and management systems. While these terms are more commonly associated with software architecture, they have specific relevance in the context of data engineering when discussing the organization of data pipelines, services, and data flow management.
 
@@ -957,29 +959,26 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
 
     ---
 
-    4. Use Case Examples:
+    4. **Use Case Examples**:
+        - **Macroservices Example**:
+            - A simple **ETL pipeline** where all the components (ingestion, transformation, and loading) are handled within a single Spark job or in a tool like **Apache NiFi** or **Airflow**, which manages the full data pipeline.
 
-        1. **Macroservices Example**:
-        - A simple **ETL pipeline** where all the components (ingestion, transformation, and loading) are handled within a single Spark job or in a tool like **Apache NiFi** or **Airflow**, which manages the full data pipeline.
+        - **Microservices Example**:
+            - A **distributed data processing system** where one service handles **data ingestion** (like Kafka or RabbitMQ), another handles **data transformations** (like Flink or Spark Streaming), and another handles **data storage and querying** (like Cassandra, Elasticsearch, or a data warehouse).
 
-        2. **Microservices Example**:
-        - A **distributed data processing system** where one service handles **data ingestion** (like Kafka or RabbitMQ), another handles **data transformations** (like Flink or Spark Streaming), and another handles **data storage and querying** (like Cassandra, Elasticsearch, or a data warehouse).
-
-        ### Conclusion:
-        - **Macroservices** are simpler, more suited for smaller or less complex data engineering systems where scalability and fault isolation are less critical.
-        - **Microservices** offer greater flexibility and scalability, making them ideal for complex, large-scale data systems that need to handle high volumes of data or require independent scaling and fault tolerance. However, they come with added complexity in management and orchestration. 
+    5. **Conclusion**:
+    - **Macroservices** are simpler, more suited for smaller or less complex data engineering systems where scalability and fault isolation are less critical.
+    - **Microservices** offer greater flexibility and scalability, making them ideal for complex, large-scale data systems that need to handle high volumes of data or require independent scaling and fault tolerance. However, they come with added complexity in management and orchestration. 
 
 ### Practice Exercises
-#### [ ] Workshop 1: Docker Compose --Flask 
+#### [ ] Workshop 1: Docker Compose --Flask :
+* Files are [here](../analytical/week2/Exercise2FlaskApp)
+* 
 #### [ ] Workshop 2: Docker Compose -- Spark Cluster
-#### [ ] Lab: Install Airbyte and Metabase with Docker:
-* **Airbyte**:
-    - 
-    -
-* **Metabase**:
-    -
-    -
 
+#### [ ] Lab: Install Airbyte and Metabase with Docker :
+* Airbyte:
+* Metabase:
 ### Self Study
 #### Mini Project : [Build Docker container to Process data]()
 
