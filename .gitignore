@@ -1,5 +1,6 @@
 # VSCode files
 __pycache__/
+*.vscode
 
 # Environment Variables
 .env

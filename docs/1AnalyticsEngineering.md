@@ -439,33 +439,33 @@ Same content for [Exercise 7: EC2 & Linux](#exercise-7-lab-ec2--linux)
         - [Exercise 6: Workshop DB2 Installation](#exercise-6-workshop-db2-installation)
         - Step 0- Copy the EC2 Key pair named `demo.pem` from local system to DE-LabSarah EC2 intance as follows
             ```bash
-                # from local system
-                cd /c/users/sanya/.ssh
-                sftp DE-LabSarah
-                put demo.pem /home/ubuntu/.ssh/
-                # from DE-LabSarah EC2 intance
-                chmod 400 /home/ubuntu/.ssh/demo.pem
-                # add the Project-Dbt server details to config for easy ssh connection
-                vim /home/ubuntu/.ssh/config
-                # write the below into the config file
-                Host Project-Dbt
-                    HostName ec2-3-139-75-67.us-east-2.compute.amazonaws.com
-                    IdentityFile /home/ubuntu/.ssh/demo.pem
-                    User ubuntu
+            # from local system
+            cd /c/users/sanya/.ssh
+            sftp DE-LabSarah
+            put demo.pem /home/ubuntu/.ssh/
+            # from DE-LabSarah EC2 intance
+            chmod 400 /home/ubuntu/.ssh/demo.pem
+            # add the Project-Dbt server details to config for easy ssh connection
+            vim /home/ubuntu/.ssh/config
+            # write the below into the config file
+            Host Project-Dbt
+                HostName ec2-3-139-75-67.us-east-2.compute.amazonaws.com
+                IdentityFile /home/ubuntu/.ssh/demo.pem
+                User ubuntu
             ```
         - `ssh -i "/home/ubuntu/.ssh/demo.pem" ubuntu@ec2-18-188-12-133.us-east-2.compute.amazonaws.com`: alternate SSH into the Project-Dbt instance
         - Step 1 - Update packages
             ```bash
-                sudo apt update # refreshes package list on the local server
-                sudo apt upgrade -y # updates the packages
-                sudo reboot #Run this and wait a few moments for the system to reboot before logging back in.
+            sudo apt update # refreshes package list on the local server
+            sudo apt upgrade -y # updates the packages
+            sudo reboot #Run this and wait a few moments for the system to reboot before logging back in.
             ```
             After running upgrade-y you may see a pink screen that says requiring kernel and daemons needing updating. 
         - Step 2 - ~~Install pip `sudo apt install python3-pip`~~
             The above is not working so we will do it in the following steps
             - Install miniconda [Instructions here](./setupNotes.md#miniconda)
             - Install conda virtual env with python and pip as follows
-            ```bash
+                ```bash
                 # goto project folder
                 cd ae_project
                 # Path to install the virtual env in the current project directory with python 3.10 and pip
@@ -473,31 +473,31 @@ Same content for [Exercise 7: EC2 & Linux](#exercise-7-lab-ec2--linux)
                 # Activate the virtual env as follows
                 conda activate .my_env 
                 # to de-activate the virtual env my_env use the below 
-            ```
+                ```
         - Step 3 - Install DBT
             - When you install DBT, you have the option to install just DBT-Core, or DBT-Core with connectors for specific databases
             - We will install DBT to be used with Postgres
-            ```bash
+                ```bash
                 # install the necessary PostgreSQL development libraries using the following command:
                 sudo apt-get install libpq-dev
                 #Install dbt-core and dbt-postgres
                 pip install dbt-postgres
-            ```
+                ```
             - At this point. You may see a number of warnings indicating that certain scripts that are needed to run dbt are installed in '/home/ubuntu/.local/bin' which is not on PATH.
             ```bash
-                # Add this line to the end of your .bashrc and save
-                export PATH="$HOME/.local/bin:$PATH"
-                # After saving run the following to instantiate the changes
-                source ~/.bashrc
+            # Add this line to the end of your .bashrc and save
+            export PATH="$HOME/.local/bin:$PATH"
+            # After saving run the following to instantiate the changes
+            source ~/.bashrc
             ```
             - Validate DBT is installed
             ```bash
-                conda activate .my_env
-                dbt --version
-                # if installed properly you should see something like the following
-                Core:
-                - installed: 1.5.2
-                - latest:    1.5.2 - Up to date!
+            conda activate .my_env
+            dbt --version
+            # if installed properly you should see something like the following
+            Core:
+            - installed: 1.5.2
+            - latest:    1.5.2 - Up to date!
             ```
             Plugins:
             - postgres: 1.5.2 - Up to date!
@@ -523,32 +523,33 @@ Same content for [Exercise 7: EC2 & Linux](#exercise-7-lab-ec2--linux)
             9. `Ctrl+D` : to log out of the postgres server
     - Task 6:
         - On the ~~Cloud Shell~~ DELab Server (I will use this instead) install `snowsql` in the Cloud Shell. This is the tool we are going to use in the future weeks in the Snowflake session.
+
             ```bash
-                sudo apt-get install unzip` # this is needed for the snowsql package to install
+            sudo apt-get install unzip # this is needed for the snowsql package to install
                 
-                # Download the installation package from internet with command curl.
-                curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.27-linux_x86_64.bash
+            # Download the installation package from internet with command curl.
+            curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.27-linux_x86_64.bash
 
-                # List the directory(you should know which command to list), to see if the installation package `snowsql-1.2.27-linux_x86_64.bash` has been downloaded on the directory.
+            # List the directory(you should know which command to list), to see if the installation package `snowsql-1.2.27-linux_x86_64.bash` has been downloaded on the directory.
                 
-                # The downloaded package is not runable, you should give the file permission to run, use command chmod, only give it the execute permission will be enough. Try to write this command, if you still don't know, use the following command line. 
-                chmod u+x snowsql-1.2.27-linux_x86_64.bash #or 
-                chmod 764 chmod u+x snowsql-1.2.27-linux_x86_64.bash
+            # The downloaded package is not runable, you should give the file permission to run, use command chmod, only give it the execute permission will be enough. Try to write this command, if you still don't know, use the following command line. 
+            chmod u+x snowsql-1.2.27-linux_x86_64.bash #or 
+            chmod 764 chmod u+x snowsql-1.2.27-linux_x86_64.bash
 
-                # You have given the package the 'execute' permission, you can run it. Please consider how to run the .bash file. Think about it and try. If you still don't know, use the following command line.
-                ./snowsql-1.2.27-linux_x86_64.bash # or
-                bash ./snowsql-1.2.27-linux_x86_64.bash
+            # You have given the package the 'execute' permission, you can run it. Please consider how to run the .bash file. Think about it and try. If you still don't know, use the following command line.
+            ./snowsql-1.2.27-linux_x86_64.bash # or
+            bash ./snowsql-1.2.27-linux_x86_64.bash
 
-                # You will see 2 interaction lines: Specify the directory in which the SnowSQL components will be installed. [~/bin]. -- Type "Enter" to go to the next step. Do you want to add /home/cloudshell-user/bin to PATH in /home/cloudshell-user/.zshrc? [y/N] -- Type "y" to go to the next step. The installation should be finished. 
+            # You will see 2 interaction lines: Specify the directory in which the SnowSQL components will be installed. [~/bin]. -- Type "Enter" to go to the next step. Do you want to add /home/cloudshell-user/bin to PATH in /home/cloudshell-user/.zshrc? [y/N] -- Type "y" to go to the next step. The installation should be finished. 
 
-                # Add PATH to .bashrc
-                nano ~/.bashrc
+            # Add PATH to .bashrc
+            nano ~/.bashrc
 
-                # Append this line to the end of the file
-                # export PATH=/home/ubuntu/bin:$PATH
+            # Append this line to the end of the file
+            # export PATH=/home/ubuntu/bin:$PATH
 
-                # restart the server
-                source ~/.bashrc
+            # restart the server
+            source ~/.bashrc
             ```
             - List all the files in the files under the directory "~" to see if you have the hidden folder .snowsql. You should know the command how to list all the files including hidden files. If not, please see the below command line. `ls -al`
             - Go to the .snowsql folder, and check if there is a file called config in this folder. Open the config file. Also view config files at `/home/ubuntu/.snowsql/1.2.27/snowsql.cnf`. Review it, and close it. This is the config file you are going to use to store the Snowflake database connection parameters.
@@ -565,6 +566,7 @@ Same content for [Exercise 7: EC2 & Linux](#exercise-7-lab-ec2--linux)
     - `unset AWS_DEFAULT_PROFILE` : to remove the default aws cli profile
     - `aws configure list` : lists the default profile
     - `aws configure list --profile sarah`: to list the configuration for a particular profile
+
 - Access S3 via AWS CLI
     - `aws s3 mb s3://demo-bucket-sarah` : to make an s3 bucket
     - `aws s3 rb s3://demo-bucket-sarah` : to remove an s3 bucket
@@ -675,8 +677,8 @@ Questions and answers available on WeCloud course app
     * [AWS using Python Jupyter notbook](../analytical/exercise1AwsCliWithPyhton.ipynb)
 
 
-#### Exercise 6: Workshop DB2 Installation
-
+#### Exercise 6: Workshop DBT Installation
+Done
 #### Exercise 7: Lab EC2 & Linux 
 Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
 
@@ -698,7 +700,8 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
     - Then click ok
 
 ### Self Study
-#### Mini Project : [Toronto Climate Data](https://github.com/sanyassyed/Toronto_Climate_Data/tree/main)
+#### Mini Project : 
+- **Toronto Climate Data** [Git Repo Link](https://github.com/sanyassyed/Toronto_Climate_Data/tree/main)
 
 ## Week 2 - Data Ingestion - Docker
 ### Lectures and Lab
@@ -708,25 +711,25 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
 - **Image**: is a template/package used to create containers. They can be pulled from the repository or can be built from a `Dockerfile`.
 - **Containers**: are running instances of images that are isolated and have their own environments and set of processes.
 -   ```bash
-        # commands on the new docker demo instance
-        sudo apt-get update
-        docker --version
-        # if docker is installed delete the old version it as follows
-        sudo apt-get remove docker docker-engine docker.io
-        # download and install docker
-        sudo apt install docker.io
-        # start and enable docker
-        sudo systemctl start docker
-        sudo systemctl enable docker
-        sudo chmod 777 /var/run/docker.sock
-        docker pull hello-world
-        # jupyter notebook
-        docker pull jupyter/datascience-notebook
-        # on the local system change the permissions for the current directory so the container user jovyn UID(1000) can assess the mounted directory "${PWD}" on the host system
-        # Changing ownership on the host ensures that the container's user can access and modify the files, avoiding permission errors when using mounted volumes.
-        sudo chown -R 1000:1000 ${PWD}
-        # run the jupyter notebook
-        docker run -it --rm -p 10000:8888 -v "${PWD}":/home/jovyan/work jupyter/datascience-notebook:latest
+    # commands on the new docker demo instance
+    sudo apt-get update
+    docker --version
+    # if docker is installed delete the old version it as follows
+    sudo apt-get remove docker docker-engine docker.io
+    # download and install docker
+    sudo apt install docker.io
+    # start and enable docker
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    sudo chmod 777 /var/run/docker.sock
+    docker pull hello-world
+    # jupyter notebook
+    docker pull jupyter/datascience-notebook
+    # on the local system change the permissions for the current directory so the container user jovyn UID(1000) can assess the mounted directory "${PWD}" on the host system
+    # Changing ownership on the host ensures that the container's user can access and modify the files, avoiding permission errors when using mounted volumes.
+    sudo chown -R 1000:1000 ${PWD}
+    # run the jupyter notebook
+    docker run -it --rm -p 10000:8888 -v "${PWD}":/home/jovyan/work jupyter/datascience-notebook:latest
     ```
 - **Commands**:
     * General
@@ -858,28 +861,28 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
         * `docker run -it --rm --network mongo-network --name mongo-express -p 8081:8081 -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin -e ME_CONFIG_MONGODB_ADMINPASSWORD=password -e ME_CONFIG_MONGODB_SERVICE=mongodb mongo-express`
     * Example use without .yml file: Rather than the above we can create a single .yml docker compose file so the above can be done together
         ```yml
-            version: '3'
-            service:
-                mongodb:
-                    image: mongo
-                    ports:
-                        - 27017:27017
-                    environment:
-                        - MONGO_INITDB_ROOT_USERNAME=admin 
-                        - MONGO_INITDB_ROOT_PASSWORD=password
-                mongo-express:
-                    image: mongo-express
-                    restart: always #  ‘restart: always’ so the image is restarted whenever it goes down. Other options for restart are: no, on-failure, always, unless-stopped
-                    ports:
-                        - 8081:8081
-                    environment:
-                        - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
-                        - ME_CONFIG_MONGODB_ADMINPASSWORD=password
-                        - ME_CONFIG_MONGODB_SERVICE=mongodb
-                    depends-on: 
-                        - mongodb 
-                    command: 
-                        - 'npm run start' # execute actions once the container is started and act as a replacement for the CMD action in your Dockerfile
+        version: '3'
+        service:
+            mongodb:
+                image: mongo
+                ports:
+                    - 27017:27017
+                environment:
+                    - MONGO_INITDB_ROOT_USERNAME=admin 
+                    - MONGO_INITDB_ROOT_PASSWORD=password
+            mongo-express:
+                image: mongo-express
+                restart: always #  ‘restart: always’ so the image is restarted whenever it goes down. Other options for restart are: no, on-failure, always, unless-stopped
+                ports:
+                    - 8081:8081
+                environment:
+                    - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+                    - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+                    - ME_CONFIG_MONGODB_SERVICE=mongodb
+                depends-on: 
+                    - mongodb 
+                command: 
+                    - 'npm run start' # execute actions once the container is started and act as a replacement for the CMD action in your Dockerfile
 
         ```
     * Commands
@@ -973,27 +976,65 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
 ### Practice Exercises
 #### [ ] Workshop 1: Docker Compose --Flask :
 * Files are [here](../analytical/week2/Exercise2FlaskApp)
-* 
+* Work done on DeLabSarah Server in the directory ~/ae_project
 #### [ ] Workshop 2: Docker Compose -- Spark Cluster
 
 #### [ ] Lab: Install Airbyte and Metabase with Docker :
 * Airbyte:
+    - Install docker, docker compose manually
+    ```bash
+    sudo apt update
+    sudo apt upgrade -y
+    sudo apt install docker.io
+    # Check that docker is installed
+    docker --version
+    # Set the docker home folder and create a cli-plugins directory for docker compose
+    DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker} 
+    mkdir -p $DOCKER_CONFIG/cli-plugins
+    # download docker compose into the cli-plugins directory 
+    # and change permissions to allow execution
+    curl -SL https://github.com/docker/compose/releases/download/v2.18.1/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+    chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+    # check that docker compose is installed
+    docker compose version
+    sudo usermod -aG docker $USER
+    sudo reboot
+    # run this and wait a few moments for the system to reboot before logging back in.
+    # follow the steps in the link above
+    # in the port 8000 use airbyte and password to login
+    ```
     - Alternate way to install Airbyte into AWS EC2 instance [here](https://docs.airbyte.com/deploying-airbyte/on-aws-ec2)
+
+    - Start and stop airbyte as follows
+    ```bash
+    docker compose up
+    docker compose stop
+    docker compose start
+    docker compose down
+    ```
 * Metabase:
     - Follow notes in the course
 ### Self Study
-#### Mini Project : [Build Docker container to Process data]()
-### What is Data Engineering?
+#### Mini Project : [Build docker container to process data]()
+### What is Data Engineering, Analytics Engineering?
+* What is a Data Engineer, Analytics Engineer & Infrastructure Engineer?
+    ![Lecture Notes Screen Grab 1](../images/DataEngineerAnalyticsEngineerInfrastructureEngineer.png)
+* Analytics Engineering vs Big Data vs Lakehouse
+![Lecture Notes Screen Grab 2](../images/DataAnalyticsBigDataLakehouse.png)
 * Analytics Engineering
-    - Data Source - row storage
+    - Data Source - row storage (database)
         - CRM Data
         - Database Data
         - Advertisement Data
-    - Tools to perform Analytics - column storage
+    - Tools to perform Analytics - column storage 
         - Data Warehouse
         - Data Lake
         - Data Lakehouse
-    - 
+        - Data Models: Data Models help define how the data will be structured and managed, enabling Data Engineers to build systems that are efficient, scalable, and optimized for data processing and analysis.
+    - Tools to perform Visualization
+        - Metabase
+        - PowerBI
+        - Looker
 * Big Data Engineering
 * Kafka + Lakehouse
 ## Week 3 - Data Ingestion - Python in Data Engineering and Cloud

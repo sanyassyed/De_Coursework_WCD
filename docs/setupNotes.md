@@ -234,7 +234,7 @@ Remember to follow these steps when working on the local and remote server respe
     * List all instances by instance id `aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId, Tags[?Key==`Name`].Value]'`
     * List all the instance by instance id along with the state `aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId, Tags[?Key==`Name`].Value, State]'`
     * Start instance using the instance id `i-070505f9d6d145db1`using the command `aws ec2 start-instances --instance-ids i-070505f9d6d145db1`
-    * Get the instance Public IPv4 DNS using the command `aws ec2 describe-instances --instance-ids i-070505f9d6d145db1 --query 'Reservations[*].Instances[*].PublicDnsName' --output text`
+    * Get the instance Public IPv4 DNS using the command `aws ec2 describe-instances --instance-ids i-074e6b1ea0216de16 --query 'Reservations[*].Instances[*].PublicDnsName' --output text`
 ### Useful tools used
 * OneNote: to take screen shots, random notes etc
 * Google Keep: scribble pad
@@ -278,3 +278,10 @@ Remember to follow these steps when working on the local and remote server respe
 * Keys:
     - `demo.pem` : s***08 account on aws
     - `s****_new_aws.pem` : s.***** account on aws
+* Change AWS Credential Details on EC2 instance DeLabSarah for the new user `sarah_de` as follows:
+    - nano ./.aws/credentials
+    - Change the profile name and credentials
+    - nano ./.aws/config
+    - Change the profile name and region if required
+    - run `export AWS_PROFILE=sarah_de`
+    - run `aws configure list --profile sarah_de` to view the changes
