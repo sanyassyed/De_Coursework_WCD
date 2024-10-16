@@ -978,10 +978,24 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
 
 #### [ ] Lab: Install Airbyte and Metabase with Docker :
 * Airbyte:
+    - Alternate way to install Airbyte into AWS EC2 instance [here](https://docs.airbyte.com/deploying-airbyte/on-aws-ec2)
 * Metabase:
+    - Follow notes in the course
 ### Self Study
 #### Mini Project : [Build Docker container to Process data]()
-
+### What is Data Engineering?
+* Analytics Engineering
+    - Data Source - row storage
+        - CRM Data
+        - Database Data
+        - Advertisement Data
+    - Tools to perform Analytics - column storage
+        - Data Warehouse
+        - Data Lake
+        - Data Lakehouse
+    - 
+* Big Data Engineering
+* Kafka + Lakehouse
 ## Week 3 - Data Ingestion - Python in Data Engineering and Cloud
 ## Week 4 - Data Ingestion - Airbyte, Data Ingestion and Snowflake
 ## Week 5 - Data Transformation - Data Warehouse
