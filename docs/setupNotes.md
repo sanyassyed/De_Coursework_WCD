@@ -247,6 +247,10 @@ Remember to follow these steps when working on the local and remote server respe
 
 ## Useful commands
 * `git status -u` : view the files in the untracked folders
+* **sftp**:
+    - `sftp remote_instance name`: to log into the remote server
+    - `get -r ./file_in_remote ./location_in_host`: use this command to get a file from the remote server into the host server
+    - `lpwd`: local host systems working directory
 
 ## Transfering EC2 Instances to another account
 * Create Another AWS account

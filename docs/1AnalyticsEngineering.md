@@ -267,7 +267,7 @@
     - Terminal: Imagine the terminal as the desk or workspace where employees (users) interact with the manager (shell), submitting tasks (commands) and receiving feedback.
     - Subshell: Picture a manager (shell) who temporarily delegates tasks to an assistant manager (subshell) to handle specific duties, while still overseeing the overall operation.
     - Child Process: Think of a child process as a new employee (process) hired by an existing employee (parent process), who follows instructions and performs tasks independently but still reports to the original employee.
-
+___
 #### [X] Lecture 2 : AWS Basics (2023-07-27):
 * [AWS Introduction -Youtube](https://www.youtube.com/watch?v=ZW4o08WjwYg)
     * IaaS - Infrastructure - eg: Virtual Machine or Servers like `Compute Engine service` on GCP where we will have to install all the applications we want to use
@@ -421,6 +421,7 @@
             - `pip show boto3`
             - `python3`
             - Now write the code to access AWS via code
+___
 
 #### [X] Lecture 3 / Lab 1 : AWS and Linux Workshop (2023-07-29)
 Same content for [Exercise 7: EC2 & Linux](#exercise-7-lab-ec2--linux)
@@ -553,7 +554,9 @@ Same content for [Exercise 7: EC2 & Linux](#exercise-7-lab-ec2--linux)
             ```
             - List all the files in the files under the directory "~" to see if you have the hidden folder .snowsql. You should know the command how to list all the files including hidden files. If not, please see the below command line. `ls -al`
             - Go to the .snowsql folder, and check if there is a file called config in this folder. Open the config file. Also view config files at `/home/ubuntu/.snowsql/1.2.27/snowsql.cnf`. Review it, and close it. This is the config file you are going to use to store the Snowflake database connection parameters.
-            
+
+---
+
 #### AWS CLI Commands
 - Setup AWS CLI USER CREDENTIALS
     - `aws configure` : used to setup the default profile without a profile name
@@ -585,6 +588,8 @@ Same content for [Exercise 7: EC2 & Linux](#exercise-7-lab-ec2--linux)
     - `aws ec2 describe-instances --filters "Name=image-id,Values=ami-0f30a9c3a48f3fa79"` to view info about instances with ami id using filters
     - `aws ec2 describe-instances --query 'Reservations[*].Instances[*].InstanceId'` : to filter out the instance ids from the describe instance command
     - `aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId, Tags[?Key==`Name`].Value]'` : to filter out the instance ids and name from the describe-instances command
+
+---
 
 ### Practice Exercises
 Find the files [here](../analytical/week1/)
@@ -634,9 +639,11 @@ Find the files [here](../analytical/week1/)
 - How to list all the available shells in your system? `cat /etc/shells`
 
 - How to check what shell you are using? `echo "$SHELL"` or `echo $0`
+___
 
 #### Exercise 2 & 3: Linux & Hackerrank:
 Questions and answers available on WeCloud course app
+___
 
 #### Exercise 4: Workshop AWS EC2 Lab
 - Aim:
@@ -655,6 +662,7 @@ Questions and answers available on WeCloud course app
             - Add the ip address of the Cloud Shell (use the command `curl https://icanhazip.com/v4`) to the inbound security rule
         - Method 2 via IAM role: Create a role and attach it to cloud shell
             - IAM Roles -> Create a Role
+___
 
 #### Exercise 5: Workshop AWS S3 Lab
 - Aim: 
@@ -677,11 +685,17 @@ Questions and answers available on WeCloud course app
     * [AWS using Python Jupyter notbook](../analytical/exercise1AwsCliWithPyhton.ipynb)
 
 
+---
+
 #### Exercise 6: Workshop DBT Installation
 Done
+
+---
+
 #### Exercise 7: Lab EC2 & Linux 
 Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
 
+---
 
 ### Errors:
 - Changing the permission of .ssh folder in Windows
@@ -699,9 +713,13 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
     - Make sure for you all the Persmissions are selected
     - Then click ok
 
+---
+
 ### Self Study
 #### Mini Project : 
 - **Toronto Climate Data** [Git Repo Link](https://github.com/sanyassyed/Toronto_Climate_Data/tree/main)
+
+---
 
 ## Week 2 - Data Ingestion - Docker
 ### Lectures and Lab
@@ -831,6 +849,8 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
         - `use database_name;`, 
         - `show tables;` etc
 
+---
+
 #### [X] Lecture 2: Docker Compose and Demo(2023-08-03):
 - **Multi-container Application:**
     * Eg: Our application requires the following: 
@@ -923,7 +943,6 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
         - **Example in Data Engineering**:
             - A **batch processing pipeline** where data is ingested, transformed, and loaded into a database in a single, unified system might be considered a macroservice. All components of the data processing pipeline are bundled together into one large service.
 
-    ---
 
     2. **Microservices**:
         - **Definition**: Microservices refer to a more distributed architecture where each component of the data pipeline is built as a small, independent service with a specific function. Each service communicates with others, typically through APIs, and is deployed and scaled independently.
@@ -946,7 +965,6 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
         - **Example in Data Engineering**:
             - A data pipeline built using **Apache Kafka** for data ingestion, **Apache Flink** for real-time transformations, **Cassandra** for storage, and a custom API for data querying could be considered a microservices architecture. Each of these components is independently deployed and scaled.
 
-    ---
 
     3. **Comparison in Data Engineering Context**:
 
@@ -960,7 +978,7 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
         | **Technology Choice**        | One technology stack for the whole system   | Services can use different technologies     |
         | **Best Use Case**            | Smaller, simpler systems                    | Large, complex, and scalable systems        |
 
-    ---
+
 
     4. **Use Case Examples**:
         - **Macroservices Example**:
@@ -973,18 +991,39 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
     - **Macroservices** are simpler, more suited for smaller or less complex data engineering systems where scalability and fault isolation are less critical.
     - **Microservices** offer greater flexibility and scalability, making them ideal for complex, large-scale data systems that need to handle high volumes of data or require independent scaling and fault tolerance. However, they come with added complexity in management and orchestration. 
 
+---
+
 ### Practice Exercises
-#### [ ] Workshop 1: Docker Compose --Flask :
-* Files are [here](../analytical/week2/Exercise2FlaskApp)
+* Install Docker and Docker Compose on DeLabSarah instance from [here](#x-lab-install-airbyte-and-metabase-with-docker-)
 * Work done on DeLabSarah Server in the directory ~/ae_project
+* Miniconda is already installed on this instance [steps here](setupNotes.md#ec2-instance-setup)
+* Create a conda virtual env with python 3.12 and pip as follows
+```bash
+conda create --prefix ./.my_env python=3.12.3 pip
+conda activate .my_env
+```
+#### [ ] Exercise 1: Run Docker
+* Files are [here](../analytical/week2/Exercise1RunDocker.md)
+* Work done on DeLabSarah Server in the directory ~/ae_project
+
+---
+
+#### [ ] Workshop 1: Docker Compose --Flask :
+* Files are [here](../analytical/week2/Workshop1FlaskApp/)
+* Work done on DeLabSarah Server in the directory ~/ae_project
+
+---
+
 #### [ ] Workshop 2: Docker Compose -- Spark Cluster
+
+---
 
 #### [X] Lab: Install Airbyte and Metabase with Docker :
 * In both Airbyte & Metabase EC2 instance install docker, docker compose manually as follows
     ```bash
     sudo apt update
     sudo apt upgrade -y
-    sudo apt install docker.io
+    sudo apt install docker.io -y
     # Check that docker is installed
     docker --version
     # Set the docker home folder and create a cli-plugins directory for docker compose
@@ -1013,8 +1052,14 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
     ```
 * Metabase:
     - Follow notes in the course
+
+---
+
 ### Self Study
 #### Mini Project : [Build docker container to process data]()
+
+---
+
 ### What is Data Engineering, Analytics Engineering?
 * What is a Data Engineer, Analytics Engineer & Infrastructure Engineer?
     ![Lecture Notes Screen Grab 1](../images/DataEngineerAnalyticsEngineerInfrastructureEngineer.png)
@@ -1036,6 +1081,9 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
         - Looker
 * Big Data Engineering
 * Kafka + Lakehouse
+
+---
+
 ## Week 3 - Data Ingestion - Python in Data Engineering and Cloud
 ## Week 4 - Data Ingestion - Airbyte, Data Ingestion and Snowflake
 ## Week 5 - Data Transformation - Data Warehouse
@@ -1044,3 +1092,4 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
 ## Week 8 - Data Transformation - DBT for ETL
 ## Week 9 - Data Analyzation - Data Analyzation with Metabase and Project Summary
 ## Week 10 - Final Project - Project Week
+
