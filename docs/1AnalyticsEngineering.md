@@ -5,7 +5,7 @@
 
 ### Lectures and Lab:
 
-#### [ ] Lecture 1 : Linux (2023-07-25):
+#### [X] Lecture 1 : Linux (2023-07-25):
 * Linux 
     - Hardware (Chips-Integrated Circuit)
     - Kernel - The core component of OS(UNIX) & helps communication happen between the Hardware and Software
@@ -268,7 +268,7 @@
     - Subshell: Picture a manager (shell) who temporarily delegates tasks to an assistant manager (subshell) to handle specific duties, while still overseeing the overall operation.
     - Child Process: Think of a child process as a new employee (process) hired by an existing employee (parent process), who follows instructions and performs tasks independently but still reports to the original employee.
 
-#### [ ] Lecture 2 : AWS Basics (2023-07-27):
+#### [X] Lecture 2 : AWS Basics (2023-07-27):
 * [AWS Introduction -Youtube](https://www.youtube.com/watch?v=ZW4o08WjwYg)
     * IaaS - Infrastructure - eg: Virtual Machine or Servers like `Compute Engine service` on GCP where we will have to install all the applications we want to use
     * PaaS - Platform - eg: `Cloud Functions` on GCP which  is a serverless compute service on GCP that allows you to run event-driven code without provisioning or managing servers. It automatically scales based on demand and executes code in response to events from various GCP services or HTTP requests.  
@@ -422,7 +422,7 @@
             - `python3`
             - Now write the code to access AWS via code
 
-#### [ ] Lecture 3 / Lab 1 : AWS and Linux Workshop (2023-07-29)
+#### [X] Lecture 3 / Lab 1 : AWS and Linux Workshop (2023-07-29)
 Same content for [Exercise 7: EC2 & Linux](#exercise-7-lab-ec2--linux)
 - Aim: 
     - Create a project folder called `ae_project` in all the servers below with the virtual env `.my_env` with `Python 3.12.3`
@@ -705,7 +705,7 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
 
 ## Week 2 - Data Ingestion - Docker
 ### Lectures and Lab
-#### [ ] Lecture 1: Docker Basic (2023-08-01):
+#### [X] Lecture 1: Docker Basic (2023-08-01):
 - **Docker**: Docker's main purpose is to package and containerize applications and then ship them and run them anywhere and any number of times.
 - **KERNEL**: The kernel is a core component of an operating system that enables communication between software applications and the underlying hardware. It acts as a bridge, managing system resources (like CPU, memory, and I/O devices) and ensuring that applications can safely and efficiently interact with the hardware without needing to manage those resources directly.
 - **Image**: is a template/package used to create containers. They can be pulled from the repository or can be built from a `Dockerfile`.
@@ -831,7 +831,7 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
         - `use database_name;`, 
         - `show tables;` etc
 
-#### [ ] Lecture 2: Docker Compose and Demo(2023-08-03):
+#### [X] Lecture 2: Docker Compose and Demo(2023-08-03):
 - **Multi-container Application:**
     * Eg: Our application requires the following: 
         1. Web-Front End
@@ -979,9 +979,8 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
 * Work done on DeLabSarah Server in the directory ~/ae_project
 #### [ ] Workshop 2: Docker Compose -- Spark Cluster
 
-#### [ ] Lab: Install Airbyte and Metabase with Docker :
-* Airbyte:
-    - Install docker, docker compose manually
+#### [X] Lab: Install Airbyte and Metabase with Docker :
+* In both Airbyte & Metabase EC2 instance install docker, docker compose manually as follows
     ```bash
     sudo apt update
     sudo apt upgrade -y
@@ -1000,11 +999,11 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
     sudo usermod -aG docker $USER
     sudo reboot
     # run this and wait a few moments for the system to reboot before logging back in.
-    # follow the steps in the link above
-    # in the port 8000 use airbyte and password to login
     ```
-    - Alternate way to install Airbyte into AWS EC2 instance [here](https://docs.airbyte.com/deploying-airbyte/on-aws-ec2)
-
+* Airbyte: 
+    - Option 1: Continue to follow the steps in the WCD tutorial
+    - Option 2: Install Airbyte into AWS EC2 instance as directed [here](https://docs.airbyte.com/deploying-airbyte/on-aws-ec2)
+    - Once Airbyte containers are pulled start it in the port 8000 use airbyte and password to login
     - Start and stop airbyte as follows
     ```bash
     docker compose up
