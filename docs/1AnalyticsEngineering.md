@@ -804,7 +804,7 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
         * `docker volume create data_volume` : creates a folder called `data_volume` at the following location on the host server where docker is installed `/var/lib/docker/volumes/data_volume`
         * `docker ps -a --filter volume=<volume_name>`:  To check if a volume is in use. If any containers are listed, that means the volume is still in use.
         * `docker volume rm <volume_name>`: You can manually remove named volume
-        *`docker volume prune`: focuses on volumes that are not associated with any containers at all
+        * `docker volume prune`: focuses on volumes that are not associated with any containers at all
         * `docker volume inspect <volume_name>`: To understand more about a specific volume and its usage, you can inspect it.
         
     * Ports
@@ -996,26 +996,33 @@ Same as [Lecture 3](#--lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
 ### Practice Exercises
 * Install Docker and Docker Compose on DeLabSarah instance from [here](#x-lab-install-airbyte-and-metabase-with-docker-)
 * Work done on DeLabSarah Server in the directory ~/ae_project
-* Miniconda is already installed on this instance [steps here](setupNotes.md#ec2-instance-setup)
-* Create a conda virtual env with python 3.12 and pip as follows
+* Miniconda is already installed on this instance if not [steps here](setupNotes.md#ec2-instance-setup)
+* Create a conda virtual env in ~/ae_project with python 3.12 and pip as follows
 ```bash
 conda create --prefix ./.my_env python=3.12.3 pip
 conda activate .my_env
 ```
-#### [ ] Exercise 1: Run Docker
+#### [X] Exercise 1: Run Docker
 * Files are [here](../analytical/week2/Exercise1RunDocker.md)
 * Work done on DeLabSarah Server in the directory ~/ae_project
 
 ---
 
-#### [ ] Workshop 1: Docker Compose --Flask :
+#### [X] Workshop 1: Docker Compose --Flask :
 * Files are [here](../analytical/week2/Workshop1FlaskApp/)
 * Work done on DeLabSarah Server in the directory ~/ae_project
 
 ---
 
 #### [ ] Workshop 2: Docker Compose -- Spark Cluster
+* [Resource](https://towardsdatascience.com/a-journey-into-big-data-with-apache-spark-part-1-5dfcc2bccdd2)
+* Change the spark download link to ``
+* `/spark/bin/spark-class org.apache.spark.deploy.master.Master --ip hostname --port 7077 --webui-port 8080` : run the command in the container. This command starts a Spark Master service on the container's IP address (hostname) and listens on port 7077 for worker nodes, with a Web UI available on port 8080 for monitoring the cluster.
 
+* Start the worker container as follows: `docker start container_id` & enter it as follows `docker exec -t container_id /bin/sh`
+
+* Run the docker compose as follows `docker composer up --build -d`
+* Transfer the project file from remote to this folder using sftp `get -r ./ae_project/docker-spark/ ./analytical/week2/`
 ---
 
 #### [X] Lab: Install Airbyte and Metabase with Docker :

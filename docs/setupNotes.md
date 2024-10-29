@@ -229,6 +229,7 @@ Remember to follow these steps when working on the local and remote server respe
     * `sudo shutdown now` : SHUTDOWN the EC2 instance or server
 
 ### EC2 instance - DELab
+* SSH Cpnnection: `ssh -i path/to/identityfile ubuntu@ec2.`
 * Start Steps
     * Goto AWS Console
     * List all instances by instance id `aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId, Tags[?Key==`Name`].Value]'`
@@ -289,3 +290,17 @@ Remember to follow these steps when working on the local and remote server respe
     - Change the profile name and region if required
     - run `export AWS_PROFILE=sarah_de`
     - run `aws configure list --profile sarah_de` to view the changes
+---
+## ERRORS
+* Uable to SSH into EC2 instance
+    * Create a `Role` for `AWS Service` of type EC2 and attach the policy `AmazonSSMManagedInstanceCore`. 
+    * Now attach this newly created IAM role to the EC2 instance as follows: 
+        * Select the instance 
+        * Goto Acitons -> Security -> Modify IAM role
+        * Then select the role just created
+        * Restart the instance for the role to be applied
+    * Connect to the ec2 instance using connect option and then session manager ( sometimes you have to wait for the session manager to connect to your instance)
+    * Log into the instance as ubuntu using the command `sudo su - ubuntu`
+    * Check the ufw (Uncomplicated Fire Wall) rules as follows `sudo ufw status verbose`
+    * If it only shows `active` and no rules that means when you attempt to SSH into your EC2 instance, the firewall is blocking that connection because there are no rules permitting incoming traffic on port 22
+    * Fix that by using the command `sudo ufw allow 22`
