@@ -1014,17 +1014,27 @@ conda activate .my_env
 
 ---
 
-#### [ ] Workshop 2: Docker Compose -- Spark Cluster
+#### [X] Workshop 2: Docker Compose -- Spark Cluster
+* Project is [here](../analytical/week2/docker-spark/)
 * [Resource](https://towardsdatascience.com/a-journey-into-big-data-with-apache-spark-part-1-5dfcc2bccdd2)
-* Change the spark download link to ``
+* Change the spark download link to `https://downloads.apache.org/spark/spark-3.5.3/spark-3.5.3-bin-hadoop3.tgz`
 * `/spark/bin/spark-class org.apache.spark.deploy.master.Master --ip hostname --port 7077 --webui-port 8080` : run the command in the container. This command starts a Spark Master service on the container's IP address (hostname) and listens on port 7077 for worker nodes, with a Web UI available on port 8080 for monitoring the cluster.
-
 * Start the worker container as follows: `docker start container_id` & enter it as follows `docker exec -t container_id /bin/sh`
-
 * Run the docker compose as follows `docker composer up --build -d`
 * Transfer the project file from remote to this folder using sftp `get -r ./ae_project/docker-spark/ ./analytical/week2/`
+
 ---
 
+
+#### [X] Exercise 2: Install Zepplin with Docker
+Run the following commands
+```bash
+# Pull zeplin image
+docker pull apache/zeppelin:0.11.2
+# run the container on port 8081
+docker run --name zeppline8081 -p 8081:8081 apache/zeppelin:0.11.2
+```
+---
 #### [X] Lab: Install Airbyte and Metabase with Docker :
 * In both Airbyte & Metabase EC2 instance install docker, docker compose manually as follows
     ```bash
@@ -1064,7 +1074,7 @@ conda activate .my_env
 
 ### Self Study
 #### Mini Project : [Build docker container to process data]()
-
+* [Link to Git Repo]()
 ---
 
 ### What is Data Engineering, Analytics Engineering?

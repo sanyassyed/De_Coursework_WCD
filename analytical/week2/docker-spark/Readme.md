@@ -1,9 +1,8 @@
 # Spark using Docker
-## Running Spark Services as follows using Docker Compose
-Run the container as follows
-`docker compose up --build -d`
+## Option 1: Running Spark Services as follows using Docker Compose
+Run the services as follows using docker compose: `docker compose up --build -d`
 
-## Run the Servics Separately using Docker
+## Option 2: Run the Servics Separately using Docker
 ```bash
 # Create the image from the Docker file as follows:
 docker build -t workshop/spark:latest .
@@ -25,9 +24,11 @@ docker exec -it spark-master /bin/sh -c "/spark/bin/spark-submit --master spark:
 
 # Spark Job Option 2: The JavaWordCount example reads the text file and counts the occurrences of each word.
 # execute in a new terminal
+# enter the container
 docker exec -it spark-master /bin/sh
+# create a text file
 echo "Hello World Hello" > /spark/examples/src/main/resources/test.txt
+# submit a spark job
 /spark/bin/spark-submit --master spark://spark-master:7077 --class org.apache.spark.examples.Java
-WordCount /spark/examples/jars/spark-examples_2.12-3.5.1.jar /spark/examples/src/main/resources/test.
-txt
+WordCount /spark/examples/jars/spark-examples_2.12-3.5.1.jar /spark/examples/src/main/resources/test.txt
 ```
