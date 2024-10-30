@@ -10,7 +10,7 @@ This repository contains notes, projects, and exercises from the Applied Data En
 - **Tools**: Ubuntu, VSCode, VMBox, Docker.
 - **Mini Projects**: Build and deploy applications using Docker containers.
     - [Project 1: Toronto Climate Data ETL Pipeline](https://github.com/sanyassyed/DataEngineering_Toronto_Climate_Data_ETL_Pipeline): This project extracts the climate data for the specified station id for the specified years, transforms it, concatenates it and loads it into a single csv file.
-    - [Project 2: Data Processing Using Docker](): This project creates a docker container for data processing
+    - [Project 2: Data Processing Using Docker](https://github.com/sanyassyed/DataEngineering_Data_Processing_Using_Docker): This project creates a docker container for data processing
 
 ### 2. Python for Data Engineering
 - **Focus**: Python for cloud-based data engineering tasks.
