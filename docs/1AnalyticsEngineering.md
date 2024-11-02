@@ -1102,6 +1102,16 @@ docker run --name zeppline8081 -p 8081:8081 apache/zeppelin:0.11.2
 ---
 
 ## Week 3 - Data Ingestion - Python in Data Engineering and Cloud
+### Lectures and Lab
+#### [ ] Lecture 1: Python in DE
+* Important builtin packages in Python for data manipulation and system interaction
+    * json: used to handle json data
+        * load() is used to read json data from a file to python obj (like dictionary)
+        * loads() is used to convert json string to python obj (like dictionary)
+        * dump() is used to write a python obj as JSON data to a file
+        * dumps() is used to convert python obj to json string 
+    * os: enables path joins, finding parent directory, walking through directories etc
+    * sys: enables getting sys arguments, python version etc
 ## Week 4 - Data Ingestion - Airbyte, Data Ingestion and Snowflake
 ## Week 5 - Data Transformation - Data Warehouse
 ## Week 6 - Data Transformation - SQL in ETL and Data Loading
