@@ -1112,6 +1112,14 @@ docker run --name zeppline8081 -p 8081:8081 apache/zeppelin:0.11.2
         * dumps() is used to convert python obj to json string 
     * os: enables path joins, finding parent directory, walking through directories etc
     * sys: enables getting sys arguments, python version etc
+    * subprocess: used for shell commands and command-line applications
+    * requests: pythonic way to get data from API
+        * POST: used to send data
+        * GET: get read only items
+        * PUT: update/create new version of the whole thing
+        * PATCH: to update specific changes; part of something
+        * DELETE: to delete
+    * 
 ## Week 4 - Data Ingestion - Airbyte, Data Ingestion and Snowflake
 ## Week 5 - Data Transformation - Data Warehouse
 ## Week 6 - Data Transformation - SQL in ETL and Data Loading
