@@ -1167,7 +1167,7 @@ Workflow will have the main script
 
 ---
 
-##### CICD:
+##### CI/CD: Continuous Integration & Continuous Delivery/Deployment
 * CI: Continuous Integration ensures that code changes being merged into the repository are reliable.
 * CD: ensures code is then delivered quickly and seamlessly to production system.
 Types of systems
@@ -1184,6 +1184,12 @@ Types of systems
     * Staging
     * Production
 
+##### Project Requirements
+* Virtual Environments
+* Secrets
+* Parameters
+* README.md
+* .gitignore
 
 
 ## Week 4 - Data Ingestion - Airbyte, Data Ingestion and Snowflake
@@ -1193,4 +1199,3 @@ Types of systems
 ## Week 8 - Data Transformation - DBT for ETL
 ## Week 9 - Data Analyzation - Data Analyzation with Metabase and Project Summary
 ## Week 10 - Final Project - Project Week
-
