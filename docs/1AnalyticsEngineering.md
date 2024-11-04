@@ -1104,22 +1104,56 @@ docker run --name zeppline8081 -p 8081:8081 apache/zeppelin:0.11.2
 ## Week 3 - Data Ingestion - Python in Data Engineering and Cloud
 ### Lectures and Lab
 #### [ ] Lecture 1: Python in DE
-* Important builtin packages in Python for data manipulation and system interaction
-    * json: used to handle json data
+Important packages in Python for data manipulation and system interaction
+* FILES MANIPULATION:
+    * `json`: used to handle json data
         * load() is used to read json data from a file to python obj (like dictionary)
         * loads() is used to convert json string to python obj (like dictionary)
         * dump() is used to write a python obj as JSON data to a file
         * dumps() is used to convert python obj to json string 
-    * os: enables path joins, finding parent directory, walking through directories etc
-    * sys: enables getting sys arguments, python version etc
-    * subprocess: used for shell commands and command-line applications
-    * requests: pythonic way to get data from API
+    * `csv`: built in library to handle csv data
+    * `parquet` : columnar storage format data. Parquet is generally better for write-once, read-many analytics, while ORC is more suitable for read-heavy operations
+    * `pyarrow` : to process orc files. The Optimized Row Columnar (ORC) file format is an open-source, columnar storage format for storing data in Apache Hive and Hadoop workloads. * `pyarrow` : PyArrow provides an interface for working with a wide range of data sources and data types, including structured and unstructured data, such as CSV files, Parquet files, JSON data, and now Pandas Dataframes
+    * `avro` : to process avro files. Avro is a row-oriented remote procedure call and data serialization framework developed within Apache's Hadoop project. It uses JSON for defining data types and protocols, and serializes data in a compact binary format.
+
+* SYSTEM MANIPULATION: 
+    * `os`: enables path joins, finding parent directory, walking through directories etc
+    * `sys`: enables getting sys arguments, python version etc
+    * `subprocess`: used for shell commands and command-line applications
+* WEB INTERACTIONS: 
+    * `requests`: pythonic way to get data from API
         * POST: used to send data
         * GET: get read only items
         * PUT: update/create new version of the whole thing
         * PATCH: to update specific changes; part of something
         * DELETE: to delete
-    * 
+    * `beautifulsoup` : for web scraping
+* DATABASE:
+    * `sqlalchemy`: 
+        * ORM (Object Relational Mapper) is a code library that automates the transfer of data between a relational database (tables with rows and columns) and application code, typically represented as objects in an object-oriented language like Python. In simpler terms, an ORM allows you to perform SQL operations—such as creating, reading, updating, and deleting records in a database—using Python code without writing raw SQL. It converts data in SQL tables into Python objects and vice versa, making it easier to interact with databases in a way that's integrated with your application’s data models. Pythonic way of working with SQL.
+        * Used to query SQL database using python.
+    * `psycopg2`: package used to connect and query PostgresDB
+* DATA PROCESSING: 
+    * `pandas` : used for data manupulation and analysis using dataframes
+    * `polars` : taking the place of pandas
+    * `numpy` : for numerical processing
+    * `petl` : PythonEtl used for ETL
+* VISUALIZATIONS: 
+    * `plotly`
+    * `matplotlib`
+* BIGDATA:
+    * `pyspark`
+    * `apache-beam`: mainly for streaming data
+* MACHINE LEARNING:
+    * `Tensorflow`
+    * `Pytorch`
+    * `scikit-learn`
+    * `huggingface`
+* TESTING
+    * `great_expectations` : package used for validating, testing, documenting & profiling; like making sure the datatypes are the same as expected
+        * Operational DB - DB that helps you be operational
+    
+    
 ## Week 4 - Data Ingestion - Airbyte, Data Ingestion and Snowflake
 ## Week 5 - Data Transformation - Data Warehouse
 ## Week 6 - Data Transformation - SQL in ETL and Data Loading
