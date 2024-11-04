@@ -1113,7 +1113,7 @@ docker run --name zeppline8081 -p 8081:8081 apache/zeppelin:0.11.2
         * dumps() is used to convert python obj to json string 
     * `csv`: built in library to handle csv data
     * `parquet` : columnar storage format data. Parquet is generally better for write-once, read-many analytics, while ORC is more suitable for read-heavy operations
-    * `pyarrow` : to process orc files. The Optimized Row Columnar (ORC) file format is an open-source, columnar storage format for storing data in Apache Hive and Hadoop workloads. * `pyarrow` : PyArrow provides an interface for working with a wide range of data sources and data types, including structured and unstructured data, such as CSV files, Parquet files, JSON data, and now Pandas Dataframes
+    * `pyarrow` : PyArrow provides an interface for working with a wide range of data sources and data types, including structured and unstructured data, such as CSV files, Parquet files, JSON data, and now Pandas Dataframes. Also it's used to process orc files. The Optimized Row Columnar (ORC) file format is an open-source, columnar storage format for storing data in Apache Hive and Hadoop workloads. 
     * `avro` : to process avro files. Avro is a row-oriented remote procedure call and data serialization framework developed within Apache's Hadoop project. It uses JSON for defining data types and protocols, and serializes data in a compact binary format.
 
 * SYSTEM MANIPULATION: 
@@ -1136,7 +1136,7 @@ docker run --name zeppline8081 -p 8081:8081 apache/zeppelin:0.11.2
 * DATA PROCESSING: 
     * `pandas` : used for data manupulation and analysis using dataframes
     * `polars` : taking the place of pandas
-    * `numpy` : for numerical processing
+    * `numpy` : for numerical processing using arrays, statistical data
     * `petl` : PythonEtl used for ETL
 * VISUALIZATIONS: 
     * `plotly`
@@ -1160,11 +1160,32 @@ docker run --name zeppline8081 -p 8081:8081 apache/zeppelin:0.11.2
 ![One-off Script Project](../analytical/week3/lec1Pic1OneOffScript.png)
 2. Single Package Project: Single package project is still the main script to execute, but you’ve moved all methods to a new file. You will import the methods from the file as a package to the main script.
 ![Single Package Project](../analytical/week3/lec1Pic2SinglePackage.png)
+Create functions that can be reused separate to the script and store it in directories like `utils` and import them into python scripts as needed. 
 3. Multiple Packages Project: In larger applications, you may have one or more internal packages that are either tied together with a main runner script or that provide specific functionality to a larger library you are packaging.
 ![Multiple Packages Project](../analytical/week3/lec1Pic3MultiplePackages.png)
+Workflow will have the main script
 
 ---
-    
+
+##### CICD:
+* CI: Continuous Integration ensures that code changes being merged into the repository are reliable.
+* CD: ensures code is then delivered quickly and seamlessly to production system.
+Types of systems
+* DEV system:
+    * Code
+    * Commit 
+    * Related Code
+* TEST system (CI Pipeline)
+    * Build
+    * Unit Tests
+    * Integration Tests
+* PRODUCTION system (CD Pipeline)
+    * Review
+    * Staging
+    * Production
+
+
+
 ## Week 4 - Data Ingestion - Airbyte, Data Ingestion and Snowflake
 ## Week 5 - Data Transformation - Data Warehouse
 ## Week 6 - Data Transformation - SQL in ETL and Data Loading
