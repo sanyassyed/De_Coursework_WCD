@@ -1104,7 +1104,7 @@ docker run --name zeppline8081 -p 8081:8081 apache/zeppelin:0.11.2
 ## Week 3 - Data Ingestion - Python in Data Engineering and Cloud
 ### Lectures and Lab
 #### [ ] Lecture 1: Python in DE
-Important packages in Python for data manipulation and system interaction
+##### Python Packages
 * FILES MANIPULATION:
     * `json`: used to handle json data
         * load() is used to read json data from a file to python obj (like dictionary)
@@ -1152,7 +1152,18 @@ Important packages in Python for data manipulation and system interaction
 * TESTING
     * `great_expectations` : package used for validating, testing, documenting & profiling; like making sure the datatypes are the same as expected
         * Operational DB - DB that helps you be operational
-    
+
+---
+
+##### Project Layouts
+1. One-off Script Project: For this type of project, you just make a .py script and run the script in its directory! In this type of project, everything is in the same directory.
+![One-off Script Project](../analytical/week3/lec1Pic1OneOffScript.png)
+2. Single Package Project: Single package project is still the main script to execute, but you’ve moved all methods to a new file. You will import the methods from the file as a package to the main script.
+![Single Package Project](../analytical/week3/lec1Pic2SinglePackage.png)
+3. Multiple Packages Project: In larger applications, you may have one or more internal packages that are either tied together with a main runner script or that provide specific functionality to a larger library you are packaging.
+![Multiple Packages Project](../analytical/week3/lec1Pic3MultiplePackages.png)
+
+---
     
 ## Week 4 - Data Ingestion - Airbyte, Data Ingestion and Snowflake
 ## Week 5 - Data Transformation - Data Warehouse
