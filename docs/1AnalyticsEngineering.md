@@ -1185,13 +1185,128 @@ Types of systems
     * Production
 
 ##### Project Requirements
-* Virtual Environments
+* Virtual Environments: 
+    * Create virtual envs in python as follows
+    ```bash
+    # python env
+    python3 -m venv my_env
+    source my_env/bin/activate
+    deactivate
+    ```
 * Secrets
-* Parameters
-* README.md
+    * Contains passwords
+    * format: key=value
+    * Contains:
+        * passwords
+        * access keys
+    * Create a .env file with the following content
+    ```text
+    ACCOUNT='USER_ACCOUNT'
+    SECRET_KEY='2345'
+    ```
+
+    * Access the secret keys in the python code
+    ```python
+    from dotenv import load_dotenv
+    import os
+
+    load_dotenv()
+    access_key=os.getenv('SECRET_KEY')
+    print(access_key)
+    ```
+* Parameters:
+    * Contains non secret or password items
+        * Can be edited by users
+        * Can be used to save 
+            * enviroment type: eg: dev or production
+            * urls
+            * Paths: output/input path, data folder paths etc.
+            * database names
+            * account names
+    * Ways to use parameters: 
+        1. Config file: In this method we use a python package to read the parameters into the code directly
+            * Format: yml, xml, json etc.
+            * Commonly used package: `toml`
+            * `config.toml` file
+            ```config.toml
+            [web]
+            name='accountname'
+            url='https://theurl.com/home'
+
+            [db]
+            db='database'
+            schema='landing'
+            ```
+            ```python
+            import toml
+            app_config = toml.load('config.toml')
+            url = app_config['web']['url']
+            print(url)
+            ```
+        1. Environment Variables : In this method we set the parameters as environment variables in the Linux system and the project will then access the parameters via the environment variables. Advantage is that other applications apart from python can also access the parameters via the environment variables.
+            * Format: Using the keyword `export` in the shell script
+            * `parm.sh` file
+            ```shell
+            export BASE_PATH="/home/product/app"
+            export SCRIPTS_FOLDER='/home/product/app/scripts"
+            ```
+            * Set these environment variables from this files as follows:
+                * Step 1: In the shell run the above script as follows: 
+                ```shell
+                chmod u+x parm.sh
+                ./para.sh
+                ```
+                * Step 2: Import the env variables into python script using `os` package as follows:
+                ```python
+                base_path=os.environ["BASE_PATH"]
+                print(base_path)
+                ```
+
+* README.md:
+    * Project's Title
+    * Project Description
+    * Table of Contents (Optional)
+    * How to Install and Run the Project
+    * How to Use the Project
+    * How to do Tests
+    * Add a License
+
 * .gitignore
+    * Add .env files which contains evironment variables and secrets
+    * Virtual env files
 
+* Command Argument / Command Line Arguments: are arguments that are specified after the name of the program in the system's command line, and these argument values are passed on to your program during program execution.
+    * Advantages: Makes the code flexible based on the input and input from one application can be passed onto another via command line arguments.
+    * Method 1: `python main.py arg1 arg2 arg3`
+    * Method 2: Use `argparse` package
+    ```python
+    import argparse
 
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--path')
+    parser.add_argument('--file')
+    args = parser.parse_args()
+
+    path = args.path
+    file = args.file
+
+    print(args)
+    print(path)
+    print(file)
+    ```
+    Pass values to the arguments --path and --file as follows:
+
+    ```commandline
+    python main.py --path /a/dir/to/file/ --file book.txt
+    ```
+* Python Style and Naming Conventions:
+    * PEP8 : Style guide for Python Code - where the best practices are described.
+    * Maximum line length
+    * Variable names
+    * Class names
+    * Use PEP8 Cheetsheet
+    * Use `pep8` package to check if code follows pep8 standards
 ## Week 4 - Data Ingestion - Airbyte, Data Ingestion and Snowflake
 ## Week 5 - Data Transformation - Data Warehouse
 ## Week 6 - Data Transformation - SQL in ETL and Data Loading
