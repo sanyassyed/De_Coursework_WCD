@@ -1103,7 +1103,7 @@ docker run --name zeppline8081 -p 8081:8081 apache/zeppelin:0.11.2
 
 ## Week 3 - Data Ingestion - Python in Data Engineering and Cloud
 ### Lectures and Lab
-#### [ ] Lecture 1: Python in DE
+#### [X] Lecture 1: Python in DE
 ##### Python Packages
 * FILES MANIPULATION:
     * `json`: used to handle json data
@@ -1305,8 +1305,38 @@ Types of systems
     * Maximum line length
     * Variable names
     * Class names
-    * Use PEP8 Cheetsheet
+    * Use PEP8 [Cheetsheet](./pep8-cheetsheet.pdf)
     * Use `pep8` package to check if code follows pep8 standards
+
+#### [ ] Lecture 2: AWS Lambda
+
+##### Overview and Introduction
+- **AWS Lambda** is used in projects to automate processes, such as retrieving data from an Amazon S3 bucket and loading it into a data warehouse.
+- **Automation**: AWS Lambda triggers at specific times (e.g., 8:00 AM) to automatically fetch data daily, without requiring manual intervention.
+
+##### Benefits and Use of AWS Lambda
+- AWS Lambda operates as a serverless computing service, which allows developers to run code without managing servers.
+- **Primary Use**: AWS Lambda can execute code in response to various events, such as data uploads to an S3 bucket.
+- **Python Integration**: In this project, Python is used to manage the Lambda function that processes and transfers data.
+
+##### Cloud Computing Metaphor and Cloud Service Models
+
+| Transportation Choice     | Capital Cost | Operational Cost | Description                               | Cloud Computing Equivalent             | Maintenance Responsibility                          | Example Services                                  |
+|---------------------------|--------------|------------------|-------------------------------------------|----------------------------------------|-----------------------------------------------------|---------------------------------------------------|
+| **Owning a Car**          | Very High    | Very Very Low    | High upfront cost, full ownership         | **On-Premises Data Center**            | Full control over hardware and software             | Physical data center                              |
+| **Leasing a Car**         | High         | Very Low         | Lower upfront, cloud-managed hardware     | **IaaS (Infrastructure as a Service)** | User manages software, networking, and storage      | AWS EC2                                           |
+| **Renting a Car**         | Low          | Low              | Provider handles most aspects             | **PaaS (Platform as a Service)**       | Only code and application management                | AWS Elastic Beanstalk                             |
+| **Taking a Taxi**         | Very Low     | High             | Fully managed service                     | **SaaS (Software as a Service)**       | No responsibility; user consumes the service        | Google Workspace:consisting of Gmail, Google Drive|
+| **Public Transport**      | Very Very Low| Very High        | Cloud-managed, deploy containers easily   | **CaaS (Container as a Service)**      | User manages container applications, some scaling   | AWS Fargate (Serverless Containers)               |
+
+##### Serverless Computing
+- **Serverless**: No need to manage servers or resources directly; the cloud handles scaling and resource allocation dynamically.
+- **AWS Fargate** is an example of a serverless container service where AWS provisions and scales resources automatically based on container needs.
+
+---
+---
+
+
 ## Week 4 - Data Ingestion - Airbyte, Data Ingestion and Snowflake
 ## Week 5 - Data Transformation - Data Warehouse
 ## Week 6 - Data Transformation - SQL in ETL and Data Loading
