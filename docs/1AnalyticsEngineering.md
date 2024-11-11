@@ -1353,8 +1353,27 @@ Types of systems
 * Has implicit high availability; so you don't need to worry if the data center is down; AWS automatically moves it to another data center implicitly
 * Nodejs & Python are the fastest languages; Java, C++ etc take longer time
 * Uses memory size and function execution time to calculate the cost. `AWS Lamda Power Tuning` tool (open source tool) to find the optimal configuration for your lambda.
-* Time-limit: 60 mins
-
+* Cons:
+    * Time-limit: 15 mins maximum. Fargate could be used for longer functions or split the function into sub functions and then use AWS Step Functions to manage or orchestrate those functions.
+    * No session affinity i.e. no control on starting and shutting down containers/microVM's
+    * Cannot predict the time taken by Lambda to complete a task
+    * Cold Start: is the time when incoming request needs to wait for a new Lambda microVM
+    * No direct control over processing power; you can only control the memory.
+* When to Use Lambda
+    * Maximising throughput (request for dynamic content loading, DB access, automatic email replies, chatbots)
+    * API-driven microservices / High availability tasks (for example payment notifications must be handled reliably with acceptable latency)
+    * Event-stream processing (depends on the size of streaming data)
+    * External integration 
+* When Not to Use Lambda
+    * Very low-latency systems (high frequency trading)
+    * Long running tasks
+    * High memory-requirement systems (10 Gb max)
+    * Large data sets
+    * Need for high compute power (Multicore CPU or GPU, 6 vCPU max)
+* Lambda Has 3 Types of Invocation
+    * *Event-driven invocation (Asynchronous)*: Some AWS services generate events which can be used to trigger your Lambda function. All events structured as JSON format and they all contain the data that the function needs to process the event.
+    * *Lambda Polling*: For services that generate a queue or data stream, you set up an event source mapping in Lambda that reads from an event source and invokes a Lambda function. Lambda can read streams from the following services: DynamoDB, Kinesis, MQ, MSK, SQS.
+    * *API-driven invocation (Synchronous)*: In web application, API Gateway can invoke Lambda function based on user request. In this case, we will wait for Lambda response which usually contains some additional information.
 ---
 ---
 
