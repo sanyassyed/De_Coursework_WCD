@@ -1327,11 +1327,33 @@ Types of systems
 | **Leasing a Car**         | High         | Very Low         | Lower upfront, cloud-managed hardware     | **IaaS (Infrastructure as a Service)** | User manages software, networking, and storage      | AWS EC2                                           |
 | **Renting a Car**         | Low          | Low              | Provider handles most aspects             | **PaaS (Platform as a Service)**       | Only code and application management                | AWS Elastic Beanstalk                             |
 | **Taking a Taxi**         | Very Low     | High             | Fully managed service                     | **SaaS (Software as a Service)**       | No responsibility; user consumes the service        | Google Workspace:consisting of Gmail, Google Drive|
-| **Public Transport**      | Very Very Low| Very High        | Cloud-managed, deploy containers easily   | **CaaS (Container as a Service)**      | User manages container applications, some scaling   | AWS Fargate (Serverless Containers)               |
+| **Public Transport**      | Very Very Low| Very High        | Cloud-managed, deploy containers easily   | **CaaS (Container as a Service)**      | User manages container applications, some scaling   | AWS Fargate (Serverless Containers), AWD EKS (Elastic Kubernetes Service)|               |
 
-##### Serverless Computing
-- **Serverless**: No need to manage servers or resources directly; the cloud handles scaling and resource allocation dynamically.
-- **AWS Fargate** is an example of a serverless container service where AWS provisions and scales resources automatically based on container needs.
+##### Serverless Computing in Cloud Services
+- **Serverless**: 
+    * No need to manage servers or resources directly; the cloud handles scaling and resource allocation dynamically.
+    * Eg: Amazon API Gateway (to manage API's), Amazon DynamoDB (manage data stores), AWS Step Functions (To orchestrate Lambda Fundtions) etc.
+- **Serverless Application Management (SAM)**: manages and deployes services using the YAML file (like Terraform). Of type IaaC  
+- **AWS Fargate**: is a container service of type **Serverless CaaS** where AWS provisions and scales resources automatically based on container needs.
+- **AWS DaynamoDB**: which is a DB of type **Serverless BaaS** (Backend as a Service)); this would be a sub-category of PaaS
+- **AWS Lambda**: is a computing service which is of type **Serverless Faas** (Function as a Service)
+
+![Evolution of Cloud Services](../analytical/week3/lec2EvolutionOfCloudServices.png)
+
+##### AWS Lambda
+* Uses:
+    - **API Gateway**: When a request, such as a product list request, is made via API Gateway to DynamoDB, AWS Lambda can be used to process the request.
+
+    - **S3 Bucket**: When new data is added to an S3 bucket, a Lambda function can automatically load this data into Snowflake. The function is triggered each time new data arrives.
+
+    - **SNS (Simple Notification Service) or SQS (Simple Queue Service)**: AWS Lambda can process incoming notifications or messages added to a queue. For example, when an email is received, it can be added to an SQS queue, and Lambda can handle or process items in the queue.
+
+    - **DynamoDB**: Lambda can respond to changes in DynamoDB tables. For instance, if an address is updated in the database, Lambda can trigger an update in another system to keep the data consistent. 
+* Internally lambda uses a seperate container/micro VM per function
+* Has implicit high availability; so you don't need to worry if the data center is down; AWS automatically moves it to another data center implicitly
+* Nodejs & Python are the fastest languages; Java, C++ etc take longer time
+* Uses memory size and function execution time to calculate the cost. `AWS Lamda Power Tuning` tool (open source tool) to find the optimal configuration for your lambda.
+* Time-limit: 60 mins
 
 ---
 ---
