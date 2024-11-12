@@ -1341,6 +1341,7 @@ Types of systems
 ![Evolution of Cloud Services](../analytical/week3/lec2EvolutionOfCloudServices.png)
 
 ##### AWS Lambda
+
 * Uses:
     - **API Gateway**: When a request, such as a product list request, is made via API Gateway to DynamoDB, AWS Lambda can be used to process the request.
 
@@ -1370,10 +1371,15 @@ Types of systems
     * High memory-requirement systems (10 Gb max)
     * Large data sets
     * Need for high compute power (Multicore CPU or GPU, 6 vCPU max)
-* Lambda Has 3 Types of Invocation
+* Invocation: Lambda Has 3 Types of Invocation (called or initiated): Lambda Invocation is the act of running a Lambda function, which can be done manually or automatically.
     * *Event-driven invocation (Asynchronous)*: Some AWS services generate events which can be used to trigger your Lambda function. All events structured as JSON format and they all contain the data that the function needs to process the event.
-    * *Lambda Polling*: For services that generate a queue or data stream, you set up an event source mapping in Lambda that reads from an event source and invokes a Lambda function. Lambda can read streams from the following services: DynamoDB, Kinesis, MQ, MSK, SQS.
+    * *Lambda Polling*: For services that generate a queue or data stream, you set up an event source mapping in Lambda that reads from an event source and invokes a Lambda function. Lambda can read streams from the following services: DynamoDB, Kinesis, MQ, MSK, SQS. Eg: This includes services like DynamoDB Streams, Kinesis, or SQS that pull records in batches and invoke Lambda in response to new items.
     * *API-driven invocation (Synchronous)*: In web application, API Gateway can invoke Lambda function based on user request. In this case, we will wait for Lambda response which usually contains some additional information.
+* Triggers (source/resource automatically initiates): Lambda Trigger is the configured event source that automatically starts a Lambda function when certain conditions are met (like an event in S3, API Gateway request, or scheduled time in CloudWatch). In short, triggers start invocations, and invocations execute the Lambda function! AWS Lambda supports a wide array of potential triggers, including incoming HTTP requests, messages from a queue, customer emails, changes to database records, user authentication, messages coming to web sockets, client device synchronization, and much more. Common Ways to Trigger Lambda Functions: 
+    * `API Gateway` event is one way to trigger Lambda. These events are considered synchronous events meaning when somebody is directly calling an API Gateway, it will trigger your Lambda function.
+    * `S3 events` occur when the content of an S3 bucket gets modified. Altering the content can be achieved by either uploading, deleting, or updating an object.
+    * `A DynamoDB table stream` - when someone updates a record in a specific DynamoDB table, it will instantly publish all changes in a stream, and the Lambda function will be invoked to consume that data in the stream.
+* Extensions: 
 ---
 ---
 
