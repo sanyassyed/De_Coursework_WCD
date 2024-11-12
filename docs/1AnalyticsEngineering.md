@@ -1326,17 +1326,18 @@ Types of systems
 | **Owning a Car**          | Very High    | Very Very Low    | High upfront cost, full ownership         | **On-Premises Data Center**            | Full control over hardware and software             | Physical data center                              |
 | **Leasing a Car**         | High         | Very Low         | Lower upfront, cloud-managed hardware     | **IaaS (Infrastructure as a Service)** | User manages software, networking, and storage      | AWS EC2                                           |
 | **Renting a Car**         | Low          | Low              | Provider handles most aspects             | **PaaS (Platform as a Service)**       | Only code and application management                | AWS Elastic Beanstalk                             |
-| **Taking a Taxi**         | Very Low     | High             | Fully managed service                     | **SaaS (Software as a Service)**       | No responsibility; user consumes the service        | Google Workspace:consisting of Gmail, Google Drive|
-| **Public Transport**      | Very Very Low| Very High        | Cloud-managed, deploy containers easily   | **CaaS (Container as a Service)**      | User manages container applications, some scaling   | AWS Fargate (Serverless Containers), AWD EKS (Elastic Kubernetes Service)|               |
+| **Taking a Taxi**         | Very Low     | High             | Fully managed service                     | **SaaS (Software as a Service)**       | No responsibility; user consumes the service        | Google Workspace: consisting of Gmail, Google Drive|
+| **Public Transport**      | Very Very Low| Very High        | Cloud-managed, deploy containers easily   | **CaaS (Container as a Service)**      | User manages container applications, some scaling   | AWS Fargate (Serverless Containers), AWS EKS (Elastic Kubernetes Service)|               |
 
 ##### Serverless Computing in Cloud Services
-- **Serverless**: 
+- **What is Serverless Service?**: 
     * No need to manage servers or resources directly; the cloud handles scaling and resource allocation dynamically.
     * Eg: Amazon API Gateway (to manage API's), Amazon DynamoDB (manage data stores), AWS Step Functions (To orchestrate Lambda Fundtions) etc.
-- **Serverless Application Management (SAM)**: manages and deployes services using the YAML file (like Terraform). Of type IaaC  
-- **AWS Fargate**: is a container service of type **Serverless CaaS** where AWS provisions and scales resources automatically based on container needs.
-- **AWS DaynamoDB**: which is a DB of type **Serverless BaaS** (Backend as a Service)); this would be a sub-category of PaaS
-- **AWS Lambda**: is a computing service which is of type **Serverless Faas** (Function as a Service)
+- **Examples**: 
+    - *Serverless Application Management (SAM)*: manages and deployes services using the YAML file (like Terraform). This service is of type IaaC. 
+    - *AWS Fargate*: is a container service of type **Serverless CaaS** where AWS provisions and scales resources automatically based on container needs.
+    - *AWS DaynamoDB*: which is a DB of type **Serverless BaaS** (Backend as a Service)); this would be a sub-category of PaaS
+    - *AWS Lambda*: is a computing service which is of type *Serverless Faas* (Function as a Service)
 
 ![Evolution of Cloud Services](../analytical/week3/lec2EvolutionOfCloudServices.png)
 
@@ -1371,15 +1372,72 @@ Types of systems
     * High memory-requirement systems (10 Gb max)
     * Large data sets
     * Need for high compute power (Multicore CPU or GPU, 6 vCPU max)
-* Invocation: Lambda Has 3 Types of Invocation (called or initiated): Lambda Invocation is the act of running a Lambda function, which can be done manually or automatically.
-    * *Event-driven invocation (Asynchronous)*: Some AWS services generate events which can be used to trigger your Lambda function. All events structured as JSON format and they all contain the data that the function needs to process the event.
-    * *Lambda Polling*: For services that generate a queue or data stream, you set up an event source mapping in Lambda that reads from an event source and invokes a Lambda function. Lambda can read streams from the following services: DynamoDB, Kinesis, MQ, MSK, SQS. Eg: This includes services like DynamoDB Streams, Kinesis, or SQS that pull records in batches and invoke Lambda in response to new items.
-    * *API-driven invocation (Synchronous)*: In web application, API Gateway can invoke Lambda function based on user request. In this case, we will wait for Lambda response which usually contains some additional information.
-* Triggers (source/resource automatically initiates): Lambda Trigger is the configured event source that automatically starts a Lambda function when certain conditions are met (like an event in S3, API Gateway request, or scheduled time in CloudWatch). In short, triggers start invocations, and invocations execute the Lambda function! AWS Lambda supports a wide array of potential triggers, including incoming HTTP requests, messages from a queue, customer emails, changes to database records, user authentication, messages coming to web sockets, client device synchronization, and much more. Common Ways to Trigger Lambda Functions: 
-    * `API Gateway` event is one way to trigger Lambda. These events are considered synchronous events meaning when somebody is directly calling an API Gateway, it will trigger your Lambda function.
-    * `S3 events` occur when the content of an S3 bucket gets modified. Altering the content can be achieved by either uploading, deleting, or updating an object.
-    * `A DynamoDB table stream` - when someone updates a record in a specific DynamoDB table, it will instantly publish all changes in a stream, and the Lambda function will be invoked to consume that data in the stream.
+* Invocation: 
+    * *What is it?*: Lambda Has 3 Types of Invocation (called or initiated): Lambda Invocation is the act of running a Lambda function, which can be done manually or automatically.
+    * Types: 
+        1. *Event-driven invocation (Asynchronous)*: Some AWS services generate events which can be used to trigger your Lambda function. All events structured as JSON format and they all contain the data that the function needs to process the event.
+        2. *Lambda Polling*: For services that generate a queue or data stream, you set up an event source mapping in Lambda that reads from an event source and invokes a Lambda function. Lambda can read streams from the following services: DynamoDB, Kinesis, MQ, MSK, SQS. Eg: This includes services like DynamoDB Streams, Kinesis, or SQS that pull records in batches and invoke Lambda in response to new items.
+        3. *API-driven invocation (Synchronous)*: In web application, API Gateway can invoke Lambda function based on user request. In this case, we will wait for Lambda response which usually contains some additional information.
+* Triggers 
+    * *What is it?*: (source/resource automatically initiates): Lambda Trigger is the configured event source that automatically starts a Lambda function when certain conditions are met (like an event in S3, API Gateway request, or scheduled time in CloudWatch). In short, triggers start invocations, and invocations execute the Lambda function! AWS Lambda supports a wide array of potential triggers, including incoming HTTP requests, messages from a queue, customer emails, changes to database records, user authentication, messages coming to web sockets, client device synchronization, and much more. Common Ways to Trigger Lambda Functions: 
+    * Types: 
+        1. *API Gateway* event is one way to trigger Lambda. These events are considered synchronous events meaning when somebody is directly calling an API Gateway, it will trigger your Lambda function.
+        2. *S3 events* occur when the content of an S3 bucket gets modified. Altering the content can be achieved by either uploading, deleting, or updating an object.
+        3. *A DynamoDB table stream* - when someone updates a record in a specific DynamoDB table, it will instantly publish all changes in a stream, and the Lambda function will be invoked to consume that data in the stream.
 * Extensions: 
+    * They are pre-built connectors that allow you to integrate Lambda with monitoring, observability, security and governance tools.
+    * Extensions may impact the performance of your function because they share resources such as CPU, memory and storage with the function and because extensions are initialized before finction code.
+    * You can create your own Lambda Extension using AWS Lambda Runtime Extensions API.
+    * In summary, Lambda Extensions can certainly be used to monitor how your Lambda functions are performing and send that data to a centralized location, which can help you manage and monitor your overall cloud infrastructure across different platforms.
+* Packaging: 
+    1. ZIP archive: 
+        * Package your Lambda as a zip file (50 MB max) 
+        * For larger archives use S3 (250 MB)
+        * ZIP fucntions are automatically patched and bugs are fixed
+    2. Docker Container: 
+        * For larger deployments package your lambda function as a Docker artifact (10GB max). 
+        * Lambda uses Amazon ECR (Elastic Container Repository) to store the functions defined as container images, and if the image is deleted then the function cannot be invoked.
+        * These functions are immutable & what's inside the container is the responsibility of the customer.
+* Layers:
+    * Another way to package code and dependencies to manage & share them easily across multiple functions.
+    * It is a .zip file archive that can contain additional code or data
+    * Layers can only be used with ZIP archive Lambda functions.
+    * Lamda extracts the layer contents into the `/opt` directory
+    * ```bash
+      # how to structre the folders in your layer .zip archive
+      pillow.zip
+      | python/PIL 
+      L python/Pillow-5.3.0.dist-info
+      ```
+* Storage Types & /tmp Usage
+    * All data must be stored in a static location as Lambda is stateless
+    * `Run the function` --store data here temporarily -->> `/tmp` (512MB free - 10GB MAX & paid) --move from here to-->>  `Amazon S3, Amazon DynamoDB, Amazon EFS(Elastic File System)`
+* Step Functions:
+    * Use this to chain-up multiple lambda's sequentially passing the output of one to the other and/or in parallel
+    * If one Lambda is too long and takes longer time; then write multiple Lambda's and use Step Functions to connect them all
+* Cold Start:
+    * It is the extra latency incurred  when AWS Lambda platform needs to spin up a new runtime environment (container) to process an action/event/request
+    * This happens when:
+        * There is code change; similar to how container is built again when Dockerfile contents change
+        * When you don't use/call a function for a long time (eg: 1 hr)
+        * When the container age (~6 hrs) is crossed and it is still not called
+        * When a container is running and Lambda needs to scale out
+    * Times:
+        * Python least cold start (no compilation required therefore the fastest)
+        * Java 11 lesser (Java requires compilation)
+        * Java 8 more
+        * More the function is called lesser the cold start frequency
+            * Call rate: 10 times per second = 0.001% cold starts
+            * Call rate: once every couple of hours = 100% cold starts
+    * How to avoid:
+        * Trim unused libraries
+        * Increase memory atleast 1769 MB (for 1 full vCPU core)
+        * Use Provisioned Concurrency (this is a paid service (fixed price) where containers are set aside irrespective of how often they are used)
+        * Use faster languages
+* Basic Usage:
+
+* Create Lambda Layer:
+
 ---
 ---
 
