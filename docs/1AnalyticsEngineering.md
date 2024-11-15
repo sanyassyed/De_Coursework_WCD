@@ -1115,7 +1115,6 @@ docker run --name zeppline8081 -p 8081:8081 apache/zeppelin:0.11.2
     * `parquet` : columnar storage format data. Parquet is generally better for write-once, read-many analytics, while ORC is more suitable for read-heavy operations
     * `pyarrow` : PyArrow provides an interface for working with a wide range of data sources and data types, including structured and unstructured data, such as CSV files, Parquet files, JSON data, and now Pandas Dataframes. Also it's used to process orc files. The Optimized Row Columnar (ORC) file format is an open-source, columnar storage format for storing data in Apache Hive and Hadoop workloads. 
     * `avro` : to process avro files. Avro is a row-oriented remote procedure call and data serialization framework developed within Apache's Hadoop project. It uses JSON for defining data types and protocols, and serializes data in a compact binary format.
-
 * SYSTEM MANIPULATION: 
     * `os`: enables path joins, finding parent directory, walking through directories etc
     * `sys`: enables getting sys arguments, python version etc
@@ -1435,6 +1434,56 @@ Types of systems
         * Use Provisioned Concurrency (this is a paid service (fixed price) where containers are set aside irrespective of how often they are used)
         * Use faster languages
 * Basic Usage:
+    * Create a Lambda function:
+        1. AWS Console -> Lambda Functions -> Create Functions
+        1. Select from:
+            1. Author from scratch - write your own
+            1. Use a blueprint - common usecase - get object from S3, use API Gateway, Do a batch job etc.
+            1. Container image - use an existing container image
+        1. Runtime: Python
+        1. Architecture: x86_64 (default) other options like AWS EC2 Graviton
+        1. Permissions: Create a new role with basic Lambda permissions
+        1. Advanced Settings: (not needed for basic run)
+            * Enable code signing (use if code needs approval)
+            * Use tags to track costs
+
+        1. Create the function
+        1. Add/Set Trigger Configuration
+        1. Add/Set Destination
+        1. Function ARN(Amazon Resource Number): Make note of this
+        1. Code Source 
+            * Lambda Handler: Where to start your function
+            * event : what you are passing eg: data added to s3 bucket
+            * context meta data attached to the lambda function of type dictionary that contains the function_name, function_version, invoked_function_arn etc.
+        1. Click on `Deploy` to apply the changes
+        1. Test 1: Pass an event. Click on `Test` and configure the test event as it's the first time:
+            1. Create new event
+            1. Event name - `hello-world-event`
+            1. Event sharing -  private
+            1. Set Event name `hello-world`
+            1. Event JSON: use the default json which will just pass that dictionary to the function
+            1. Save
+        1. Click on `Test` and that event just create will be used for testing
+        1. Test 2: No event to pass just print the date time
+        ```python
+        import json
+        from datetime import datetime
+
+        def lambda_handler(event, context):
+            timestamp = datetime.now().strftime("%Y-%m-%d %H-%M-%S")
+            print(timestamp)
+        ```
+        1. Test 3: Print all the packages available in Lambda for Python by default
+        ```python
+        from pkg_resources import working_set
+
+        def lambda_handler(event, context):
+            for i in working_set:
+                print(i.project_name + " + " + i.version)
+        ```
+
+        1. Test 4: s3 Put event, where you put into a s3 bucket. There is a template event available for this already. We can use that to test.
+
 
 * Create Lambda Layer:
 
