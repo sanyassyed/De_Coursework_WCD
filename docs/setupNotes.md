@@ -252,6 +252,9 @@ Remember to follow these steps when working on the local and remote server respe
     - `sftp remote_instance name`: to log into the remote server
     - `get -r ./file_in_remote ./location_in_host`: use this command to get a file from the remote server into the host server
     - `lpwd`: local host systems working directory
+* Copy project folder from remote to local system
+    - `scp -r MiniProject:/home/ubuntu/DataEngineering_Jobs_Data_ETL_Pipeline .`
+    - remember to remove virtual env files
 
 ## Transfering EC2 Instances to another account
 * Create Another AWS account
@@ -304,3 +307,13 @@ Remember to follow these steps when working on the local and remote server respe
     * Check the ufw (Uncomplicated Fire Wall) rules as follows `sudo ufw status verbose`
     * If it only shows `active` and no rules that means when you attempt to SSH into your EC2 instance, the firewall is blocking that connection because there are no rules permitting incoming traffic on port 22
     * Fix that by using the command `sudo ufw allow 22`
+    
+* VSCode keeps loosing EC2 server connection:
+    * [Resource](https://earlruby.org/2021/06/fixing-vscode-when-it-keeps-dropping-ssh-connections/comment-page-1/)
+    * To fix the problem I just removed the cache as follows:
+        * Exit completely out of VSCode so that no VSCode processes are running. Force quit if you have to.
+        * ssh to the remote machine(s) and delete the ~/.vscode-server directory with rm -Rf ~/.vscode-server/
+        * If you get any “cannot remove [file]: Device or resource busy” errors then look for stuck processes:
+        * lsof | grep $HOME/.vscode-server | awk '{ print $2 }' | sort -u
+        … then kill those processes, then trying removing the directory again.
+        * Restart VSCode.

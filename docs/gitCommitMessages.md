@@ -13,6 +13,9 @@
   - `FIX: corrected calculation in metrics function`
   - `FIX: resolved typo in README file`
 
+- **WORKING**: for code that is working commits
+  - `WORKING: this stage of code is working witout issues`
+
 - **REFACTOR**: for code restructuring or optimization without changing functionality
   - `REFACTOR: reorganized module imports`
   - `REFACTOR: optimized data cleaning functions`

@@ -1299,6 +1299,8 @@ Types of systems
     ```commandline
     python main.py --path /a/dir/to/file/ --file book.txt
     ```
+* Logging:
+![Logging In Python](../images/logging.png)
 * Python Style and Naming Conventions:
     * PEP8 : Style guide for Python Code - where the best practices are described.
     * Maximum line length
