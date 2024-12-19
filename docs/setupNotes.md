@@ -302,14 +302,6 @@ Remember to follow these steps when working on the local and remote server respe
 * Click `Apply` button
 * Now the instance type is chaged
 
-## Decrease the volume of instance
-* [Resource](https://medium.com/@m.yunan.helmy/decrease-the-size-of-ebs-volume-in-your-ec2-instance-ea326e951bce) to reduce instance volume size
-* [Resource](https://medium.com/@m.yunan.helmy/increase-the-size-of-ebs-volume-in-your-ec2-instance-3859e4be6cb7) to create a snapshot of the old volume
-* NOTE: Update a few commands in these resources as follows
-```bash
-sudo rsync -axv --progress --partial / /mnt/new-volume
-```
-
 ---
 ## ERRORS
 * Uable to SSH into EC2 instance
