@@ -1185,6 +1185,7 @@ Types of systems
 
 ##### Project Requirements
 * Virtual Environments: 
+    * Filename: `sandbox` or `.v_env`
     * Create virtual envs in python as follows
     ```bash
     # python env
@@ -1192,13 +1193,77 @@ Types of systems
     source my_env/bin/activate
     deactivate
     ```
+* Initialization Script:
+    * Filename: `init.sh`
+    * Contains initialization tasks or setup steps required for a project, environment, or application to run. It's often used to prepare the environment or system before the main execution.
+    A file named **`init.sh`** typically contains initialization tasks or setup steps required for a project, environment, or application to run. It’s often used to prepare the environment or system before the main execution. Here's what it commonly includes:
+    * **Contents of `init.sh`**
+        1. **Exporting Environment Variables**  
+        - Sets variables needed by the application or script.
+        ```bash
+        export APP_ENV=production
+        export DATABASE_URL="postgresql://user:password@localhost:5432/mydb"
+        ```
+
+        2. **Directory Setup**  
+        - Creates or ensures necessary directories exist.
+        ```bash
+        mkdir -p /var/log/myapp
+        mkdir -p /tmp/myapp
+        ```
+
+        3. **Permissions Setup**  
+        - Sets appropriate permissions for files and directories.
+        ```bash
+        chmod 755 /var/log/myapp
+        chown user:user /var/log/myapp
+        ```
+
+        4. **Dependency Installation or Setup**  
+        - Installs required dependencies or initializes services.
+        ```bash
+        pip install -r requirements.txt
+        npm install
+        ```
+
+        5. **Service Initialization**  
+        - Starts or checks services required for the application.
+        ```bash
+        service postgresql start
+        ```
+
+        6. **Shell Aliases or Path Setup**  
+        - Adds custom paths or aliases to simplify command execution.
+        ```bash
+        export PATH="$PATH:/usr/local/bin/myapp"
+        alias startapp="./run.sh"
+        ```
+
+        7. **Application-Specific Initialization**  
+        - Executes tasks specific to the application, such as seeding a database or creating default configuration files.
+        ```bash
+        ./manage.py migrate
+        ./manage.py collectstatic --noinput
+        ```
+
+        8. **Custom Messages or Logs**  
+        - Outputs information about the initialization process.
+        ```bash
+        echo "Initialization complete. Ready to start!"
+        ```
+    * **When and How `init.sh` is Used**
+        - **During Deployment**: To set up the environment for a server or application.
+        - **Local Development**: To initialize the environment before running an application locally.
+        - **In Containers**: Used in Docker `ENTRYPOINT` or `CMD` to prepare the container.
+
 * Secrets
+    * Filename: `.env`
     * Contains passwords
     * format: key=value
     * Contains:
         * passwords
         * access keys
-    * Create a .env file with the following content
+    * Sample file content
     ```text
     ACCOUNT='USER_ACCOUNT'
     SECRET_KEY='2345'
@@ -1214,7 +1279,8 @@ Types of systems
     print(access_key)
     ```
 * Parameters:
-    * Contains non secret or password items
+    * Filename: `config.toml` or `param.sh`
+    * Contains non-secret or non-password items
         * Can be edited by users
         * Can be used to save 
             * enviroment type: eg: dev or production
@@ -1222,6 +1288,7 @@ Types of systems
             * Paths: output/input path, data folder paths etc.
             * database names
             * account names
+            * aws configs
     * Ways to use parameters: 
         1. Config file: In this method we use a python package to read the parameters into the code directly
             * Format: yml, xml, json etc.
@@ -1233,7 +1300,7 @@ Types of systems
             url='https://theurl.com/home'
 
             [db]
-            db='database'
+            db_name='database'
             schema='landing'
             ```
             ```python
@@ -1244,7 +1311,7 @@ Types of systems
             ```
         1. Environment Variables : In this method we set the parameters as environment variables in the Linux system and the project will then access the parameters via the environment variables. Advantage is that other applications apart from python can also access the parameters via the environment variables.
             * Format: Using the keyword `export` in the shell script
-            * `parm.sh` file
+            * `param.sh` file
             ```shell
             export BASE_PATH="/home/product/app"
             export SCRIPTS_FOLDER='/home/product/app/scripts"
@@ -1252,14 +1319,19 @@ Types of systems
             * Set these environment variables from this files as follows:
                 * Step 1: In the shell run the above script as follows: 
                 ```shell
-                chmod u+x parm.sh
-                ./para.sh
+                chmod u+x param.sh
+                ./param.sh
                 ```
                 * Step 2: Import the env variables into python script using `os` package as follows:
                 ```python
                 base_path=os.environ["BASE_PATH"]
                 print(base_path)
-                ```
+               ```
+            * Alternatively, the parameters can be stored in a config file and then exported as environment variables in the shell script as discussed above using the following command in the .sh file
+            ```shell
+            # this will pull the value assigned to db in the `config.toml` file
+            export DATABASE_NAME = $(grep 'db_name' config.toml | sed 's/.*=//' | tr -d '"')
+            ```
 
 * README.md:
     * Project's Title
@@ -1301,6 +1373,7 @@ Types of systems
     ```
 * Logging:
 ![Logging In Python](../images/logging.png)
+
 * Python Style and Naming Conventions:
     * PEP8 : Style guide for Python Code - where the best practices are described.
     * Maximum line length
@@ -1321,6 +1394,12 @@ Types of systems
 - **Python Integration**: In this project, Python is used to manage the Lambda function that processes and transfers data.
 
 ##### Cloud Computing Metaphor and Cloud Service Models
+
+* `IaaS` -> Eg: AWS Ec2, GCP Compute Engine
+* `PaaS` -> Eg: AWS Lambda (also a FaaS), Cloud Functions
+* `SaaS` -> Eg: Google Workspace
+* `CaaS` -> Eg: AWS Fargate (AWS Fargate is a serverless compute engine for containers that works with both Amazon Elastic Container Service (ECS) and Amazon Elastic Kubernetes (EKS))
+* `BaaS` -> Eg: AWS DyanmoDB (Amazon DynamoDB is a managed NoSQL database service provided by Amazon Web Services)
 
 | Transportation Choice     | Capital Cost | Operational Cost | Description                               | Cloud Computing Equivalent             | Maintenance Responsibility                          | Example Services                                  |
 |---------------------------|--------------|------------------|-------------------------------------------|----------------------------------------|-----------------------------------------------------|---------------------------------------------------|
@@ -1386,8 +1465,12 @@ Types of systems
         2. *S3 events* occur when the content of an S3 bucket gets modified. Altering the content can be achieved by either uploading, deleting, or updating an object.
         3. *A DynamoDB table stream* - when someone updates a record in a specific DynamoDB table, it will instantly publish all changes in a stream, and the Lambda function will be invoked to consume that data in the stream.
 * Extensions: 
+    * AWS Lambda Extensions allow you to connect AWS services or third-party solutions to Lambda functions to `monitor performance`, `enhance logging`, `ensure security`, or `add custom initialization` steps.
+    * AWS Lambda Extensions are a mechanism to extend the capabilities of AWS Lambda functions.
+    * They allow you to integrate with AWS services, third-party tools, or custom monitoring, logging, and security solutions.
+    * Extensions run alongside the Lambda function's runtime and can perform tasks before, during, or after the execution of the function.
     * They are pre-built connectors that allow you to integrate Lambda with monitoring, observability, security and governance tools.
-    * Extensions may impact the performance of your function because they share resources such as CPU, memory and storage with the function and because extensions are initialized before finction code.
+    * Extensions may impact the performance of your function because they share resources such as CPU, memory and storage with the function and because extensions are initialized before function code.
     * You can create your own Lambda Extension using AWS Lambda Runtime Extensions API.
     * In summary, Lambda Extensions can certainly be used to monitor how your Lambda functions are performing and send that data to a centralized location, which can help you manage and monitor your overall cloud infrastructure across different platforms.
 * Packaging: 
@@ -1403,7 +1486,7 @@ Types of systems
     * Another way to package code and dependencies to manage & share them easily across multiple functions.
     * It is a .zip file archive that can contain additional code or data
     * Layers can only be used with ZIP archive Lambda functions.
-    * Lamda extracts the layer contents into the `/opt` directory
+    * Lambda extracts the layer contents into the `/opt` directory
     * ```bash
       # how to structre the folders in your layer .zip archive
       pillow.zip
@@ -1414,6 +1497,7 @@ Types of systems
     * All data must be stored in a static location as Lambda is stateless
     * `Run the function` --store data here temporarily -->> `/tmp` (512MB free - 10GB MAX & paid) --move from here to-->>  `Amazon S3, Amazon DynamoDB, Amazon EFS(Elastic File System)`
 * Step Functions:
+    * Used for orchestration
     * Use this to chain-up multiple lambda's sequentially passing the output of one to the other and/or in parallel
     * If one Lambda is too long and takes longer time; then write multiple Lambda's and use Step Functions to connect them all
 * Cold Start:
@@ -1500,3 +1584,12 @@ Types of systems
 ## Week 8 - Data Transformation - DBT for ETL
 ## Week 9 - Data Analyzation - Data Analyzation with Metabase and Project Summary
 ## Week 10 - Final Project - Project Week
+
+
+## EC2's to re-configure
+* DBT- [dbt](https://learn.weclouddata.com/programs/2/courses/159d75b6-f529-492e-9c48-8d16f33a8183/weeks/2483/materials/19623?topic_id=6510)
+* AIRBYTE & METABASE - [WeCloudData Airbyte & Metabase Installation Instructions](https://learn.weclouddata.com/programs/2/courses/159d75b6-f529-492e-9c48-8d16f33a8183/weeks/2500/materials/19647?topic_id=6566) [My Airbyte Installation Instructions]([here](#x-lab-install-airbyte-and-metabase-with-docker-))
+
+## AWS Important Documentation
+* [Free Tier](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=categories%23compute)
+* [My free tier usage](https://us-east-1.console.aws.amazon.com/billing/home#/freetier)

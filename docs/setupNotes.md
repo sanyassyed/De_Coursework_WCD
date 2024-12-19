@@ -294,6 +294,23 @@ Remember to follow these steps when working on the local and remote server respe
     - run `export AWS_PROFILE=sarah_de`
     - run `aws configure list --profile sarah_de` to view the changes
 ---
+## Change EC2 Instance type
+* In order to change the instance type of EC2 instance from t2.medium to t2.micro follow the steps [here](https://cloudvisor.co/blog/how-to-change-an-ec2-instance-type/)
+* Stop the instance
+* Select `Actions` -> `Instance Settings` -> `Change Instance Type`
+* Select the required instance from the drop down menu
+* Click `Apply` button
+* Now the instance type is chaged
+
+## Decrease the volume of instance
+* [Resource](https://medium.com/@m.yunan.helmy/decrease-the-size-of-ebs-volume-in-your-ec2-instance-ea326e951bce) to reduce instance volume size
+* [Resource](https://medium.com/@m.yunan.helmy/increase-the-size-of-ebs-volume-in-your-ec2-instance-3859e4be6cb7) to create a snapshot of the old volume
+* NOTE: Update a few commands in these resources as follows
+```bash
+sudo rsync -axv --progress --partial / /mnt/new-volume
+```
+
+---
 ## ERRORS
 * Uable to SSH into EC2 instance
     * Create a `Role` for `AWS Service` of type EC2 and attach the policy `AmazonSSMManagedInstanceCore`. 

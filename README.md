@@ -17,6 +17,7 @@ This repository contains notes, projects, and exercises from the Applied Data En
 - **Skills**: Python, AWS EC2, S3, Lambda, Docker.
 - **Tools**: Python, AWS S3, AWS EC2, Lambda, Serverless.
 - **Project**: Python applications on cloud and serverless deployments.
+    - [Project 1: Job Data Processing and Storage in AWS Cloud](https://github.com/sanyassyed/DataEngineering_Jobs_Data_ETL_Pipeline/tree/main): This mini project involves developing a Python-based data engineering pipeline to extract, transform, and load (ETL) job data from an API into an AWS S3 bucket.
 
 ### 3. Modern Data Stack
 - **Focus**: Data warehouse technologies and SQL-based ELT transformation.
