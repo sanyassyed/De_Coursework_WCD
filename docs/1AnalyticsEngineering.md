@@ -1572,8 +1572,60 @@ Types of systems
 
 
 * Create Lambda Layer:
-
----
+1. Create a .zip file containing the required package 
+    * Use a virtual python environment with a Python version same as the one used in the Lambda function
+    * Activate the virtual environment
+    * Create a new folder eg: pandas-layer
+    * Enter the folder pandas-layer
+    * pip install the python package `pandas` in this folder using the -t flag 
+    * Exit the folder
+    * Zip the folder pandas-layer as `pandas-layer.zip` using the zip package
+    * Upload the `pandas-layer.zip` folder to s3 (same region as the Lambda function) as follows:
+        * Create a new bucket if no bucket exists
+        * Use AWS CLI to upload the zip file to s3
+    ```bash
+    mkdir project
+    cd project
+    # create a virtual env with the required python version
+    python3.17 -m venv .venv
+    # activate the virtual env
+    source .venv/bin/activate
+    python3.17 -m pip install --upgrade pip
+    # make the directory for the package
+    mkdir pandas-layer
+    cd pandas-layer
+    # install all pandas files in this folder
+    pip install pandas -t .
+    ls
+    cd ..
+    # zip the folder for layer
+    zip -r pandas-layer.zip pandas-layer/
+    # upload to s3
+    aws s3 cp pandas-layer.zip s3://aws_bucket_name
+    ```
+1. Add the zip file as layer to lambda function
+    * Method 1: 
+        * Goto the bottom of the Lambda function page 
+        * In Layers select `Add Layer`
+        * Select `Specify ARN` and give the ARN number of the .zip file in s3
+        * Select Add
+    * Method 2:
+        * Goto the main Lambda page
+        * In the left pane select Layers
+        * Select Create Layer
+        * Name: pandas-layer
+        * Select `Upload a file from Amazon s3`
+        * Give the s3 link URL i.e the https://...
+        * Compatable runtimes - Python 3.17
+        * Create
+        * Copy the ARN of this Layer just created
+        * Go back to the Lambda function page
+        * Goto the bottom
+        * Select `Add Layer`
+        * Select `Custom Layers`
+        * Select the layer just created pandas-layer
+        * Press Add
+    * Test the pandas layer by clicking the button Deploy and Test
 ---
 
 
