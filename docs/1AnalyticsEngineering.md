@@ -1637,18 +1637,46 @@ Types of systems
         * Make sure the invocation is not recursive
     1. Inside the lambda function code do the following
         1. Grab a file from S3 bucket
-        1. Store the file in /tmp
+        1. Download file from S3 & Store the file in /tmp: to do this give the Lambda function role the permission to access s3 by using `Attach Policy`
         1. Perform computation on the file
         1. Upload the file into different s3 folder
+        
         ```python
+        # lambda function code
         import pandas as pd
         import boto3
 
         def lambda_handler(event, context):
             # grab the file from s3
             s3 = boto3.client('s3')
+            
+            # we need bucket name and object key
+            input_bucket = event['Records'][0]['s3']['bucket']['name']
+            input_file_key = event['Records'][0]['s3']['object']['key']
+            print(f'The bucket name is: {bucket}')
+            print(f'The name of the file uploaded is: {file_key}')
 
+            # store the file into /tmp folder
+            output_file_key = 'output/results.csv'
+            _, file_key = os.path.split(input_file_key)
+            s3.download_file(input_bucket, input_file_key, '/tmp/'+ file_key)
+            
+            print(os.listdir('/tmp/'))
+
+            # computation on the file
+            df = pd.read_csv('/tmp'+ file_key)
+            print(df)
+
+            meta = df.describe().to_csv('/tmp/results.csv')
+
+            # upload the file to different s3 folder
+            s3.upload_file('/tmp/results.csv', bucket, output_file_key)
         ```
+* Logs:
+    * To check if the Lamda function has been invoked or not
+    * In the Lambda function goto the bottom and select the tab `Monitor` -> `Cloud Watch` -> `View Cloud Watch Logs`
+    * Select the lambda function
+    * Here you can view all the logs related to that function
 
 ---
 ---
