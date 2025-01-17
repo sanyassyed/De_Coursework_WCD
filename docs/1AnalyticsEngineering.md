@@ -1519,93 +1519,68 @@ Types of systems
         * Increase memory atleast 1769 MB (for 1 full vCPU core)
         * Use Provisioned Concurrency (this is a paid service (fixed price) where containers are set aside irrespective of how often they are used)
         * Use faster languages
-* Basic Usage:
-    * Create a Lambda function:
-        1. AWS Console -> Lambda Functions -> Create Functions
-        1. Select from:
-            1. Author from scratch - write your own - this was used in the demo
-            1. Use a blueprint - common usecase - get object from S3, use API Gateway, Do a batch job etc.
-            1. Container image - use an existing container image
-        1. Runtime: Python
-        1. Architecture: x86_64 (default) other options like AWS EC2 Graviton
-        1. Permissions: Create a new role with basic Lambda permissions
-        1. Advanced Settings: (not needed for basic run)
-            * Enable code signing (use if code needs approval)
-            * Use tags to track costs
 
-        1. Create the function
-        1. Add/Set Trigger Configuration
-        1. Add/Set Destination
-        1. Function ARN(Amazon Resource Number): Make note of this
-        1. Code Source 
-            * Lambda Handler: Where to start your function
-            * event : what you are passing eg: data added to s3 bucket
-            * context meta data attached to the lambda function of type dictionary that contains the function_name, function_version, invoked_function_arn etc.
-        1. Click on `Deploy` to apply the changes
-        1. Test 1: Pass an event. Click on `Test` and configure the test event as it's the first time:
-            1. Create new event
-            1. Event name - `hello-world-event`
-            1. Event sharing -  private
-            1. Set Event name `hello-world`
-            1. Event JSON: use the default json which will just pass that dictionary to the function
-            1. Save
-        1. Click on `Test` and that event just create will be used for testing
-        1. Test 2: No event to pass just print the date time
-        ```python
-        import json
-        from datetime import datetime
+* Create a Lambda function:
+    1. AWS Console -> Lambda Functions -> Create Functions
+    1. Select from:
+        1. Author from scratch - write your own - this was used in the demo
+        1. Use a blueprint - common usecase - get object from S3, use API Gateway, Do a batch job etc.
+        1. Container image - use an existing container image
+    1. Runtime: Python
+    1. Architecture: x86_64 (default) other options like AWS EC2 Graviton
+    1. Permissions: Create a new role with basic Lambda permissions
+    1. Advanced Settings: (not needed for basic run)
+        * Enable code signing (use if code needs approval)
+        * Use tags to track costs
 
-        def lambda_handler(event, context):
-            timestamp = datetime.now().strftime("%Y-%m-%d %H-%M-%S")
-            print(timestamp)
-        ```
-        1. Test 3: Print all the packages available in Lambda for Python by default
-        ```python
-        from pkg_resources import working_set
+    1. Create the function
+    1. Add/Set Trigger Configuration
+    1. Add/Set Destination
+    1. Function ARN(Amazon Resource Number): Make note of this
+    1. Code Source 
+        * Lambda Handler: Where to start your function
+        * event : what you are passing eg: data added to s3 bucket
+        * context: meta data attached to the lambda function of type dictionary that contains the function_name, function_version, invoked_function_arn etc.
+    1. Click on `Deploy` to apply the changes
+    1. Test 1: Pass an event. Click on `Test` and configure the test event as it's the first time:
+        1. Create new event
+        1. Event name - `hello-world-event`
+        1. Event sharing -  private
+        1. Set Event name `hello-world`
+        1. Event JSON: use the default json which will just pass that dictionary to the function
+        1. Save
+    1. Click on `Test` and that event just created will be used for testing
+    1. Test 2: No event to pass just print the date time
+    ```python
+    import json
+    from datetime import datetime
 
-        def lambda_handler(event, context):
-            for i in working_set:
-                print(i.project_name + " + " + i.version)
-        ```
-
-        1. Test 4: s3 Put event, where you put into a s3 bucket. There is a template event available for this already. We can use that to test.
-
-
-* Create Lambda Layer:
-    1. In AWS Cloud Shell: Make sure the system as the Python version same as the Lambda function, if not install as follows
-    ```bash
-    sudo yum update -y
-    sudo yum groupinstall "Development Tools" -y
-    sudo apt install build-essential -y
-    
-    # install Install Development Tools required by python
-    sudo yum install gcc zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel tk-devel libffi-devel xz-devel wget -y
-
-    # Goto [here](https://www.python.org/ftp/python/) and get the version of python you want
-    wget https://www.python.org/ftp/python/3.12.8/Python-3.12.8.tgz
-    tar -xvzf Python-3.12.8.tgz
-    cd Python-3.12.8
-
-    # configure the build process
-    ./configure --enable-optimizations
-
-    # compile python
-    make -j$(nproc)
-
-    # install python
-    sudo make altinstall
-
-    # check python version
-    python3.12 --version
+    def lambda_handler(event, context):
+        timestamp = datetime.now().strftime("%Y-%m-%d %H-%M-%S")
+        print(timestamp)
     ```
+    1. Test 3: Print all the packages available in Lambda for Python by default
+    ```python
+    from pkg_resources import working_set
+
+    def lambda_handler(event, context):
+        for i in working_set:
+            print(i.project_name + " + " + i.version)
+    ```
+
+    1. Test 4: s3 Put event, where you put into a s3 bucket. There is a template event available for this already. We can use that to test.
+
+
+* Layer:
+    1. In AWS Cloud Shell: Make sure the server you are using has the Python version same as the Lambda function, if not install it first and create a virtual enviroment using it
     1. Create a .zip file containing the required package 
         * Use a virtual python environment with a Python version same as the one used in the Lambda function
         * Activate the virtual environment
         * Create a new folder `python` : this should always be the folder name
-        * Enter the folder python
+        * Enter the folder `python`
         * pip install the python package `pandas` in this folder using the -t flag 
         * Exit the folder
-        * Zip the folder python as any name eg: `pandas-layer.zip` using the zip package
+        * Zip the folder python with any name eg: `pandas-layer.zip` using the zip package
         * Upload the `pandas-layer.zip` folder to s3 (same region as the Lambda function) as follows:
             * Create a new bucket if no bucket exists
             * Use AWS CLI to upload the zip file to s3
@@ -1625,8 +1600,8 @@ Types of systems
         ls
         cd ..
         # zip the folder for layer
-        zip -r pandas-layer.zip pandas-layer/
-        # upload to s3 using the s3URI for the bucket
+        zip -r pandas-layer.zip python/
+        # upload to s3 using the s3s URI for the bucket
         aws s3 cp pandas-layer.zip s3://aws_bucket_name
         ```
     1. Add the zip file as layer to lambda function
@@ -1651,7 +1626,7 @@ Types of systems
             * Press Add
         * Test the pandas layer by clicking the Deploy button and then Test button
 
-* S3 Trigger:
+* S3 Trigger Use case:( Test 4 discussed above)
     1. Create two folders in the s3 bucket input and output
     1. Goto to the Lambda function:
         * Select `Add Trigger`
@@ -1697,17 +1672,18 @@ Types of systems
             s3.upload_file('/tmp/results.csv', bucket, output_file_key)
         ```
 * Logs:
+    * Give the Lamda Function's role the Permission to Access all CloudWatch Logs
     * To check if the Lamda function has been invoked or not
     * In the Lambda function goto the bottom and select the tab `Monitor` -> `Cloud Watch` -> `View Cloud Watch Logs`
     * Select the lambda function
     * Here you can view all the logs related to that function
 
-* Summary - How to create a Lambda Function
+* Summary - How to create a Lambda Function as shown in Lecture 2
     * Aim: Create a function that is 
         * triggered by an s3 upload event
-        * then reads the file in the function 
-        * gets the dataset description as a csv 
-        * loads that results csv to another s3 bucket.
+        * then reads the file uploaded which is a csv as a pandas dataframe 
+        * gets the dataset's description as a csv 
+        * loads that result csv to another s3 bucket.
     * Create a function 
         * named `etl-basic`
         * Runtime: Python3.12
@@ -1756,16 +1732,43 @@ Types of systems
     aws s3 cp pandas-layer.zip s3://etl-basic-data/packages/
     ```
     * Create a Custom Layer with compatable runtime as Python3.12 by adding the .zip folder to it 
-    * Add the above Custom layer created to the Lambda Function either by selecting Custom layer or adding the layer ARN number
+    * Add the above Custom layer created to the Lambda Function either by selecting Custom layer or adding the cutom layers ARN number
     * Add S3 trigger to Lambda Function with the bucket name and `input/` as prefix
-    * Download the dataset file to use using curl
+    * Download the dataset file to use for this demo using curl as follows on the CloudShell
+    * And then upload it into the input folder in the etl-basic bucket
     ```bash
     curl -L -o ./avocado-prices.zip https://www.kaggle.com/api/v1/datasets/download/neuromusic/avocado-prices
     unzip avocado-prices.zip -d .
     # upload this file to s3
     aws s3 cp avocado.csv s3://etl-basic-data/input/
     ```
-    * Write code for the lambda function to download the s3 file, transform and load back to s3
+    * Write code for the lambda function to download the s3 file, transform it and load the result back to s3
+    ```python
+    import pandas as pd
+    import os
+    import boto3
+    def lambda_handler(event, context):
+        # grab the bucket and file name
+        bucket = event['Records'][0]['s3']['bucket']['name']
+        inputFileName = event['Records'][0]['s3']['object']['key']
+        print("Bucket Name: " + bucket)
+        print("File Name: " + inputFileName)
+
+        # download file from s3
+        s3 = boto3.client('s3')
+        outputFileName = 'output/results.csv'
+        _, FileName = os.path.split(inputFileName)
+        s3.download_file(bucket, inputFileName, '/tmp/' + FileName)
+
+        # read the csv file
+        df = pd.read_csv('/tmp/' + FileName)
+        # view the contents of the /tmp folder
+        print(f'Contents of /tmp folder: {os.listdir('/tmp/')}')
+
+        meta = df.describe().to_csv('/tmp/results.csv')
+
+        s3.upload_file('/tmp/results.csv', bucket, outputFileName)
+    ```
 ---
 ---
 
