@@ -1523,7 +1523,7 @@ Types of systems
     * Create a Lambda function:
         1. AWS Console -> Lambda Functions -> Create Functions
         1. Select from:
-            1. Author from scratch - write your own
+            1. Author from scratch - write your own - this was used in the demo
             1. Use a blueprint - common usecase - get object from S3, use API Gateway, Do a batch job etc.
             1. Container image - use an existing container image
         1. Runtime: Python
@@ -1572,14 +1572,40 @@ Types of systems
 
 
 * Create Lambda Layer:
+    1. In AWS Cloud Shell: Make sure the system as the Python version same as the Lambda function, if not install as follows
+    ```bash
+    sudo yum update -y
+    sudo yum groupinstall "Development Tools" -y
+    sudo apt install build-essential -y
+    
+    # install Install Development Tools required by python
+    sudo yum install gcc zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel tk-devel libffi-devel xz-devel wget -y
+
+    # Goto [here](https://www.python.org/ftp/python/) and get the version of python you want
+    wget https://www.python.org/ftp/python/3.12.8/Python-3.12.8.tgz
+    tar -xvzf Python-3.12.8.tgz
+    cd Python-3.12.8
+
+    # configure the build process
+    ./configure --enable-optimizations
+
+    # compile python
+    make -j$(nproc)
+
+    # install python
+    sudo make altinstall
+
+    # check python version
+    python3.12 --version
+    ```
     1. Create a .zip file containing the required package 
         * Use a virtual python environment with a Python version same as the one used in the Lambda function
         * Activate the virtual environment
-        * Create a new folder eg: pandas-layer
-        * Enter the folder pandas-layer
+        * Create a new folder `python` : this should always be the folder name
+        * Enter the folder python
         * pip install the python package `pandas` in this folder using the -t flag 
         * Exit the folder
-        * Zip the folder pandas-layer as `pandas-layer.zip` using the zip package
+        * Zip the folder python as any name eg: `pandas-layer.zip` using the zip package
         * Upload the `pandas-layer.zip` folder to s3 (same region as the Lambda function) as follows:
             * Create a new bucket if no bucket exists
             * Use AWS CLI to upload the zip file to s3
@@ -1587,29 +1613,24 @@ Types of systems
         mkdir project
         cd project
         # create a virtual env with the required python version
-        python3.17 -m venv .venv
+        python3.12 -m venv .venv
         # activate the virtual env
         source .venv/bin/activate
-        python3.17 -m pip install --upgrade pip
+        python3.12 -m pip install --upgrade pip
         # make the directory for the package
-        mkdir pandas-layer
-        cd pandas-layer
+        mkdir python
+        cd python
         # install all pandas files in this folder
         pip install pandas -t .
         ls
         cd ..
         # zip the folder for layer
         zip -r pandas-layer.zip pandas-layer/
-        # upload to s3
+        # upload to s3 using the s3URI for the bucket
         aws s3 cp pandas-layer.zip s3://aws_bucket_name
         ```
     1. Add the zip file as layer to lambda function
-        * Method 1: 
-            * Goto the bottom of the Lambda function page 
-            * In Layers select `Add Layer`
-            * Select `Specify ARN` and give the ARN number of the .zip file in s3
-            * Select Add
-        * Method 2:
+        * First Create a Custom Layer:
             * Goto the main Lambda page
             * In the left pane select Layers
             * Select Create Layer
@@ -1618,14 +1639,17 @@ Types of systems
             * Give the s3 link URL i.e the https://...
             * Compatable runtimes - Python 3.17
             * Create
-            * Copy the ARN of this Layer just created
-            * Go back to the Lambda function page
-            * Goto the bottom
-            * Select `Add Layer`
-            * Select `Custom Layers`
-            * Select the layer just created pandas-layer
+        * Add the Custom Layer just created as a Layer to the Lambda Function: 
+            * Goto the bottom of the Lambda function page 
+            * In Layers select `Add Layer`
+            * Option 1:
+                * Select `Specify ARN` and give the ARN number of Layer just created
+                * Select Add
+            * Option 2:
+                * Select `Custom Layers`
+                * Select the layer just created i.e pandas-layer
             * Press Add
-        * Test the pandas layer by clicking the button Deploy and Test
+        * Test the pandas layer by clicking the Deploy button and then Test button
 
 * S3 Trigger:
     1. Create two folders in the s3 bucket input and output
@@ -1678,6 +1702,70 @@ Types of systems
     * Select the lambda function
     * Here you can view all the logs related to that function
 
+* Summary - How to create a Lambda Function
+    * Aim: Create a function that is 
+        * triggered by an s3 upload event
+        * then reads the file in the function 
+        * gets the dataset description as a csv 
+        * loads that results csv to another s3 bucket.
+    * Create a function 
+        * named `etl-basic`
+        * Runtime: Python3.12
+    * Create a bucket `etl-basic-data`
+    * Create subfolders in the bucket as follows: `packages`, `input`, `output`
+    * Give the Lambda function's Role the permission to 
+        1. Access AmazonS3FullAccess
+        2. Access CloudWatchLogsFullAccess
+    * Create a .zip file of the pandas package in Cloud Shell and upload it to S3 as a .zip file
+    * Always install the packages in the folder named `python` and zip it with any file name
+    ```bash
+    # cloud shell
+    # install python 3.12 as follows
+    sudo apt update && sudo apt upgrade -y
+    python --version
+    sudo yum update -y
+    sudo yum install gcc zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel tk-devel libffi-devel xz-devel wget -y
+    wget https://www.python.org/ftp/python/3.12.8/Python-3.12.8.tgz
+    tar -xvzf Python-3.12.8.tgz
+    cd Python-3.12.8
+    ./configure --enable-optimizations
+    make -j$(nproc)
+    sudo make altinstall
+    python3.12 --version
+
+    # create project folder
+    mkdir ae_project
+    cd ae_project/
+
+    # create virtual env
+    python3.12 -m venv .venv
+    source .venv/bin/activate
+
+    # create python folder to install all required packages here eg: pandas
+    mkdir python
+    cd python/
+    python3.12 -m pip install --upgrade pip
+    pip install pandas -t .
+    cd ..
+
+    # zip the python folder into a .zip file
+    zip -r pandas-layer.zip python/
+    
+    # upload the .zip to s3
+    aws --version
+    aws s3 cp pandas-layer.zip s3://etl-basic-data/packages/
+    ```
+    * Create a Custom Layer with compatable runtime as Python3.12 by adding the .zip folder to it 
+    * Add the above Custom layer created to the Lambda Function either by selecting Custom layer or adding the layer ARN number
+    * Add S3 trigger to Lambda Function with the bucket name and `input/` as prefix
+    * Download the dataset file to use using curl
+    ```bash
+    curl -L -o ./avocado-prices.zip https://www.kaggle.com/api/v1/datasets/download/neuromusic/avocado-prices
+    unzip avocado-prices.zip -d .
+    # upload this file to s3
+    aws s3 cp avocado.csv s3://etl-basic-data/input/
+    ```
+    * Write code for the lambda function to download the s3 file, transform and load back to s3
 ---
 ---
 
