@@ -1421,6 +1421,7 @@ Types of systems
 
 ![Evolution of Cloud Services](../analytical/week3/lec2EvolutionOfCloudServices.png)
 
+
 ##### AWS Lambda
 
 * Uses:
@@ -1672,7 +1673,7 @@ Types of systems
             s3.upload_file('/tmp/results.csv', bucket, output_file_key)
         ```
 * Logs:
-    * Give the Lamda Function's role the Permission to Access all CloudWatch Logs
+    * Give the Lamda Function's role the Permission to `Access all CloudWatch Logs`
     * To check if the Lamda function has been invoked or not
     * In the Lambda function goto the bottom and select the tab `Monitor` -> `Cloud Watch` -> `View Cloud Watch Logs`
     * Select the lambda function
@@ -1684,7 +1685,7 @@ Types of systems
         * then reads the file uploaded which is a csv as a pandas dataframe 
         * gets the dataset's description as a csv 
         * loads that result csv to another s3 bucket.
-    * Create a function 
+    * Function Creation
         * named `etl-basic`
         * Runtime: Python3.12
     * Create a bucket `etl-basic-data`
@@ -1770,7 +1771,130 @@ Types of systems
         s3.upload_file('/tmp/results.csv', bucket, outputFileName)
     ```
 ---
+
+#### Lab 1: Lambda
+
 ---
+
+### Practice & Exercises
+
+#### Mini Project for Python in Cloud: [Jobs Data ETL Project](https://github.com/sanyassyed/DataEngineering_Jobs_Data_ETL_Pipeline)
+
+This mini project involves developing a Python-based data engineering pipeline to extract, transform, and load (ETL) job data from the MUSE API into an AWS S3 bucket. The project simulates real-world scenarios of working with APIs, managing cloud resources, and implementing ETL workflows for structured data processing.
+
+---
+
+#### Workshop: Lambda
+
+##### NOTE: 
+* There are two ways to create functions:
+    1. Via GUI AWS Console
+    2. Via AWS CLI:
+        * EC2: If using an EC2 instance use an IAM account to use the AWS CLI. Below find the steps to create an IAM account and use those credentials: 
+            * Create AWS `IAM account`: Going to use `zara_de` account
+            * Give IAM the following permissions by adding the following policies to the User Group `developers` to which the user `zara_de` belongs
+                * AWSLambda_FullAccess
+                * AmazonAPIGatewayInvokeFullAccess
+            * Grab the following Credentials (saved in the folder `credentials`)
+                * access_key_id: YOUR-AWS-ACCESS-KEY-ID
+                * secret_access_key: YOUR-AWS-SECRET-ACCESS-KEY
+        * AWS Cloud Shell: When using this server there is no need to use another IAM account. You can directly create the Roles for Lambda, Lambda Functions etc from this account
+* Use the account number correctly: the IAM account number for zara_de when using EC2 instance and admin_de account number when using Cloud shell
+* Use the tutorials for more detailed steps
+
+
+##### 1. Lambda Function: Hello World Example:
+
+* Nagivate to Lambda Dashboard and Create a Function
+---
+
+##### 2. Creating a Lambda Function using AWS CLI without Runtime Dependencies
+* This Lambda function does not require any external packages that are not already available in Lambda
+* Goto the Cloud shell
+* Python version being used in the .venv is `3.9.20`
+* 1.Create a Role for the Lambda Function:
+    * Trusted Entity Type: AWS Service
+    * Use case: AWS Lambda
+    * Permission Policies: AWSLambdaBasicExecutionRole
+    
+    ```bash
+    # create a role with this command
+    aws iam create-role --role-name lambda-ex --assume-role-policy-document '{"Version": "2012-10-17","Statement": [{ "Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]}'
+    ```
+* 2.Attach Policies to the above Role `lambda-ex`
+```bash
+# attach a policy to the above role
+aws iam attach-role-policy --role-name lambda-ex --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+```
+* 3.Write the lambda function `lambda_function.py`
+```python
+import logging
+import math
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+# Define a list of Python lambda functions that are called by this AWS Lambda function.
+ACTIONS = {
+    'square': lambda x: x * x,
+    'square root': lambda x: math.sqrt(x),
+    'increment': lambda x: x + 1,
+    'decrement': lambda x: x - 1,
+}
+
+
+def lambda_handler(event, context):
+    """
+    Accepts an action and a number, performs the specified action on the number,
+    and returns the result.
+    :param event: The event dict that contains the parameters sent when the function
+                  is invoked.
+    :param context: The context in which the function is called.
+    :return: The result of the specified action.
+    """
+    logger.info('Event: %s', event)
+
+    result = ACTIONS[event['action']](event['number'])
+    logger.info('Calculated result of %s', result)
+
+    response = {'result': result}
+    return response
+```
+* 4.Zip the function using the following command
+```bash
+zip demo-math-function-package.zip lambda_function.py
+```
+* 5.Create the Lambda Function using the following command
+```bash
+aws lambda create-function --function-name demo-math-function-sanya --zip-file fileb://demo-math-function-package.zip --handler lambda_function.lambda_handler --runtime python3.9 --role arn:aws:iam::209479284263:role/lambda-ex 
+```
+* Optional: Update the same Lambda function as follows after you hve made changes in the Lambda function and rezipped it:
+```bash
+aws lambda update-function-code \
+  --function-name demo-math-function-sanya \
+  --zip-file fileb://demo-math-function-package.zip
+
+```
+* 6.Invoke the Lambda function as follows
+```bash
+aws lambda invoke --function-name demo-math-function-sanya --payload '{"action":"square","number":3}' --cli-binary-format raw-in-base64-out output.txt
+```
+* 7.View the output in `output.txt` on the Cloud Console
+---
+
+##### 3. Creating a lambda function with runtime dependencies
+
+---
+
+##### 4. SAM (Serverless Application) Workshop
+
+---
+
+#### Workshop: Lambda Project
+---
+
+
+
 
 ## Week 4 - Data Ingestion - Airbyte, Data Ingestion and Snowflake
 ## Week 5 - Data Transformation - Data Warehouse
