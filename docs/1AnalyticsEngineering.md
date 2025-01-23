@@ -1809,25 +1809,33 @@ This mini project involves developing a Python-based data engineering pipeline t
 ---
 
 ##### 2. Creating a Lambda Function using AWS CLI without Runtime Dependencies
-* This Lambda function does not require any external packages that are not already available in Lambda
+* This Lambda function `does not require any external packages` that are not already available in Lambda
 * Goto the Cloud shell
 * Python version being used in the .venv is `3.9.20`
-* 1.Create a Role for the Lambda Function:
-    * Trusted Entity Type: AWS Service
-    * Use case: AWS Lambda
-    * Permission Policies: AWSLambdaBasicExecutionRole
-    
-    ```bash
-    # create a role with this command
-    aws iam create-role --role-name lambda-ex --assume-role-policy-document '{"Version": "2012-10-17","Statement": [{ "Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]}'
-    ```
-* 2.Attach Policies to the above Role `lambda-ex`
+* Creating a Role & attaching Policies to it
 ```bash
-# attach a policy to the above role
+# Step 1: Create a Role for the Lambda Function:
+# Trusted Entity Type: AWS Service
+# Use case: AWS Lambda
+# Permission Policies: AWSLambdaBasicExecutionRole
+
+# Create a role with this command
+aws iam create-role --role-name lambda-ex --assume-role-policy-document '{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {"Service": "lambda.amazonaws.com"},
+    "Action": "sts:AssumeRole"
+  }]
+}'
+
+# Step 2: Attach Policies to the above Role `lambda-ex`
+# Attach a policy to the above role
 aws iam attach-role-policy --role-name lambda-ex --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
 ```
-* 3.Write the lambda function `lambda_function.py`
+* Lambda Function in Python
 ```python
+# Step 3: Write the Lambda Function `lambda_function.py`
 import logging
 import math
 
@@ -1841,7 +1849,6 @@ ACTIONS = {
     'increment': lambda x: x + 1,
     'decrement': lambda x: x - 1,
 }
-
 
 def lambda_handler(event, context):
     """
@@ -1860,30 +1867,218 @@ def lambda_handler(event, context):
     response = {'result': result}
     return response
 ```
-* 4.Zip the function using the following command
+* Zip & Push the Lambda Function via AWS CLI
 ```bash
+source .venv/bin/activate
+# Test the python lambda function
+
+# Step 4: Zip the function using the following command
 zip demo-math-function-package.zip lambda_function.py
-```
-* 5.Create the Lambda Function using the following command
-```bash
-aws lambda create-function --function-name demo-math-function-sanya --zip-file fileb://demo-math-function-package.zip --handler lambda_function.lambda_handler --runtime python3.9 --role arn:aws:iam::209479284263:role/lambda-ex 
-```
-* Optional: Update the same Lambda function as follows after you hve made changes in the Lambda function and rezipped it:
-```bash
+
+# Step 5: Create the Lambda Function using the following command
+aws lambda create-function --function-name demo-math-function-sanya \
+  --zip-file fileb://demo-math-function-package.zip \
+  --handler lambda_function.lambda_handler \
+  --runtime python3.9 \
+  --role arn:aws:iam::209479284263:role/lambda-ex
+
+# Optional: Update the same Lambda function as follows after you have made changes in the Lambda function and rezipped it:
 aws lambda update-function-code \
   --function-name demo-math-function-sanya \
   --zip-file fileb://demo-math-function-package.zip
 
+# Step 6: Invoke the Lambda function as follows
+aws lambda invoke --function-name demo-math-function-sanya \
+  --payload '{"action":"square","number":3}' \
+  --cli-binary-format raw-in-base64-out output.txt
+
+# Step 7: View the output in `output.txt` on the Cloud Console
+cat output.txt
 ```
-* 6.Invoke the Lambda function as follows
-```bash
-aws lambda invoke --function-name demo-math-function-sanya --payload '{"action":"square","number":3}' --cli-binary-format raw-in-base64-out output.txt
-```
-* 7.View the output in `output.txt` on the Cloud Console
+* Step 8: Also view CloudWatch to see the output. Navigate to CloudWatch Logs in the AWS Management Console to review the logs.
+
 ---
 
 ##### 3. Creating a lambda function with runtime dependencies
+* Create Lambda function by also adding the `external packages` via zip file
+* I have modified this lab to try and do everything via command line
+```bash
+# In this tutorial we will create a function to resize images. 
+# We will install a package call Pillow.
+cd ~
+mkdir image_resize
+cd image_resize
+python3 -m venv venv
+source venv/bin/activate
+pip install Pillow
+```
+* Write the test Lambda function `image_resize.py`as follows:
+```python
+import os
+import sys
+import uuid
+import argparse
+from urllib.parse import unquote_plus
+from PIL import Image
+import PIL.Image
 
+def resize_image(image_path, resized_path):
+    with Image.open(image_path) as image:
+        image.thumbnail(tuple(x / 2 for x in image.size))
+        image.save(resized_path)
+
+def main():
+    parser = argparse.ArgumentParser()
+    # Set the default for the dataset argument
+    parser.add_argument("image")
+    parser.add_argument("resized_image")
+    args = parser.parse_args()
+    # Create a dictionary of the shell arguments
+    resize_image(args.image, args.resized_image)
+
+if __name__ == "__main__":
+    main()
+``` 
+* Test the script
+```bash
+wget https://image.isu.pub/170511092643-22144705c27a3307c43c7155f2727f69/jpg/page_1.jpg
+mv page_1.jpg dog_food.jpg
+python3 image_resize.py dog_food.jpg dog_food_resize.jpg
+```
+* Update the above code and save as `lambda_function.py`
+```python
+import boto3
+import os
+import sys
+import uuid
+from urllib.parse import unquote_plus
+from PIL import Image
+import PIL.Image
+
+import logging
+from os import path
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+s3_client = boto3.client('s3')
+
+def resize_image(image_path, resize_path):
+	with Image.open(image_path) as image:
+		image.thumbnail(tuple(x/2 for x in image.size))
+		image.save(resize_path)
+
+def lambda_handler(event, context):
+	for record in event['Records']:
+		bucket = record['s3']['bucket']['name']
+		key = unquote_plus(record['s3']['object']['key'])
+
+	logger.info(f"The key is: {key}")
+	
+	_, tmpkey = os.path.split(key)
+	
+	logger.info(f"The temp key is: {tmpkey}")
+
+	download_path = os.path.join("/", "tmp", tmpkey)
+	upload_path = os.path.join("/", "tmp",  "resized_"+tmpkey)
+	s3_client.download_file(bucket, key, download_path)
+	resize_image(download_path, upload_path)
+
+	if path.isfile(upload_path): 
+		logger.info(f"Image has been created locally; uploading to s3 now at {bucket}/clean/{tmpkey}")
+		s3_client.upload_file(upload_path, bucket, "clean/"+tmpkey)
+		logger.info(f"Image upload to s3 complete")
+	else: 
+		logger.info(f"Resized image does not exist; no upload to s3 happened")
+```
+* Package the Lambda Function and the other dependant packages
+```bash
+thisfolder=$(pwd)
+cd $thisfolder/venv/lib/python3.8/site-packages
+zip -r9 ${thisfolder}/resize-image.zip .
+cd ${thisfolder}
+# add the lambda_function to the .zip file
+zip -g resize-image.zip lambda_function.py
+# check the contents of the zip file as follows
+unzip -l resize-image.zip
+```
+* Create the Lambda Role and attach policy
+```bash
+aws iam create-role --role-name cli_image_resize_role --assume-role-policy-document '{"Version": "2012-10-17","Statement": [{ "Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]}'
+
+# Policy 1
+aws iam attach-role-policy --role-name cli_image_resize_role --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+# Policy 2
+aws iam attach-role-policy --role-name cli_image_resize_role --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess
+```
+* Create the lambda function
+```bash
+aws lambda create-function --function-name cli_image_resize --zip-file fileb://resize-image.zip --handler lambda_function.lambda_handler --runtime python3.9 --role arn:aws:iam::209479284263:role/cli_image_resize_role
+
+# optional update code
+aws lambda update-function-code \
+  --function-name cli_image_resize \
+  --zip-file fileb://resize-image.zip
+```
+* Make a bucket `cli-lambda-images` with sub folders raw and clean
+```bash
+aws s3 mb s3://cli-lambda-images --region us-east-2
+
+# subfolders
+aws s3api put-object --bucket cli-lambda-images --key raw/ --content-length 0
+aws s3api put-object --bucket cli-lambda-images --key clean/ --content-length 0
+```
+* Set the permission for Lambda to explicitly allow s3 to access it 
+```bash
+aws lambda add-permission \
+  --function-name cli_image_resize \
+  --statement-id AllowS3Invoke \
+  --action lambda:InvokeFunction \
+  --principal s3.amazonaws.com \
+  --source-arn arn:aws:s3:::cli-lambda-images \
+  --source-account 209479284263
+```
+* Create Event Notification for the s3 bucket which is usually set via the Console. This configuration needs to be saved to a notification.json file. TIP: To get the configuration of another such event to copy and paste then use the following command `aws s3api get-bucket-notification-configuration --bucket bucket_name --region us-east-2`
+
+```bash
+nano notification.json
+# write the following in the above file
+{
+    "LambdaFunctionConfigurations": [
+        {
+            "Id": "s3_image_upload_raw",
+            "LambdaFunctionArn": "arn:aws:lambda:us-east-2:209479284263:function:cli_image_resize",
+            "Events": [
+                "s3:ObjectCreated:Put"
+            ],
+            "Filter": {
+                "Key": {
+                    "FilterRules": [
+                        {
+                            "Name": "Prefix",
+                            "Value": "raw/"
+                        },
+                        {
+                            "Name": "Suffix",
+                            "Value": ""
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
+```
+* Add this notification to the required bucket
+```bash
+aws s3api put-bucket-notification-configuration --bucket cli-lambda-images --notification-configuration file://notification.json
+```
+
+* Test by uploading an image to the bucket
+```bash
+aws s3 cp dog_food.jpg s3://cli-lambda-images/raw/
+```
+* This will trigger the lambda function and the uploaded image will be cleaned and put into the clean folder of the bucket
 ---
 
 ##### 4. SAM (Serverless Application) Workshop
