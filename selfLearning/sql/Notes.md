@@ -1,8 +1,8 @@
 # SQL Topics
 Find here the important concepts in SQLl
 ## Stored Procedures
-* (Video)[https://youtu.be/OT1RErkfLNQ?t=8943]
-* (Code)[https://github.com/AlexTheAnalyst/MySQL-YouTube-Series/blob/main/Advanced%20-%20Stored%20Procedures.sql]
+* [Video](https://youtu.be/OT1RErkfLNQ?t=8943)
+* [Code](https://github.com/AlexTheAnalyst/MySQL-YouTube-Series/blob/main/Advanced%20-%20Stored%20Procedures.sql)
 * Syntax:
 ```sql
 -- select the database to use
