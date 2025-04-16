@@ -1073,8 +1073,8 @@ docker run --name zeppline8081 -p 8081:8081 apache/zeppelin:0.11.2
 ---
 
 ### Self Study
-#### Mini Project : [Build docker container to process data]()
-* [Link to Git Repo]()
+#### Mini Project : 
+* Build docker container to process data [Link to Git Repo](https://github.com/sanyassyed/DataEngineering_Data_Processing_Using_Docker)
 ---
 
 ### What is Data Engineering, Analytics Engineering?
@@ -2082,16 +2082,177 @@ aws s3 cp dog_food.jpg s3://cli-lambda-images/raw/
 ---
 
 ##### 4. SAM (Serverless Application) Workshop
-
+Extra concepts
+* [Cloudformation](https://www.youtube.com/watch?v=0Sh9OySCyb4&t=279s)
+* [SAM](https://www.youtube.com/watch?v=MipjLaTp5nA&t=807s)
+* []
 ---
 
 #### Workshop: Lambda Project
+* Superstore ETL Project [GitHub Link](https://github.com/sanyassyed/DataEngineering_SuperStore_Data_ETL_Pipeline)
+
+* Todo: 
+    * Add read me documentation by adding architecture and the project files and structures
+    * Fix commands to setup the Lambda function i.e write a make file
+    * Use IaaC SAM to create the Lambda function, Roles and Policies.
+
 ---
 
 
 
-
+---
 ## Week 4 - Data Ingestion - Airbyte, Data Ingestion and Snowflake
+---
+### Lectures and Lab
+#### Lecture 1: Snowflake
+* `WAREHOUSE` in snowflake refers to a compute power place. Think of it like an EC2 instance. 
+* Creation: Create it as follows
+    * UI: Main Page Left Window -> Admin -> Warehouses ->
+    * Query: Main Page Left Window -> Worksheets -> Use the + sign to create a worksheet where you can type, execute and save your queries
+* Datawarehouse contains multiple databases
+    * Databases:
+        * Examples: Development | Staging or Testing or Beta| Production
+        * Databases contain multiple schemas
+        * Schemas:
+            * Examples:
+                * Landing Zone Schema: Data comes in here
+                * Enterprise Zone Schema: Logic processing is done here
+                * Business Zone 1 Schema| Business Zone 2 Schema| Business Zone 3 Schema: Final destinations of data
+            * Schemas contain the following:
+                * Table
+                    * Regular Table
+                    * Transient Table
+                    * Temporary Table
+                * View : It allows the result of a query to be accessed as if it were a table
+                * Stage
+                * Storage Integration
+                * File Format
+                * Sequence
+                * Pipe
+                * Stream
+                * Task
+                * Function
+                * Procedure
+                * Dynamic Table
+Absolutely! Here's your updated and refined version of the notes with corrections and added clarity:
+
+---
+
+### #### Lecture 1: Snowflake
+
+- `Warehouse` in Snowflake refers to a `compute resource`, similar to an EC2 instance. It provides the processing power for executing SQL queries, loading data, and performing other tasks.  
+  - Warehouses can be scaled up or down and paused when not in use to save costs.
+
+- Creating a Warehouse:
+  - Via UI:  
+    Main Page → Left Sidebar → **Admin** → **Warehouses**
+  - Via Query: 
+    Main Page → Left Sidebar → **Worksheets** → Use the **+** sign to create a new worksheet where you can write, execute, and save your SQL queries.
+
+- Snowflake Account Structure:
+  - A `Snowflake account` can contain multiple `Databases`.
+  - Each `Database` contains one or more `Schemas`.
+  - Each `Schema` contains various `data objects`.
+  - Databases → Schemas → Objects
+
+- Databases:
+  - Common environments:  
+    - `Development` 
+    - `Staging / Testing / Beta` 
+    - `Production`
+
+- Schemas:  
+  - Logical groupings within databases used to organize data and objects.  
+  - Examples of schema zones in a data pipeline:
+    - `Landing Zone Schema:` Where raw data is ingested
+    - `Enterprise Zone Schema:` Where data transformation/processing logic is applied
+    - `Business Zone 1/2/3 Schemas:` Final curated data for business users
+
+- Schema Objects:
+  - Tables
+    - Permanent Table: Default; persists until manually dropped
+    - Transient Table: Doesn’t support long-term time travel; useful for intermediate storage
+    - Temporary Table: Session-specific; disappears after the session ends
+  - Views: Saved SQL queries that behave like virtual tables
+  - Stage: Temporary or persistent storage location for loading/unloading data
+  - Storage Integration: Secure integration with external cloud storage (e.g., S3, Azure Blob)
+  - File Format: Definitions for parsing incoming data files (CSV, JSON, etc.)
+  - Sequence: Generates unique numeric values
+  - Pipe: Enables continuous data loading with Snowpipe
+  - Stream: Tracks changes (CDC) on a table
+  - Task: Automates execution of SQL code on a schedule or trigger
+  - Function: Custom SQL or JavaScript functions
+  - Procedure: Blocks of procedural logic written in SQL or JavaScript
+  - Dynamic Table: Automatically keeps materialized views up to date using incremental updates
+
+- Example Structure of Datawarehouse:
+    * `Development Database` - Layer 1
+        * Landing Zone `Schema` - Layer 2
+            * Table 1
+            * Table 2
+            * View 1
+            * View 2
+        * Enterprise Zone `Schema`
+            * Table 1
+            * Table 2
+            * View 1
+            * View 2
+        * Business Zone 1 `Schema`
+            * Table 1
+            * Table 2
+            * View 1
+            * View 2
+        * Business Zone 2 `Schema`
+            * Table 1
+            * Table 2
+            * View 1
+            * View 2
+    * `Production Database`
+        * Landing Zone `Schema`
+            * Table 1
+            * Table 2
+            * View 1
+            * View 2
+        * Enterprise Zone `Schema`
+            * Table 1
+            * Table 2
+            * View 1
+            * View 2
+        * Business Zone 1 `Schema`
+            * Table 1
+            * Table 2
+            * View 1
+            * View 2
+        * Business Zone 2 `Schema`
+            * Table 1
+            * Table 2
+            * View 1
+            * View 2
+You're asking some really insightful questions — and you're **spot on** for connecting the dots between **data warehouses** (like Snowflake) and **traditional relational databases** (like MySQL or Postgres). Let's break it down:
+
+- Database → Schema → Tables / Views / Functions, etc.
+
+| Feature     | MySQL                   | Postgres                | Snowflake              |
+|-------------|--------------------------|--------------------------|--------------------------|
+| **Schemas** | Technically supports them, but underused (often uses just one schema per DB) | Fully supports schemas (commonly used) | Core part of design, heavily used |
+| **Typical Use** | Most people just use `database → table` | `database → schema → table` | `database → schema → table` |
+| **Use in real-world** | Apps often treat the database as the whole workspace | Schemas used to organize tables by module/domain | Schemas often map to pipeline zones (e.g., landing, curated) |
+
+
+
+#### Lecture 2: Airbyte, Lambda & Project Data Ingestion
+#### Lab 1: Project Part-1 
+
+---
+
+### Practice
+#### Exercise-1 Snowflake Exercise
+#### Workshop-2 Airbyte
+#### Exercise-2 Lambda Function Ingest Data
+#### Lab - Project Capstone 1: Data Ingestion
+
+---
+
 ## Week 5 - Data Transformation - Data Warehouse
 ## Week 6 - Data Transformation - SQL in ETL and Data Loading
 ## Week 7 - Data Transformation - Data Modeling and ETL in the Project

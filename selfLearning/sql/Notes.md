@@ -64,6 +64,10 @@ CALL large_salaries3(1);
     * REPLACE(string, character_to_replace, character_to_replace_with)
     * LOCATE(string_to_locate, string)
     * CONCAT(string1, string2, string3)
+* Date Functions
+    * SUBDATE(CURRDATE(), INTERVAL 1 DAY)
+    * DATEDIFF(date1, date2)
+    *
 
 
 ## Frame:
@@ -200,3 +204,49 @@ FROM Employee
 ORDER BY salary DESC
 LIMIT 1;
 ```
+* When doing join to filter the joining table before the join give the `WHERE condition` in the `ON clause`.
+
+* `Unique Key` is the same as `Primary Key` except unique key values can be NULL
+
+* 
+
+## REGULAR expression
+* [Source](https://www.geeksforgeeks.org/mysql-regular-expressions-regexp/)
+
+## Unlocked Leetcode 
+* [Source](https://leetcode.ca/all/problems.html)
+
+## DATA Modelling
+### Dimention Table - `5 W's`
+* `Who` - Customer Table
+* `Where` - Address Table
+* `When` - Date Table
+* `What` - Product Table
+* `Why` -  Reason Table or Promotion Table
+    * This table captures the motivation or reason behind a particular business event or transaction
+    * Why did the customer make a purchase? → Promotion table (tracks discounts, campaigns, offers)
+    * Why was an order returned? → Return Reason table
+    * Why was a transaction flagged? → Fraud Reason table
+* Dimension tables gives context to the measures (KPI's)in the fact table
+* Are usually text or words  with the exception of ids and dates (which are usually finite numbers i.e you cannot do math with it)
+* In Pivot table only Dimension table fields go into row, columns & filters
+### Fact Table - `1 H`
+* `How` (How Much) - Sales Table or Orders Table
+* Has Measures (KPI's) Eg: Profit, Expenses, Sales etc
+* Are usually numbers which can be infinite and mathematical operations can be performed on them
+* Fact table fields go into Values
+
+## JOINS
+* Inner Join - returns only matching rows from both tables
+    * Table1 `JOIN` Table2 `ON` Table1.key = Table2.key or 
+    * Table1 `INNER JOIN` Table2 `ON` Table 1.key = Table2.key
+* Left Join - returns all rows from Table1 and matching rows from Table2, NULL if no match. 'OUTER' is optional
+    * Table1 `LEFT JOIN` Table2 `ON` Table 1.key = Table2.key
+    * Table1 `LEFT OUTER JOIN` Table2 `ON` Table 1.key = Table2.key
+* Right Join - returns all rows from Table2 and matching rows from Table1, NULL if no match. 'OUTER' is optional
+    * Table1 `RIGHT JOIN` Table2 `ON` Table 1.key = Table2.key
+    * Table1 `RIGHT OUTER JOIN` Table2 `ON` Table 1.key = Table2.key
+* Left Anti Join - Finding unmatched rows (exclusively in Table1 but not in Table2)
+    * Table1 `LEFT JOIN` Table2 `ON` Table1.key = Table2.key `WHERE` Table2.key = NULL
+* Right Anti Join - Finding unmatched rows (exclusively in Table2 but not in Table1)
+    * Table1 `RIGHT JOIN` Table2 `ON` Table 1.key = Table2.key `WHERE` Table1.key = NULL
