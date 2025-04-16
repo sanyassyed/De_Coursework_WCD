@@ -2107,28 +2107,28 @@ Extra concepts
 #### Lecture 1: 
 ##### Datawarehouse vs Database (Traditional Relational DB's)
 - Structure
-    - Feature | MySQL | Postgres | Snowflake
-    Schemas | Technically supports them, but underused (often uses just one schema per DB) | Fully supports schemas (commonly used) | Core part of design, heavily used
-    Typical Use | Most people just use database → table | database → schema → table | database → schema → table
-    Use in real-world | Apps often treat the database as the whole workspace | Schemas used to organize tables by module/domain | Schemas often map to pipeline zones (e.g., landing, curated)
+Feature | MySQL | Postgres | Snowflake
+Schemas | Technically supports them, but underused (often uses just one schema per DB) | Fully supports schemas (commonly used) | Core part of design, heavily used
+Typical Use | Most people just use database → table | database → schema → table | database → schema → table
+Use in real-world | Apps often treat the database as the whole workspace | Schemas used to organize tables by module/domain | Schemas often map to pipeline zones (e.g., landing, curated)
 
-    - | Feature     | MySQL                   | Postgres                | Snowflake              |
-    |-------------|--------------------------|--------------------------|--------------------------|
-    | **Schemas** | Technically supports them, but underused (often uses just one schema per DB) | Fully supports schemas (commonly used) | Core part of design, heavily used |
-    | **Typical Use** | Most people just use `database → table` | `database → schema → table` | `database → schema → table` |
-    | **Use in real-world** | Apps often treat the database as the whole workspace | Schemas used to organize tables by module/domain | Schemas often map to pipeline zones (e.g., landing, curated) |
+| Feature     | MySQL                   | Postgres                | Snowflake              |
+|-------------|--------------------------|--------------------------|--------------------------|
+| **Schemas** | Technically supports them, but underused (often uses just one schema per DB) | Fully supports schemas (commonly used) | Core part of design, heavily used |
+| **Typical Use** | Most people just use `database → table` | `database → schema → table` | `database → schema → table` |
+| **Use in real-world** | Apps often treat the database as the whole workspace | Schemas used to organize tables by module/domain | Schemas often map to pipeline zones (e.g., landing, curated) |
 
 - Compute & Storage
-    - Feature | Traditional RDBMS (MySQL/Postgres) | Snowflake
-    Compute & Storage | Tightly coupled - Compute & Storage handled by the same server | Decoupled - Compute handled by Warehouse & Storage by the cloud
-    Compute |	Compute power of the Virtual Warehouse (XS or XL etc)  | The CPU/memory of the server
-    Storage | The local disk or attached volume | Cloud
-    Scaling | Vertical (upgrade server) | Elastic (scale compute/storage independently)
-    Cost Efficiency | Pay for uptime | Pay-as-you-go (pause compute)
-    Cost Estimate | You pay for the whole server even if you're not using it 24/7 | Pay what you use: Compute = by the second & Storage = by GB per month
-    High Availability | Needs setup (e.g., replication) | Built-in (cloud-native)
-    Auto-scaling | Manual (complex) | Supported (auto-scaling warehouses)
-    Performance Boosting | Limited by machine | Add more warehouses / scale up instantly
+Feature | Traditional RDBMS (MySQL/Postgres) | Snowflake
+Compute & Storage | Tightly coupled - Compute & Storage handled by the same server | Decoupled - Compute handled by Warehouse & Storage by the cloud
+Compute |	Compute power of the Virtual Warehouse (XS or XL etc)  | The CPU/memory of the server
+Storage | The local disk or attached volume | Cloud
+Scaling | Vertical (upgrade server) | Elastic (scale compute/storage independently)
+Cost Efficiency | Pay for uptime | Pay-as-you-go (pause compute)
+Cost Estimate | You pay for the whole server even if you're not using it 24/7 | Pay what you use: Compute = by the second & Storage = by GB per month
+High Availability | Needs setup (e.g., replication) | Built-in (cloud-native)
+Auto-scaling | Manual (complex) | Supported (auto-scaling warehouses)
+Performance Boosting | Limited by machine | Add more warehouses / scale up instantly
 
 
 
