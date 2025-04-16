@@ -2104,8 +2104,35 @@ Extra concepts
 ## Week 4 - Data Ingestion - Airbyte, Data Ingestion and Snowflake
 ---
 ### Lectures and Lab
-#### Lecture 1: Snowflake
+#### Lecture 1: 
+##### Datawarehouse vs Database (Traditional Relational DB's)
+- Structure
+    - Feature | MySQL | Postgres | Snowflake
+    Schemas | Technically supports them, but underused (often uses just one schema per DB) | Fully supports schemas (commonly used) | Core part of design, heavily used
+    Typical Use | Most people just use database → table | database → schema → table | database → schema → table
+    Use in real-world | Apps often treat the database as the whole workspace | Schemas used to organize tables by module/domain | Schemas often map to pipeline zones (e.g., landing, curated)
 
+    - | Feature     | MySQL                   | Postgres                | Snowflake              |
+    |-------------|--------------------------|--------------------------|--------------------------|
+    | **Schemas** | Technically supports them, but underused (often uses just one schema per DB) | Fully supports schemas (commonly used) | Core part of design, heavily used |
+    | **Typical Use** | Most people just use `database → table` | `database → schema → table` | `database → schema → table` |
+    | **Use in real-world** | Apps often treat the database as the whole workspace | Schemas used to organize tables by module/domain | Schemas often map to pipeline zones (e.g., landing, curated) |
+
+- Compute & Storage
+    - Feature | Traditional RDBMS (MySQL/Postgres) | Snowflake
+    Compute & Storage | Tightly coupled - Compute & Storage handled by the same server | Decoupled - Compute handled by Warehouse & Storage by the cloud
+    Compute |	Compute power of the Virtual Warehouse (XS or XL etc)  | The CPU/memory of the server
+    Storage | The local disk or attached volume | Cloud
+    Scaling | Vertical (upgrade server) | Elastic (scale compute/storage independently)
+    Cost Efficiency | Pay for uptime | Pay-as-you-go (pause compute)
+    Cost Estimate | You pay for the whole server even if you're not using it 24/7 | Pay what you use: Compute = by the second & Storage = by GB per month
+    High Availability | Needs setup (e.g., replication) | Built-in (cloud-native)
+    Auto-scaling | Manual (complex) | Supported (auto-scaling warehouses)
+    Performance Boosting | Limited by machine | Add more warehouses / scale up instantly
+
+
+
+##### Snowflake
 - `Warehouse` in Snowflake refers to a `compute resource`, similar to an EC2 instance. It provides the processing power for executing SQL queries, loading data, and performing other tasks.  
   - Warehouses can be scaled up or down and paused when not in use to save costs.
 
@@ -2194,17 +2221,6 @@ Extra concepts
             * Table 2
             * View 1
             * View 2
-You're asking some really insightful questions — and you're **spot on** for connecting the dots between **data warehouses** (like Snowflake) and **traditional relational databases** (like MySQL or Postgres). Let's break it down:
-
-- Database → Schema → Tables / Views / Functions, etc.
-
-| Feature     | MySQL                   | Postgres                | Snowflake              |
-|-------------|--------------------------|--------------------------|--------------------------|
-| **Schemas** | Technically supports them, but underused (often uses just one schema per DB) | Fully supports schemas (commonly used) | Core part of design, heavily used |
-| **Typical Use** | Most people just use `database → table` | `database → schema → table` | `database → schema → table` |
-| **Use in real-world** | Apps often treat the database as the whole workspace | Schemas used to organize tables by module/domain | Schemas often map to pipeline zones (e.g., landing, curated) |
-
-
 
 #### Lecture 2: Airbyte, Lambda & Project Data Ingestion
 #### Lab 1: Project Part-1 
