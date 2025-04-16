@@ -2119,21 +2119,21 @@ Use in real-world | Apps often treat the database as the whole workspace | Schem
 | **Use in real-world** | Apps often treat the database as the whole workspace | Schemas used to organize tables by module/domain | Schemas often map to pipeline zones (e.g., landing, curated) |
 
 - Compute & Storage
+    -  Snowflake uses cloud object storage under the hood (like AWS S3), which enables efficient scaling and durability.
 
-|Feature | Traditional RDBMS (MySQL/Postgres) | Snowflake|
-|-------------|--------------------------|--------------------------|
-|Compute & Storage | Tightly coupled - Compute & Storage handled by the same server | Decoupled - Compute handled by Warehouse & Storage by the cloud |
-|Compute |	Compute power of the Virtual Warehouse (XS or XL etc)  | The CPU/memory of the server |
-|Storage | The local disk or attached volume | Cloud |
-|Scaling | Vertical (upgrade server) | Elastic (scale compute/storage independently) |
-|Cost Efficiency | Pay for uptime | Pay-as-you-go (pause compute) |
-|Cost Estimate | You pay for the whole server even if you're not using it 24/7 | Pay what you use: Compute = by the second & Storage = by GB per month |
-|High Availability | Needs setup (e.g., replication) | Built-in (cloud-native) |
-|Auto-scaling | Manual (complex) | Supported (auto-scaling warehouses) |
-|Performance Boosting | Limited by machine | Add more warehouses / scale up instantly |
+| Feature | Traditional RDBMS (MySQL/Postgres) | Snowflake |
+|--------|-------------------------------------|-----------|
+| **Compute & Storage** | Tightly coupled – compute and storage run on the same server | Decoupled – compute via Virtual Warehouse, storage on cloud |
+| **Compute** | Handled by the server's CPU and memory | Handled by Virtual Warehouses (XS, S, M, L, XL, etc.) |
+| **Storage** | Server’s local disk or attached storage volume | Cloud storage (e.g., AWS S3, Azure Blob) |
+| **Scaling** | Vertical (upgrade server hardware) | Elastic (independently scale compute and storage) |
+| **Cost Efficiency** | Pay for uptime regardless of usage | Pay-as-you-go (pause compute to save costs) |
+| **Cost Estimate** | Pay for the entire server 24/7, even when idle | Compute billed per second; storage billed per GB/month |
+| **High Availability** | Requires manual setup (e.g., replication, failover) | Built-in high availability (cloud-native architecture) |
+| **Auto-scaling** | Manual and complex to configure | Built-in auto-scaling of compute resources |
+| **Performance Boosting** | Limited by server capacity | Instantly scale up warehouse size or add more clusters |
 
-
-
+    
 ##### Snowflake
 - `Warehouse` in Snowflake refers to a `compute resource`, similar to an EC2 instance. It provides the processing power for executing SQL queries, loading data, and performing other tasks.  
   - Warehouses can be scaled up or down and paused when not in use to save costs.
