@@ -2151,10 +2151,13 @@ Use in real-world | Apps often treat the database as the whole workspace | Schem
   - Databases → Schemas → Objects
 
 - Databases:
-  - Common environments:  
-    - `Development` 
-    - `Staging / Testing / Beta` 
-    - `Production`
+    - Common environments:  
+        - `Development` 
+        - `Staging / Testing / Beta` 
+        - `Production`
+    - In Snowflake when a Database is first created the following get created by default
+        - `Public` Schema
+        - `Schema` : Stores the meta data about the schemas i.e Tables, Views etc's information; column information etc.
 
 - Schemas:  
   - Logical groupings within databases used to organize data and objects.  
@@ -2168,7 +2171,35 @@ Use in real-world | Apps often treat the database as the whole workspace | Schem
     - Permanent Table: Default; persists until manually dropped
     - Transient Table: Doesn’t support long-term time travel; useful for intermediate storage
     - Temporary Table: Session-specific; disappears after the session ends
-  - Views: Saved SQL queries that behave like virtual tables
+- Views
+    - A **View** is like a **saved SQL query** that looks like a table.
+    - It **doesn’t store any data** — it just runs the query each time you use it.
+    - Because it runs fresh each time, it can be **slower for large data**, but it's **not expensive** since no storage is used.
+    - Ideal for lightweight reports or frequently changing logic.
+    - Eg: A View is like an **à la carte menu** — the dish (query) is **cooked fresh** every time you order it.
+    ```sql
+    CREATE VIEW high_value_orders AS
+    SELECT * FROM orders WHERE total_amount > 1000;
+    ```
+    - This doesn’t store the data, just the logic.
+    - When you run `SELECT * FROM high_value_orders;` Snowflake runs the full query on the orders table
+- Materialized Views:
+    - A **Materialized View** is also based on a SQL query, **but it stores the result**.
+    - That means you **don’t need to compute the query every time** — it’s already done.
+    - Snowflake **keeps it updated** in the background when the underlying data changes.
+    - It’s **faster to query**, but **costs more** because it uses **storage and compute** to stay fresh.
+    - Eg: A Materialized View is like a **meal prep service** — the food (query result) is already cooked and stored, so it’s **ready to serve** quickly.
+    ```sql
+    CREATE MATERIALIZED VIEW monthly_sales_summary AS
+    SELECT product_id,
+            DATE_TRUNC('month', sale_date) AS month,
+            SUM(amount) AS total_sales
+    FROM sales
+    GROUP BY product_id, DATE_TRUNC('month', sale_date);
+    ```
+    - When you run `SELECT * FROM monthly_sales_summary;` You get faster performance, because results are precomputed.
+    - The result of this aggregation is **stored** and **automatically refreshed** when new sales come in.
+    - Useful for dashboards or reports that are accessed often.
   - Stage: Temporary or persistent storage location for loading/unloading data
   - Storage Integration: Secure integration with external cloud storage (e.g., S3, Azure Blob)
   - File Format: Definitions for parsing incoming data files (CSV, JSON, etc.)
@@ -2183,7 +2214,7 @@ Use in real-world | Apps often treat the database as the whole workspace | Schem
 - Example Structure of Datawarehouse:
     * `Development Database` - Layer 1
         * Landing Zone `Schema` - Layer 2
-            * Table 1
+            * Table 1 - Layer 3
             * Table 2
             * View 1
             * View 2
@@ -2223,6 +2254,135 @@ Use in real-world | Apps often treat the database as the whole workspace | Schem
             * Table 2
             * View 1
             * View 2
+
+---
+
+
+
+##### Snowflake Editions
+Snowflake offers multiple editions to choose from, ensuring that your usage fits your organization's specific requirements.They are as follows:
+
+1. Standard Edition - 
+    - 1 Day time travel
+    - Choose manually the Warehouse (i.e. the compute power) required for the query
+1. Enterprise Edition (Standard +)
+    - Upto 90 day time travel
+    - Multi-cluster Warehouse: This feature helps in automatically selecting the Warehouse required for the query based on the requirement from XS, S, M, L etc.
+1. Business Critical Edition (Enterprise +) 
+    - Enhanced Security Policy
+1. Virtual Private Snowflake (VPS) Edition (Business Cricical +) - Eg: Customer-dedicated metadata store
+
+
+##### Data Modelling
+- When deciding the structure of the Schema we look at the following
+    - What tables, views etc we need
+    - In tables what is the `access pattern` (which can be implemented via `clustering` using `CLUSTER BY (key_name(s))`) like
+        - What colums will be accessed most
+        - What colums can therefore be used as clusters to help access of the requently queried columns to be faster
+
+##### Snowflake Elements Creation via Syntax
+###### DATABASE
+- use database_name;
+
+###### SCHEMA
+- CREATE SCHEMA IF NOT EXISTS db_name.schema_name
+- USE SCHEMA schema_name;
+- SHOW TABLES;
+- SHOW TABLES IN schema_name;
+
+###### TABLE
+- CREATE OR REPLACE TABLE schema_name.table_name
+(key1 int,
+key2, int,
+key3 int,
+description varchar(10),
+default_timestamp_col timestamp default current_timestamp())
+CLUSTER BY (key1, key2);
+- CREATE TABLE IF NOT EXISTS...
+- CREATE TRANSIENT TABLE...
+- CREATE TEMPORARY TABLE...
+- CREATE OR REPLACE TABLE table_name
+`LIKE` another_table_name
+CLUSTER BY (col1, col2); - creates an empty table so only brings structure
+- CREATE OR REPLACE TABLE table_name
+`CLONE` another_table_name
+CLUSTER BY (col1, col2); - copies the structure and content
+- CREATE OR REPLACE TABLE schema_name.table_name
+(key1 int,
+key2, int,
+key3 int)
+`AS`
+(SELECT col1, col2, col3 FROM another_table)
+CLUSTER BY (key1, key2);
+- DROP TABLE schema_name.table_name;
+- UNDROP TABLE schema_name.table_name;
+- INSERT INTO TABLE schema_name.table_name VALUES (val1a, val2a), (val1b, val2b), (val1c, val2c);
+- ALTER TABLE schema_name.table_name `RENAME` TO schema_name.new_table_name;
+- ALTER TABLE schema_name.table_name `ADD COLUMN` col_name col_type;
+- ALTER TABLE schema_name.table_name `RENAME COLUMN` col_name TO new_col_name;
+- ALTER TABLE schema_name.table_name `ALTER COLUMN` col_name SET TYPE new_data_type;
+- DESCRIBE TABLE schema_name.table_name;
+- SHOW COLUMNS IN schema_name.table_name; : Similar to `DESCRIBE TABLE`
+- SELECT * FROM table_name;
+
+###### Query
+- Kill hanging queries
+- Get the `query` from the Query History
+- SELECT SYSTEM$CANCEL_QUERY('query_id');
+- Only a data admin can run the above query
+
+###### ROLE
+- Role is similar to IAM role in AWS
+- A Role can decide an account can use which:
+    - Warehouse
+    - Database
+    - Schema
+    - Table (rarely happens)
+- CREATE [OR REPLACE] ROLE [IF NOT EXISTS] role_name;
+- GRANT USAGE DATABASE database_name TO ROLE role_name;
+
+##### Snowflake Elements Creation via UI:
+The UI will automatically create the SQL template to create the following:
+###### Database
+- Main Page → Left Sidebar → **Data** → **Databases** → **+Database** button on the top right
+
+###### Schema
+- Main Page → Left Sidebar → **Data** → **Databases** → Select the Database → **+Schema** button on the top right
+
+###### Table
+- Main Page → Left Sidebar → **Data** → **Databases** → Select the Database → Select the Schema → **Create** button on the top right  → Then select Table/View etc  from the drop down menu
+
+##### Other Topics
+**NOTE: REFER TO PPT FOR NOTES**
+- Marketplace
+- Activity 
+    - Query History 
+    - Copy History
+
+##### Snowflake Architecture
+- All layers are decoupled
+- They can all be scaled differently
+- All layers have access to other layers therefore when multiple queries are run by mutiple users you need optimization and metadata to direct the resources in the right direction. I.e. making sure the qurey is accessing the right table the right warehouse size etc.
+- A query has to pass through all these layers in order Eg: SELECT * FROM table WHERE column1='filter'
+    - Layer 1 - Cloud Services
+        - Authentication : Check if the person (role) has the permission to even run this query
+            - Infrastructure : This manages the infrastructure i.e for this table what warehouse and storage is required etc.
+            - Optimiser: 
+                - It knows which database the query should run on and hence optimizes the query run rather than the query running on the wrong database
+                - It also decides which size of warehouse to use for the query this is available in the Enterprise Edition
+                - This Layer uses information from the Metadata layer
+            - Metadata: Contains metadata about the data warehouse, schmas, table etc. (Does the table even have a column name column1 which holds the value 'filter' if not then it won't even execute the query).
+            - Security : 
+    - Layer 2 - Compute
+    - Layer 3 - Storage
+        - The data can be staged in different Data Lakes Eg: Snowflake Storage, S3, Microsoft Azure etc.
+        - 
+
+##### Time Travel
+- Get data from the data objects (table, views etc) at a particular point in time
+- SELECT * FROM my_table AT(TIMESTAMP => 'Fri, 01 May 2015 16:20:00 -0700'::timestamp); - data at a particular timestamp
+- SELECT * FROM my_table AT(OFFSET => -60*5); - data from 5 minutes ago 
+---
 
 #### Lecture 2: Airbyte, Lambda & Project Data Ingestion
 #### Lab 1: Project Part-1 
