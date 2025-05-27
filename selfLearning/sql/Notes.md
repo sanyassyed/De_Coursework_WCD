@@ -67,7 +67,14 @@ CALL large_salaries3(1);
 * Date Functions
     * SUBDATE(CURRDATE(), INTERVAL 1 DAY)
     * DATEDIFF(date1, date2)
-    *
+    * DATE_FORMAT(date1, "%Y%m") = 202002 NOTE: %Y - 2020; %y 20; %M January %m 01 %D 31 %d 31st More info [here](https://dev.mysql.com/doc/refman/8.4/en/date-and-time-functions.html#function_date-format) 
+    * MONTH(date1) = 2
+    * YEAR(date1) = 2020
+    * DAY(date1) = 31
+    * EXTRACT(YEAR FROM date1) = 2020
+    * EXTRACT(YEAR_MONTH FROM date1) = 202001
+    * EXTRACT(DAY_MINUTE FROM '2019-07-02 01:02:03') Result: 20102 (DAY: 02 HOUR: 01 MINUTE: 02)
+    * EXTRACT(MICROSECOND FROM '2003-01-02 10:30:00.000123') Result: 123
 
 
 ## Frame:

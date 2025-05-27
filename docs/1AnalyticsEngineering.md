@@ -2200,16 +2200,17 @@ Use in real-world | Apps often treat the database as the whole workspace | Schem
     - When you run `SELECT * FROM monthly_sales_summary;` You get faster performance, because results are precomputed.
     - The result of this aggregation is **stored** and **automatically refreshed** when new sales come in.
     - Useful for dashboards or reports that are accessed often.
-  - Stage: Temporary or persistent storage location for loading/unloading data
-  - Storage Integration: Secure integration with external cloud storage (e.g., S3, Azure Blob)
-  - File Format: Definitions for parsing incoming data files (CSV, JSON, etc.)
-  - Sequence: Generates unique numeric values
-  - Pipe: Enables continuous data loading with Snowpipe
-  - Stream: Tracks changes (CDC) on a table
-  - Task: Automates execution of SQL code on a schedule or trigger
-  - Function: Custom SQL or JavaScript functions
-  - Procedure: Blocks of procedural logic written in SQL or JavaScript
-  - Dynamic Table: Automatically keeps materialized views up to date using incremental updates
+- Stage: Temporary or persistent storage location for loading/unloading data
+- Storage Integration: Secure integration with external cloud storage (e.g., S3, Azure Blob)
+- File Format: Definitions for parsing incoming data files (CSV, JSON, etc.)
+- Sequence: Generates unique numeric values
+- Pipe: Enables continuous data loading with Snowpipe
+- Stream: Tracks changes (CDC) on a table
+- Task: Automates execution of SQL code on a schedule or trigger
+- Function: Custom SQL or JavaScript functions
+- Procedure: Blocks of procedural logic written in SQL or JavaScript
+- Dynamic Table: Automatically keeps materialized views up to date using incremental updates
+
 
 - Example Structure of Datawarehouse:
     * `Development Database` - Layer 1
@@ -2374,17 +2375,167 @@ The UI will automatically create the SQL template to create the following:
             - Metadata: Contains metadata about the data warehouse, schmas, table etc. (Does the table even have a column name column1 which holds the value 'filter' if not then it won't even execute the query).
             - Security : 
     - Layer 2 - Compute
+        - This is more expensive than cost of storage
+        - It sizes can range from X-Small to 6X-Large
     - Layer 3 - Storage
         - The data can be staged in different Data Lakes Eg: Snowflake Storage, S3, Microsoft Azure etc.
-        - 
+        - Data is stored as column-store; the data is easily compresseble here. Eg: Country column data can be compressed to store only the unique values and the metadata stores which rows have which column value.
 
 ##### Time Travel
 - Get data from the data objects (table, views etc) at a particular point in time
 - SELECT * FROM my_table AT(TIMESTAMP => 'Fri, 01 May 2015 16:20:00 -0700'::timestamp); - data at a particular timestamp
 - SELECT * FROM my_table AT(OFFSET => -60*5); - data from 5 minutes ago 
+
+##### Common Data Types
+- INT
+- NUMERIC(38, 2) - numbers with decimals
+- VARCHAR(XXX)
+- BOOLEAN
+- DATE
+- TIMESTAMP
+
 ---
 
+##### Method 1: Local Server → Snowflake DB: Data Load Via SnowSQL CLI
+Here we see how we load data from local system to Snowflake DB table using the followin steps
+1. Install SnowSQL CLI on Local Server
+2. Connect to Snowflake DB from Local Server using snowsql
+3. Load Data from Local Server to Snowflake DB
+
+**NOTE: - Use cloud shell (US East 1 N. Virginia) for this**
+
+###### 1. INSTALL SnowSQL CLI
+- Install SnowSQL CLI on the cloud shell [Lecture 3-Lab1](#x-lecture-3--lab-1--aws-and-linux-workshop-2023-07-29)
+
+###### 2. CONNNECT
+- Grab the `account URL` from Snowflake UI (bottom left corner of Main Menu click on the account number and select `copy account URL`)
+```bash
+# view all the directories in the home directory
+ls -al
+# if snowsql is installed you should see .snowsql directory
+snowsql --version
+# Connect to snowflake using account and username and pwd
+snowsql -a mk81553.ca-central.aws -u sanya1234
+Password:
+# Now you are connected to Snowflake db; so you can use SQL commands
+show warehouses;
+use warehouse warehouse_name
+use DATABASE demo_db
+SELECT * FROM table1;
+# CTRL+Z to exit
+# easy way to connect to snowflake
+# goto config file
+cd .snowsql
+cd 1.2.27
+nano snowsql.cnf
+```
+- In the config file; do the following
+    - Change [connections.example] to your connection name
+    - Add the details for accountname, username and password
+    - Now rather than giving the above details everytime you can connect to snowflake as follows where `example` is the connection name
+    - snowsql -c example
+
+###### 3. LOAD Data
+- Data Staging
+    - The data is first staged here before it can be loaded into a table
+    - There are two types
+        1. Internal Named Stage : folder to get names organized for you `@namestage ;`
+        1. User Sepcific Stage `@~ ;`
+    - Steps: Data (in local File System) → PUT → Internal-Name Stage / User Stage → COPY INTO → Table in a DB
+
+```sql
+-- Snowflake UI
+-- run these in Snowflake UI
+-- clean stage if needed
+-- removing any old data in user stage
+rm @~;
+-- listing the data in the user stage
+list @~;
+-- Once checked that it is empty
+-- Create a table where the data will be loaded
+CREATE TABLE..
+```
+```bash
+# On the local server
+# Load the data from server to Snowflake Data Stage
+# -c connection -q query enclosed in "" by mentioning the Data Staging Tag
+snowsql -c example -q "put file://file_name.csv @~;"
+
+```
+
+```sql
+-- Snowflake UI
+list @~;
+-- Now you will see the uploaded data here
+-- Copy data from the Staged area into the Table
+COPY INTO db_name.schema_name.table_name FROM @~/file_name.csv
+-- Check data in the table
+SELECT * FROM db_name.schema_name.table_name;
+```
+
+
+##### Method 2: S3 → Snowflake DB: Data Load Automatically
+Here we see how data load into Snowflake DB table is automatically triggered when data is loaded into an s3 bucket. I.e a STAGE integrated with S3 can upload and download a file directly from S3. To do this do the following:
+1. Create an S3 bucket
+1. Create a new IAM Role and attach to it a Policy in AWS to give Snowflake access to that S3 bucket as follows
+     - Create a New Role
+     - Entity type: AWS Account
+     - Another AWS account (Give a dummy ac id as later we will get the snowflake account id)
+     - External ID - 0000
+     - Create Custom Policy
+         - Policy Editor - JSON
+         - Copy Paste the JSON Permission Script here
+         - Add the S3 Bucket's ARN number in the JSON script
+         - Give the policy a name
+         - Create the policy
+     - Add this newly created policy to the new Role
+     - Give the Role a name
+     - Create the role
+1. Create an INTEGRATION at Snowflake
+    - We are going to connect the IAM Role to Snowflake 
+    - Get the role ARN
+    - Type the code in Snowflake UI `CREATE OR REPLACE STORAGE INTEGRATION...`
+    - Once the INTEGRATION is created get the AWS_IAM_USER_ARN & EXTERNAL_ID and replace these values in the Role on IAM under `Trust Relationships` tab
+1. Create a `FILE FORMAT` in Snowflake using `CREATE OR REPLACE FILE FORMAT....`
+1. Grant necessary permissions to integration and file format
+1. Create a NAME STAGE with such an INTEGRATION
+1. View the stage
+1. Upload a csv file into s3 and see if that trigerrs to load in Snowflake
+1. Check the stage if data from s3 has arrived or not
+1. Now copy the data from the name stage into a desired table
+
+---
+##### Connect Snowflake to other apps to upload and download data
+- DBeaver : SQL client SW app and a db admin tool
+- VSCode : 
+- PowerBI : 
+- Metabase :
+
 #### Lecture 2: Airbyte, Lambda & Project Data Ingestion
+- **Airbyte**
+- Airbyte is an open-source data integration tool with an extensive library of connectors for syncing data from various sources.
+
+- **AWS Lambda**
+- AWS Lambda is a serverless computing service that enables developers to run code without provisioning or managing servers.
+
+- **Pre-requisites**
+    1. **EC2 Instance for Airbyte Setup**:
+        - Use a large EC2 instance with Docker and Docker Compose installed.
+        - Install Airbyte by following the steps outlined [here](#x-lab-install-airbyte-and-metabase-with-docker-).
+
+    1. **EC2 Instance for Project Development**:
+        - This instance should have SnowSQL installed.
+        - Follow the instructions in `Task-6` provided [here](#x-lecture-3--lab-1--aws-and-linux-workshop-2023-07-29).
+
+    1. **Snowflake Account**:
+        - Create a Snowflake account
+##### Project Execution:
+###### **Step 1:** AWS LAMBDA pulls data from S3 to Snowflake DB
+- 
+
+---
+
+Would you like this reformatted into a document or slide format as well?
 #### Lab 1: Project Part-1 
 
 ---
