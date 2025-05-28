@@ -75,6 +75,8 @@ CALL large_salaries3(1);
     * EXTRACT(YEAR_MONTH FROM date1) = 202001
     * EXTRACT(DAY_MINUTE FROM '2019-07-02 01:02:03') Result: 20102 (DAY: 02 HOUR: 01 MINUTE: 02)
     * EXTRACT(MICROSECOND FROM '2003-01-02 10:30:00.000123') Result: 123
+* Grouping:
+    * GROUP_CONCAT(DISTINCT test_score ORDER BY test_score DESC SEPARATOR ' ') [More info](https://dev.mysql.com/doc/refman/8.4/en/aggregate-functions.html#function_group-concat)
 
 
 ## Frame:
