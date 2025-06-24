@@ -78,6 +78,77 @@ CALL large_salaries3(1);
 * Grouping:
     * GROUP_CONCAT(DISTINCT test_score ORDER BY test_score DESC SEPARATOR ' ') [More info](https://dev.mysql.com/doc/refman/8.4/en/aggregate-functions.html#function_group-concat)
 
+## REGEXP
+* `+` : 1 or more
+* `?` : 0 or 1
+* `*` : 0 or more
+
+### 🔤 MySQL REGEXP Character Table
+
+| Regex Pattern | Meaning                           | Example          | Matches             | Doesn’t Match  | 
+| ------------- | --------------------------------- | ---------------- | ------------------- | -------------- | 
+| `.`           | Any single character              | `'a.c'`          | `abc`, `a1c`, `a-c` | `ac`, `abdc`   |
+| `^`           | Start of string                   | `'^abc'`         | `abc`, `abcdef`     | `xabc`, `aabc` | 
+| `$`           | End of string                     | `'abc$'`         | `abc`, `xabc`       | `abcd`, `abcc` |  
+| `*`           | 0 or more of the preceding        | `'ab*c'`         | `ac`, `abc`, `abbc` | `adc`, `aabc`  | 
+| `+`           | 1 or more of the preceding        | `'ab+c'`         | `abc`, `abbc`       | `ac`, `adc`    |  
+| `?`           | 0 or 1 of the preceding           | `'ab?c'`         | `ac`, `abc`         | `abbc`, `adc`  |  
+| `[...]`       | Any one character in set          | `'a[xyz]c'`      | `axc`, `ayc`        | `abc`, `azxc`  |  
+| `[^...]`      | Any one character **not** in set  | `'a[^xyz]c'`     | `abc`, `amc`        | `axc`, `ayc`   |  
+| `[a-z]`       | Character range                   | `'a[b-d]c'`      | `abc`, `acc`        | `aec`, `afc`   |  
+| `\|`          | Alternation (OR)- Or Match        | `'abc\|xyz'`     | `abc`, `xyz`        | `abz`, `xyc`   |
+| `(...)`       | Grouping (Not capturing in MySQL) | `'a(bc\|de)f'`   | `abcf`, `adef`      | `abdef`, `af`  | 
+| `{n}`         | Exactly n repetitions             | `'a{3}'`         | `aaa`               | `aa`, `aaaa`   |
+| `{n,}`        | n or more repetitions             | `'a{2,}'`        | `aa`, `aaaaa`       | `a`            | 
+| `{n,m}`       | Between n and m repetitions       | `'a{2,3}'`       | `aa`, `aaa`         | `a`, `aaaa`    | 
+
+---
+
+### 🧱 POSIX Character Classes (In Square Brackets)
+
+| POSIX Class  | Meaning      | Equivalent          | Example        | Matches       |
+| ------------ | ------------ | ------------------- | -------------- | ------------- |
+| `[:alnum:]`  | Alphanumeric | `[a-zA-Z0-9]`       | `[[:alnum:]]`  | `a`, `Z`, `5` |
+| `[:alpha:]`  | Alphabetic   | `[a-zA-Z]`          | `[[:alpha:]]`  | `b`, `T`      |
+| `[:digit:]`  | Digits       | `[0-9]`             | `[[:digit:]]`  | `0`, `9`      |
+| `[:lower:]`  | Lowercase    | `[a-z]`             | `[[:lower:]]`  | `m`, `z`      |
+| `[:upper:]`  | Uppercase    | `[A-Z]`             | `[[:upper:]]`  | `D`, `X`      |
+| `[:space:]`  | Whitespace   | space, tab, newline | `[[:space:]]`  | `' '`, `\t`   |
+| `[:punct:]`  | Punctuation  | `. , ! ? etc.`      | `[[:punct:]]`  | `!`, `.`      |
+| `[:xdigit:]` | Hex digits   | `[0-9A-Fa-f]`       | `[[:xdigit:]]` | `F`, `a`, `3` |
+
+🔹 POSIX classes **must be placed inside square brackets**:
+✅ `[[:digit:]]` → valid
+❌ `[:digit:]` → invalid
+
+---
+
+### 🔍 MySQL Regex Examples
+
+```sql
+-- Match lowercase email names ending in @leetcode.com
+SELECT email FROM users
+WHERE email REGEXP '^[a-z]+@leetcode\\.com$';
+
+-- Match any string that starts with a digit
+SELECT name FROM items
+WHERE name REGEXP '^[[:digit:]]';
+
+-- Match hex colors like #FFAA00
+SELECT color FROM palette
+WHERE color REGEXP '^#[[:xdigit:]]{6}$';
+```
+
+---
+
+### ⚠️ Important Notes
+
+* MySQL regex is **case-insensitive by default** unless you use `COLLATE ..._bin` or `REGEXP_LIKE(..., ..., 'c')` in MySQL 8+.
+* MySQL regex does **not support lookahead/lookbehind**, `\d`, `\w`, etc. (unlike PCRE).
+* Always escape special characters like `.` with `\\.` in MySQL queries.
+
+---
+
 
 ## Frame:
 * [My SQL Documentation](https://dev.mysql.com/doc/refman/8.4/en/window-functions-frames.html)
