@@ -23,6 +23,32 @@ DELIMITER ;
 -- calling the procedure
 CALL large_salaries3(1);
 ```
+
+## Aggregate Functions
+All aggregate functions can be used with GROUP BY to perform calculations per group, or without it for entire-table aggregations
+
+| **Function Name**  | **Syntax**                   | **Description**                                                                                                            |
+| ------------------ | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `COUNT()`          | `COUNT(column_name)`         | Returns the number of non-NULL values in a column.                                                                         |
+|                    | `COUNT(*)`                   | Returns the total number of rows, including rows with NULLs.                                                               |
+| `SUM()`            | `SUM(column_name)`           | Returns the total sum of a numeric column.                                                                                 |
+| `AVG()`            | `AVG(column_name)`           | Returns the average value of a numeric column.                                                                             |
+| `MIN()`            | `MIN(column_name)`           | Returns the minimum value in a column.                                                                                     |
+| `MAX()`            | `MAX(column_name)`           | Returns the maximum value in a column.                                                                                     |
+| `GROUP_CONCAT()`   | `GROUP_CONCAT(column_name)`  | Concatenates non-NULL values from a group into a single string.                                                            |
+| `STDDEV()`         | `STDDEV(column_name)`        | Returns the sample standard deviation of a numeric column.                                                                 |
+| `STDDEV_POP()`     | `STDDEV_POP(column_name)`    | Returns the population standard deviation.                                                                                 |
+| `STDDEV_SAMP()`    | `STDDEV_SAMP(column_name)`   | Returns the sample standard deviation (same as `STDDEV()`).                                                                |
+| `VAR_POP()`        | `VAR_POP(column_name)`       | Returns the population variance.                                                                                           |
+| `VAR_SAMP()`       | `VAR_SAMP(column_name)`      | Returns the sample variance.                                                                                               |
+| `VARIANCE()`       | `VARIANCE(column_name)`      | Alias for `VAR_SAMP()`. Returns the sample variance.                                                                       |
+| `BIT_AND()`        | `BIT_AND(column_name)`       | Returns bitwise AND (1 if both values are 1; else 0) of all bits in the column (non-NULL values only).                     |
+| `BIT_OR()`         | `BIT_OR(column_name)`        | Returns bitwise OR (1 if either of the values is 1; else 0) of all bits in the column.                                     |
+| `BIT_XOR()`        | `BIT_XOR(column_name)`       | Returns bitwise XOR (the two values are different) of all bits in the column.                                              |
+| `JSON_ARRAYAGG()`  | `JSON_ARRAYAGG(column_name)` | Returns a JSON array of values from a group.                                                                               |
+| `JSON_OBJECTAGG()` | `JSON_OBJECTAGG(k, v)`       | Returns a JSON object aggregated from key-value pairs in a group.                                                          |
+| `ANY_VALUE()`      | `ANY_VALUE(column_name)`     | Returns any value from the group (used when a deterministic value is not needed).                                          |
+
 ## Window Functions
 * Used to compute running totals
 * [Video](https://www.youtube.com/watch?v=zAmJPdZu8Rg)
