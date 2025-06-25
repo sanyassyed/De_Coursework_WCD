@@ -8,7 +8,7 @@ Find here the important concepts in SQLl
 -- select the database to use
 USE `parks_and_recreation`;
 DROP procedure IF EXISTS `large_salaries3`;
--- it automatically adds the dilimiter for us
+-- it automatically adds the delimiter for us
 DELIMITER $$
 CREATE PROCEDURE large_salaries3(employee_id_param INT)
 BEGIN
