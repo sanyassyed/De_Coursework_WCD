@@ -5,19 +5,24 @@ Find here the important concepts in SQLl
 * [Code](https://github.com/AlexTheAnalyst/MySQL-YouTube-Series/blob/main/Advanced%20-%20Stored%20Procedures.sql)
 * Syntax:
 ```sql
--- select the database to use
+-- Select the database to use
 USE `parks_and_recreation`;
-DROP procedure IF EXISTS `large_salaries3`;
--- it automatically adds the delimiter for us
+
+-- Drop the procedure if it already exists
+DROP PROCEDURE IF EXISTS `large_salaries3`;
+
+-- Set a new delimiter
 DELIMITER $$
-CREATE PROCEDURE large_salaries3(employee_id_param INT)
+
+CREATE PROCEDURE large_salaries3(IN employee_id_param INT)
 BEGIN
 	SELECT *
 	FROM employee_salary
 	WHERE salary >= 60000
-    AND employee_id_param = employee_id;
+	  AND employee_id = employee_id_param;
 END $$
 
+-- Reset the delimiter
 DELIMITER ;
 
 -- calling the procedure
