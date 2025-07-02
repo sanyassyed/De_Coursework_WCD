@@ -1,8 +1,5 @@
 # ✅ MySQL Cheat Sheet 1
-Can you put each function in a separate line of the table with an explanation about what it is and a sample input and output where possible? I want all data in table format and as markdown.
-Here's the table with each function explained, and sample input/output where possible, formatted in markdown:
 
-```markdown
 ## 🧮 Aggregate Functions
 
 | Function                                                                             | Description                                                       | Sample Input / Output                                                                                     |
@@ -50,7 +47,7 @@ Here's the table with each function explained, and sample input/output where pos
 | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------- | --------------------------------------------------------------- |
 | `NOW()/CURDATE()/CURTIME()/CURRENT_TIMESTAMP()/LOCALTIME()/SYSDATE()`                                       | Return current date and time             | `NOW()` → `'2025-07-02 12:00:00'`                               |
 | `DATE(col)`, `EXTRACT(unit FROM col)`, `YEAR()/MONTH()/DAY()/HOUR()/MINUTE()/SECOND()/QUARTER()`            | Extract specific parts of a date         | `YEAR('2025-07-02')` → `2025`                                   |
-| `DATE_ADD()/ADDDATE()/DATE_SUB()/SUBDATE()/ADDTIME()/SUBTIME()/TIMESTAMP()`                                 | Date arithmetic                           | `DATE_ADD('2025-07-02', INTERVAL 1 DAY)` → `'2025-07-03'`      |
+| `DATE_ADD()/ADDDATE()/DATE_SUB()/SUBDATE()/ADDTIME()/SUBTIME()/TIMESTAMP()`                                 | Date arithmetic                          | `DATE_ADD('2025-07-02', INTERVAL 1 DAY)` → `'2025-07-03'`      |
 | `DATEDIFF(col1, col2)`, `TIMEDIFF(col1, col2)`, `TIME_TO_SEC()/SEC_TO_TIME()`, `PERIOD_ADD()/PERIOD_DIFF()` | Calculate date/time differences          | `DATEDIFF('2025-07-02', '2025-07-01')` → `1`                    |
 | `DATE_FORMAT()/TIME_FORMAT()`, `STR_TO_DATE()`                                                              | Format/parse dates/times                 | `DATE_FORMAT('2025-07-02', '%Y-%m-%d')` → `'2025-07-02'`        |
 | `DAYNAME()/MONTHNAME()`, `DAYOFWEEK()/DAYOFMONTH()/DAYOFYEAR()`, `WEEK()/WEEKOFYEAR()/WEEKDAY()`            | Extract additional date components       | `DAYNAME('2025-07-02')` → `'Wednesday'`                         |
