@@ -75,9 +75,9 @@ Here's the table with each function explained, and sample input/output where pos
 | Function/Ctrl                                                    | Description                             | Sample Input / Output                                       |
 | ---------------------------------------------------------------- | --------------------------------------- | ----------------------------------------------------------- |
 | `IF(condition, true, false)`, `CASE WHEN ... END`, `NULLIF(a,b)` | Conditional logic                       | `IF(1 > 2, 'yes', 'no')` → `'no'`                           |
-| `IFNULL(a, b)`, `COALESCE(a, b, ...)`, `ISNULL(a)`               | Null handling                           | `IFNULL(NULL, 'default')` → `'default'`                      |
-| `GREATEST(), LEAST()`                                            | Return extreme values                   | `GREATEST(1, 2
-```
+| `IFNULL(a, b)`, `COALESCE(a, b, ...)`, `ISNULL(a)`               | Null handling                           | `IFNULL(NULL, 'default')` → `'default'`                     |
+| `GREATEST(), LEAST()`                                            | Return extreme values                   | `GREATEST(1, 2)`   → `2`                                    |
+
 
 
 ## 🔁 Conversion, Type & Binary
