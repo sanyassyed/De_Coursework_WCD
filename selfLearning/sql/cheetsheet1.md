@@ -15,13 +15,13 @@
 
 ## 🪟 Window Functions
 
-| Function                                                               | Description                                                       | Sample Input / Output                                                         |
-| ---------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `ROW_NUMBER()/RANK()/DENSE_RANK()/NTILE(n)/PERCENT_RANK()/CUME_DIST()` | Ranking and distribution across rows                              | `ROW_NUMBER()` on [10, 20, 30] → `[1, 2, 3]`                                  |
-| `LAG(col, offset)/LEAD(col, offset)`                                   | Access previous/next row values                                   | `LAG(price, 1)` → previous value of `price`                                   |
-| `SUM/AVG/MIN/MAX(...) OVER (...)`                                      | Aggregated values over a window                                   | `SUM(price) OVER (PARTITION BY category)` → `total_per_category`              |
-| `FIRST_VALUE()/LAST_VALUE()/NTH_VALUE(col, n)`                         | First, last, nth rows in the window                               | `FIRST_VALUE(price) OVER (PARTITION BY category)` → `first price of category` |
-| `OVER (PARTITION BY ... ORDER BY ... ROWS/RANGE BETWEEN ...)`          | Window definition and partitioning                                | `SUM(price) OVER (PARTITION BY category ORDER BY date)`                       |
+| Function                                                               | Description                                                       | Sample Input / Output                                                                                                  |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `ROW_NUMBER()/RANK()/DENSE_RANK()/NTILE(n)/PERCENT_RANK()/CUME_DIST()` | Ranking and distribution across rows                              | `ROW_NUMBER()` on [10, 20, 30] → `[1, 2, 3]`, `NTILE()` :- partition data and put into buckets or groups of equal size |
+| `LAG(col, offset)/LEAD(col, offset)`                                   | Access previous/next row values                                   | `LAG(price, 1)` → previous value of `price`                                                                            |
+| `SUM/AVG/MIN/MAX(...) OVER (...)`                                      | Aggregated values over a window                                   | `SUM(price) OVER (PARTITION BY category)` → `total_per_category`                                                       |
+| `FIRST_VALUE()/LAST_VALUE()/NTH_VALUE(col, n)`                         | First, last, nth rows in the window                               | `FIRST_VALUE(price) OVER (PARTITION BY category)` → `first price of category`                                          |
+| `OVER (PARTITION BY ... ORDER BY ... ROWS/RANGE BETWEEN ...)`          | Window definition and partitioning                                | `SUM(price) OVER (PARTITION BY category ORDER BY date)`                                                                |
 
 ---
 
