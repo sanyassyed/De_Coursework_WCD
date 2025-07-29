@@ -2107,10 +2107,6 @@ Extra concepts
 #### Lecture 1: 
 ##### Datawarehouse vs Database (Traditional Relational DB's)
 - Structure
-Feature | MySQL | Postgres | Snowflake
-Schemas | Technically supports them, but underused (often uses just one schema per DB) | Fully supports schemas (commonly used) | Core part of design, heavily used
-Typical Use | Most people just use database → table | database → schema → table | database → schema → table
-Use in real-world | Apps often treat the database as the whole workspace | Schemas used to organize tables by module/domain | Schemas often map to pipeline zones (e.g., landing, curated)
 
 | Feature     | MySQL                   | Postgres                | Snowflake              |
 |-------------|--------------------------|--------------------------|--------------------------|
