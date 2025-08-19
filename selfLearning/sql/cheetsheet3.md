@@ -182,6 +182,12 @@ FROM product;
 
 ---
 
+### NOTES
+
+* In SQL 0/0 results in `null` -> handle that by using `IFNULL()` function to display desired result
+
+---
+
 ### 📎 Additional References
 
 * [MySQL 8.4 Window Function Frames Documentation](https://dev.mysql.com/doc/refman/8.4/en/window-functions-frames.html)

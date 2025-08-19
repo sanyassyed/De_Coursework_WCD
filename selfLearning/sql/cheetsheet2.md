@@ -163,6 +163,8 @@ Here’s the corrected and fully aligned version of your **MySQL String Function
     * DAY_HOUR
     * YEAR_MONTH
 
+* DATE_FORMAT parameter Values [here](https://www.w3schools.com/sql/func_mysql_date_format.asp)
+
 ---
 
 ## Other Functions & Operators
