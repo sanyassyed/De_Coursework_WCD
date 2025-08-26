@@ -455,7 +455,8 @@ Same content for [Exercise 7: EC2 & Linux](#exercise-7-lab-ec2--linux)
                 User ubuntu
             ```
         - `ssh -i "/home/ubuntu/.ssh/demo.pem" ubuntu@ec2-18-188-12-133.us-east-2.compute.amazonaws.com`: alternate SSH into the Project-Dbt instance
-        - Step 1 - Update packages
+        - Step 1 **Project-Dbt Instance** 
+        - Update packages
             ```bash
             sudo apt update # refreshes package list on the local server
             sudo apt upgrade -y # updates the packages
@@ -474,26 +475,36 @@ Same content for [Exercise 7: EC2 & Linux](#exercise-7-lab-ec2--linux)
                 # Activate the virtual env as follows
                 conda activate .my_env 
                 # to de-activate the virtual env my_env use the below 
+                conda activate
                 ```
         - Step 3 - Install DBT
+            - Install System Level Libraries (PostgreSQL CLient Headers) **this is always installed globally not in the venv**
             - When you install DBT, you have the option to install just DBT-Core, or DBT-Core with connectors for specific databases
             - We will install DBT to be used with Postgres
                 ```bash
                 # install the necessary PostgreSQL development libraries using the following command:
-                sudo apt-get install libpq-dev
-                #Install dbt-core and dbt-postgres
-                pip install dbt-postgres
+                sudo apt-get install -y libpq-dev
                 ```
-            - At this point. You may see a number of warnings indicating that certain scripts that are needed to run dbt are installed in '/home/ubuntu/.local/bin' which is not on PATH.
-            ```bash
-            # Add this line to the end of your .bashrc and save
-            export PATH="$HOME/.local/bin:$PATH"
-            # After saving run the following to instantiate the changes
-            source ~/.bashrc
-            ```
+            - Install dbt-core and dbt-postgres
+                - **Option 1**: Install in the Global Python
+                ```bash
+                pip install --user dbt-postgres   # for global user install
+                # If you see a number of warnings indicating that certain scripts that are needed to run dbt are installed in '/home/ubuntu/.local/bin' which is not on PATH.
+                # Add this line to the end of your .bashrc and save
+                export PATH="$HOME/.local/bin:$PATH"
+                # After saving run the following to instantiate the changes
+                source ~/.bashrc
+                ```
+                - **Option 2 - NOT USED IN THIS EXERCISE**: Install in the Virtual env
+                ```bash
+                conda activate .venv
+                pip install dbt-postgres          # inside a virtualenv
+                ```
             - Validate DBT is installed
             ```bash
+            # If using Option 2 dbt-postgres will only be avialable inside the venv
             conda activate .my_env
+            # If using Option 1 dbt-postgres will be avilable globally; no need to acivate the venv
             dbt --version
             # if installed properly you should see something like the following
             Core:
@@ -535,7 +546,7 @@ Same content for [Exercise 7: EC2 & Linux](#exercise-7-lab-ec2--linux)
                 
             # The downloaded package is not runable, you should give the file permission to run, use command chmod, only give it the execute permission will be enough. Try to write this command, if you still don't know, use the following command line. 
             chmod u+x snowsql-1.2.27-linux_x86_64.bash #or 
-            chmod 764 chmod u+x snowsql-1.2.27-linux_x86_64.bash
+            chmod u+x snowsql-1.2.27-linux_x86_64.bash
 
             # You have given the package the 'execute' permission, you can run it. Please consider how to run the .bash file. Think about it and try. If you still don't know, use the following command line.
             ./snowsql-1.2.27-linux_x86_64.bash # or
@@ -2357,6 +2368,7 @@ The UI will automatically create the SQL template to create the following:
     - Copy History
 
 ##### Snowflake Architecture
+![Snowflake Architecture](../images/4.1_Snowflake_Architecture.png)
 - All layers are decoupled
 - They can all be scaled differently
 - All layers have access to other layers therefore when multiple queries are run by mutiple users you need optimization and metadata to direct the resources in the right direction. I.e. making sure the qurey is accessing the right table the right warehouse size etc.
@@ -2377,6 +2389,7 @@ The UI will automatically create the SQL template to create the following:
         - The data can be staged in different Data Lakes Eg: Snowflake Storage, S3, Microsoft Azure etc.
         - Data is stored as column-store; the data is easily compresseble here. Eg: Country column data can be compressed to store only the unique values and the metadata stores which rows have which column value.
 
+
 ##### Time Travel
 - Get data from the data objects (table, views etc) at a particular point in time
 - SELECT * FROM my_table AT(TIMESTAMP => 'Fri, 01 May 2015 16:20:00 -0700'::timestamp); - data at a particular timestamp
@@ -2393,7 +2406,7 @@ The UI will automatically create the SQL template to create the following:
 ---
 
 ##### Method 1: Local Server → Snowflake DB: Data Load Via SnowSQL CLI
-Here we see how we load data from local system to Snowflake DB table using the followin steps
+Here we see how we load data from local system to Snowflake DB table using the following steps
 1. Install SnowSQL CLI on Local Server
 2. Connect to Snowflake DB from Local Server using snowsql
 3. Load Data from Local Server to Snowflake DB
@@ -2410,7 +2423,8 @@ Here we see how we load data from local system to Snowflake DB table using the f
 ls -al
 # if snowsql is installed you should see .snowsql directory
 snowsql --version
-# Connect to snowflake using account and username and pwd
+# Connect to snowflake using accountname <account_locator>.<region>.<cloud> and username and pwd
+# eg: snowsql -a F******.us-east-*.aws -u SAN*****
 snowsql -a mk81553.ca-central.aws -u sanya1234
 Password:
 # Now you are connected to Snowflake db; so you can use SQL commands
@@ -2427,6 +2441,12 @@ nano snowsql.cnf
 ```
 - In the config file; do the following
     - Change [connections.example] to your connection name
+    ```yml
+    [connections.wcd]
+    accountname = F******.us-east-2.aws
+    username = SA*****
+    password = ****
+    ```
     - Add the details for accountname, username and password
     - Now rather than giving the above details everytime you can connect to snowflake as follows where `example` is the connection name
     - snowsql -c example
@@ -2531,7 +2551,6 @@ Here we see how data load into Snowflake DB table is automatically triggered whe
 
 ---
 
-Would you like this reformatted into a document or slide format as well?
 #### Lab 1: Project Part-1 
 
 ---
