@@ -2449,9 +2449,21 @@ nano snowsql.cnf
     ```
     - Add the details for accountname, username and password
     - Now rather than giving the above details everytime you can connect to snowflake as follows where `example` is the connection name
-    - snowsql -c example
+    - snowsql -c wcd
 
 ###### 3. LOAD Data
+- File for the exercise [city.csv](https://drive.google.com/file/d/1OjfICorv5awMlykK-kYZvI4Er9wPHsx4/view)
+- Create a Database, Schema and Table in Snowflake as follows
+```sql
+drop database if exists walmart_Dev;
+
+create database if not exists walmart_dev;
+create schema if not exists  enterprise;
+
+Create or replace table enterprise.city
+(cty_id int,
+cty_name varchar);
+```
 - Data Staging
     - The data is first staged here before it can be loaded into a table
     - There are two types
@@ -2578,3 +2590,6 @@ Here we see how data load into Snowflake DB table is automatically triggered whe
 ## AWS Important Documentation
 * [Free Tier](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=categories%23compute)
 * [My free tier usage](https://us-east-1.console.aws.amazon.com/billing/home#/freetier)
+
+
+https://drive.google.com/file/d/1OjflCorv5awMlykK-kYZvl4Er9wPHsx4/view?usp=share_link
