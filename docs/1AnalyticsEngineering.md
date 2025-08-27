@@ -2405,7 +2405,7 @@ The UI will automatically create the SQL template to create the following:
 
 ---
 
-##### Method 1: Local Server → Snowflake DB: Data Load Via SnowSQL CLI
+##### Method 1: Local Server → Snowflake DB: Data Load Via SnowSQL CLI using USER SPECIFIC STAGE
 Here we see how we load data from local system to Snowflake DB table using the following steps
 1. Install SnowSQL CLI on Local Server
 2. Connect to Snowflake DB from Local Server using snowsql
@@ -2502,9 +2502,9 @@ SELECT * FROM db_name.schema_name.table_name;
 ```
 
 
-##### Method 2: S3 → Snowflake DB: Data Load Automatically
+##### Method 2: S3 → Snowflake DB: Data Load Automatically using NAMED STAGE
 Here we see how data load into Snowflake DB table is automatically triggered when data is loaded into an s3 bucket. I.e a STAGE integrated with S3 can upload and download a file directly from S3. To do this do the following:
-1. Create an S3 bucket
+1. Create an S3 bucket `snowflake-stage-bucket-<your name>`
 1. Create a new IAM Role and attach to it a Policy in AWS to give Snowflake access to that S3 bucket as follows
      - Create a New Role
      - Entity type: AWS Account
@@ -2513,24 +2513,108 @@ Here we see how data load into Snowflake DB table is automatically triggered whe
      - Create Custom Policy
          - Policy Editor - JSON
          - Copy Paste the JSON Permission Script here
-         - Add the S3 Bucket's ARN number in the JSON script
-         - Give the policy a name
-         - Create the policy
+        ```json
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "s3:PutObject",
+                        "s3:GetObject",
+                        "s3:GetObjectVersion",
+                        "s3:DeleteObject",
+                        "s3:DeleteObjectVersion"
+                    ],
+                    "Resource": "<paste-bucket-arn-number-here>/*"
+                },
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "s3:ListBucket",
+                        "s3:GetBucketLocation"
+                    ],
+                    "Resource": "<paste-bucket-arn-number-here>",
+                    "Condition": {
+                        "StringLike": {
+                            "s3:prefix": [
+                                "*"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+         ```
+        - Add the S3 Bucket's ARN number in the JSON script
+        - Give the policy a name `snowflake-stage-bucket-policy`
+        - Create the policy
      - Add this newly created policy to the new Role
-     - Give the Role a name
+     - Give the Role a name `snowflake-stage-bucket-role`
      - Create the role
 1. Create an INTEGRATION at Snowflake
     - We are going to connect the IAM Role to Snowflake 
     - Get the role ARN
     - Type the code in Snowflake UI `CREATE OR REPLACE STORAGE INTEGRATION...`
-    - Once the INTEGRATION is created get the AWS_IAM_USER_ARN & EXTERNAL_ID and replace these values in the Role on IAM under `Trust Relationships` tab
+    ```sql
+    CREATE OR REPLACE STORAGE INTEGRATION S3_INT_WCD_LECT1
+    TYPE = EXTERNAL_STAGE
+    STORAGE_PROVIDER = S3
+    ENABLED = TRUE
+    STORAGE_AWS_ROLE_ARN = '<arn-of-the-aws-role>'
+    STORAGE_ALLOWED_LOCATIONS = ('s3://snowflake-stage-bucket-sanya');
+    ```
+    - Once the INTEGRATION is created get the `AWS_IAM_USER_ARN` & `EXTERNAL_ID` using the command `DESC INTEGRATION<your integration name>` 
+    - Replace these values in the Role on IAM under `Trust Relationships` tab
+    ```json
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Principal": {
+                    "AWS": "<STORAGE_AWS_IAM_USER_ARN>"
+                },
+                "Action": "sts:AssumeRole",
+                "Condition": {
+                    "StringEquals": {
+                        "sts:ExternalId": "<STORAGE_AWS_EXTERNAL_ID>"
+                    }
+                }
+            }
+        ]
+    }
+    ```
 1. Create a `FILE FORMAT` in Snowflake using `CREATE OR REPLACE FILE FORMAT....`
-1. Grant necessary permissions to integration and file format
+```sql
+USE database WALMART_DEV;
+USE SCHEMA ENTERPRISE;
+
+CREATE or REPLACE FILE FORMAT CSV_COMMA
+TYPE ='CSV'
+FIELD_DELIMITER = ',';
+```
+1. Grant necessary rights to create the stage in the schema & to use the integration that connects to AWS
+```sql
+GRANT CREATE STAGE ON SCHEMA enterprise to ROLE accountadmin;
+GRANT USAGE ON INTEGRATION S3_INT_WCD_LECT1 to ROLE accountadmin;
+```
 1. Create a NAME STAGE with such an INTEGRATION
-1. View the stage
+```sql
+Create the STAGE with this query:
+CREATE OR REPLACE STAGE WCD_LECT1_STAGE
+STORAGE_INTEGRATION = S3_INT_WCD_LECT1
+URL='s3://your bucket name'
+FILE_FORMAT = CSV_COMMA;
+```
+1. View the stage `SHOW STAGES;`
 1. Upload a csv file into s3 and see if that trigerrs to load in Snowflake
-1. Check the stage if data from s3 has arrived or not
+1. Check the stage if data from s3 has arrived or not `List @WCD_LECT1_STAGE;`
 1. Now copy the data from the name stage into a desired table
+```sql
+COPY INTO walmart.enterprise.city from @WCD_LECT1_STAGE/city.csv
+FILE_FORMAT =CSV_COMMA;
+```
 
 ---
 ##### Connect Snowflake to other apps to upload and download data
