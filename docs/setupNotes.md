@@ -29,7 +29,7 @@ Additional course related documantation can be found in
 
 ## Initial Setup
 ### Project Repo
-* Create a repo `deCourse` in the local system where all the project related material will be stored
+* Create a repo ~~`deCourse`~~ `ae_project` in the local system where all the project related material will be stored
 * Initialize the local repo and then push it to the remote repo
     ```bash
         git init
@@ -228,7 +228,7 @@ Remember to follow these steps when working on the local and remote server respe
     * `Ctrl+D`: EXIT the EC2 instance or server
     * `sudo shutdown now` : SHUTDOWN the EC2 instance or server
 
-### EC2 instance - DELab
+### EC2 instance - ~~DELab~~ zara_de
 * SSH Cpnnection: `ssh -i path/to/identityfile ubuntu@ec2.`
 * Start Steps
     * Goto AWS Console

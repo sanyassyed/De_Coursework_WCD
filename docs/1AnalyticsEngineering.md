@@ -510,9 +510,9 @@ Same content for [Exercise 7: EC2 & Linux](#exercise-7-lab-ec2--linux)
             Core:
             - installed: 1.5.2
             - latest:    1.5.2 - Up to date!
-            ```
             Plugins:
             - postgres: 1.5.2 - Up to date!
+            ```
     - Task 3:
         - [Exercise 1: Linux Basic](#exercise-1-linux-basics)
     - Task 4:
@@ -2601,8 +2601,8 @@ GRANT USAGE ON INTEGRATION S3_INT_WCD_LECT1 to ROLE accountadmin;
 ```
 1. Create a NAME STAGE with such an INTEGRATION
 ```sql
-Create the STAGE with this query:
-CREATE OR REPLACE STAGE WCD_LECT1_STAGE
+-- Create the STAGE with this query:
+CREATE OR REPLACE walmart.enterprise.STAGE WCD_LECT1_STAGE
 STORAGE_INTEGRATION = S3_INT_WCD_LECT1
 URL='s3://your bucket name'
 FILE_FORMAT = CSV_COMMA;
@@ -2615,7 +2615,7 @@ FILE_FORMAT = CSV_COMMA;
 COPY INTO walmart.enterprise.city from @WCD_LECT1_STAGE/city.csv
 FILE_FORMAT =CSV_COMMA;
 ```
-
+1. [Checklist for the above two methods](../analytical/week4/SnowflakeFileTransferChecklist.md)
 ---
 ##### Connect Snowflake to other apps to upload and download data
 - DBeaver : SQL client SW app and a db admin tool
@@ -2641,9 +2641,11 @@ FILE_FORMAT =CSV_COMMA;
 
     1. **Snowflake Account**:
         - Create a Snowflake account
+
+
 ##### Project Execution:
-###### **Step 1:** AWS LAMBDA pulls data from S3 to Snowflake DB
-- 
+* The Lecture 2, 3 & Practice labs are a part of the midterm project - [DataEngineering_Retail_ETL_Pipeline](https://github.com/sanyassyed/DataEngineering_Retail_ETL_Pipeline)
+* Find the notes of the project [here](https://github.com/sanyassyed/DataEngineering_Retail_ETL_Pipeline/blob/main/docs/project_creation.md)
 
 ---
 
@@ -2653,13 +2655,54 @@ FILE_FORMAT =CSV_COMMA;
 
 ### Practice
 #### Exercise-1 Snowflake Exercise
+* Completed in Lecture 1 - find notes there
 #### Workshop-2 Airbyte
+* Completed in Lecture 2 as a part of the midterm project
+* [Airbyte Playground](https://demo.airbyte.io/workspaces/55c39a0b-037d-406c-a1ac-00393b055f18/connections)
 #### Exercise-2 Lambda Function Ingest Data
+* Completed in Lecture 2 as a part of the midterm project
 #### Lab - Project Capstone 1: Data Ingestion
-
+* Completed in Lecture 2
 ---
 
 ## Week 5 - Data Transformation - Data Warehouse
+### Pre-work
+#### What is a data warehouse
+* What is a database?
+    * OLTP - Online Transaction Processing
+    * For transactional databases, mostly used for transaction data, good for data write, not good for data read.
+    * Normalised form of Data Model preferred
+* What is a datawarehouse?
+    * OLAP - Online Analytical Processing
+    * For data analytical functions, the data warehouse we will frequently use is OLAP. To understand the difference in database design
+    * Denormalized form of Data Model preferred (Dimention & Fact Tables)
+* What is a datalake?
+* Normalized Data: A Schema design to store `non-redundant` and `consistent data`
+    * Data Integrity is maintained
+    * Little to no redundant data
+    * Many Tables
+    * Optimized for storage of data
+* Denormalized Data: A schema that combines data so that `accessing data` (query) is `fast`
+    * Data integrity is not maintained
+    * Why: In denormalized tables, the same data is stored in multiple rows.
+    * Example: If a customer’s address is repeated in every order row, and the customer moves, updating the address in all rows may be missed → inconsistent data.
+    * Redundant data is common
+    * Fewer tables
+    * Excessive data, storage is less optimal
+* Data Modelling: 
+    * Is the process of designing the structure of the Database or the Data System
+* Dimensional Modelling:
+    * Is specialized data modelling for Business Intelligence
+    * It is design methodology used in DW to organize and structure data for easy and efficient querying and reporting
+    * Is mostly denormalized
+    * Why?
+        * 
+* Important Terminologies
+    * Bridging Table
+    * Granularity
+    * Drill-down
+---
+
 ## Week 6 - Data Transformation - SQL in ETL and Data Loading
 ## Week 7 - Data Transformation - Data Modeling and ETL in the Project
 ## Week 8 - Data Transformation - DBT for ETL
