@@ -2677,30 +2677,72 @@ FILE_FORMAT =CSV_COMMA;
     * For data analytical functions, the data warehouse we will frequently use is OLAP. To understand the difference in database design
     * Denormalized form of Data Model preferred (Dimention & Fact Tables)
 * What is a datalake?
-* Normalized Data: A Schema design to store `non-redundant` and `consistent data`
-    * Data Integrity is maintained
-    * Little to no redundant data
-    * Many Tables
-    * Optimized for storage of data
-* Denormalized Data: A schema that combines data so that `accessing data` (query) is `fast`
-    * Data integrity is not maintained
-    * Why: In denormalized tables, the same data is stored in multiple rows.
-    * Example: If a customer’s address is repeated in every order row, and the customer moves, updating the address in all rows may be missed → inconsistent data.
-    * Redundant data is common
-    * Fewer tables
-    * Excessive data, storage is less optimal
+    * Data lake is storage system that is used to store large volumes of raw, unstructured, semi-structured data in its original format,
 * Data Modelling: 
     * Is the process of designing the structure of the Database or the Data System
+    * Main Data Model Methods:
+        * Normalization Data Models: A Schema design to store `non-redundant` and `consistent data`
+            * Data Integrity is maintained
+            * Little to no redundant data
+            * Many Tables
+            * Optimized for storage of data
+        * Denormalization Data Models: A schema that combines data so that `accessing data` (query) is `fast`
+            * Data integrity is not maintained
+            * Why: In denormalized tables, the same data is stored in multiple rows.
+            * Example: If a customer’s address is repeated in every order row, and the customer moves, updating the address in all rows may be missed → inconsistent data.
+            * Redundant data is common
+            * Fewer tables
+            * Excessive data, storage is less optimal
 * Dimensional Modelling:
     * Is specialized data modelling for Business Intelligence
     * It is design methodology used in DW to organize and structure data for easy and efficient querying and reporting
-    * Is mostly denormalized
+    * Is mostly Denormalized (Star Schema)
     * Why?
-        * 
+        * Easy to query as query will run on fewer tables
+        * We need fewer joins as possible for faster querying and reporting
 * Important Terminologies
     * Bridging Table
     * Granularity
     * Drill-down
+* Why do we need a data model in a data warehouse? 
+    * Characteristics of a DW (**TINS**)
+        * Time Variant - Since it stores historical data we can analyse data over time
+        * Integrated - Data is brought in from various sources
+        * Non-Volatile - Data is static and once data enters a DW it stayes there
+        * Subject Oriented - DW is designed keeping in mind the subject
+* Data Modelling Process:
+    * Resource Video[Designing Your Data Warehouse from the Ground Up](https://www.youtube.com/watch?v=patBYUGwsHE)
+    * Lecture Highlights: **Designing Your Data Warehouse from the Ground Up**
+    * Introduction & Motivation: The session walks through designing a modern data warehouse from scratch, covering key foundational steps ([YouTube][1]).
+    * Key Components (Inferred from associated materials): From similar webinar outlines and best practices content:
+        1. **Define the Need for Data Analysis**
+        Distinguish between operational and decision-support data and highlight why organizations build data warehouses to enable deep business insights ([Course Hero][2]).
+        2. **Business Intelligence (BI) Architecture**
+        Cover components of BI—data sources, ETL processes, warehouse storage, and analytical layers (OLAP).
+        3. **Data Warehouse Fundamentals**
+        Explore characteristics of a DW (subject-oriented, integrated, nonvolatile, time-variant) and introduce modeling techniques such as star schemas and multidimensional analysis ([Course Hero][2], [YouTube][1]).
+        4. **OLAP and Schema Design**
+        Discuss OLAP operations, design of cubes, and pros/cons of schemas like star vs. snowflake ([Course Hero][2]).
+
+    * Summary Notes:
+
+    | Section             | Highlights                                                                |
+    | ------------------- | ------------------------------------------------------------------------- |
+    | **Why DWs Matter**  | Support for decision-making, deeper insights, BI evolution                |
+    | **BI Architecture** | ETL → DW storage → OLAP/analytics stack                                   |
+    | **DW Traits**       | Integrated, time-variant, nonvolatile, supports subject-focused decisions |
+    | **Schema Design**   | Star schema best for performance and simplicity                           |
+    | **OLAP Cubes**      | Enable advanced analytics via slicing, dicing, drill-down                 |
+
+    * Suggested Next Steps:
+        * For more structured guidance, consider reviewing blog posts like **"The Ultimate Guide to Data Warehouse Design"**, which maps out design in steps—requirements, modeling, ETL, deployment, governance, and more ([Integrate.io][3]).
+        * For best practices on schema, modeling, and architecture decisions like star schema vs. surrogate keys, check out resources from SQLServerCentral ([SQLServerCentral][4]).
+
+    [1]: https://www.youtube.com/watch?v=patBYUGwsHE&utm_source=chatgpt.com "Designing Your Data Warehouse from the Ground Up"
+    [2]: https://www.coursehero.com/file/249770854/Chapter-9-10-Data-Warehousepdf/?utm_source=chatgpt.com "Mastering Data Warehousing: Essential Concepts and Techniques"
+    [3]: https://www.integrate.io/blog/the-ultimate-guide-to-data-warehouse-design/?utm_source=chatgpt.com "The Ultimate Guide to Data Warehouse Design"
+    [4]: https://www.sqlservercentral.com/blogs/10-sql-server-data-warehouse-design-best-practices-to-follow-part-1?utm_source=chatgpt.com "10 SQL Server Data Warehouse Design Best Practices to ..."
+
 ---
 
 ## Week 6 - Data Transformation - SQL in ETL and Data Loading
