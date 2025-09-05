@@ -2675,7 +2675,7 @@ FILE_FORMAT =CSV_COMMA;
 * What is a datawarehouse?
     * OLAP - Online Analytical Processing
     * For data analytical functions, the data warehouse we will frequently use is OLAP. To understand the difference in database design
-    * Denormalized form of Data Model preferred (Dimention & Fact Tables)
+    * Denormalized form of Data Model preferred (dimension & Fact Tables)
 * What is a datalake?
     * Data lake is storage system that is used to store large volumes of raw, unstructured, semi-structured data in its original format,
 * Data Modelling: 
@@ -2702,7 +2702,7 @@ FILE_FORMAT =CSV_COMMA;
         * We need fewer joins as possible for faster querying and reporting
 * Important Terminologies
     * Bridging Table
-    * Granularity
+    * Granularity - the level at which each data row in your fact table is
     * Drill-down
 * Why do we need a data model in a data warehouse? 
     * Characteristics of a DW (**TINS**)
@@ -2710,40 +2710,501 @@ FILE_FORMAT =CSV_COMMA;
         * Integrated - Data is brought in from various sources
         * Non-Volatile - Data is static and once data enters a DW it stayes there
         * Subject Oriented - DW is designed keeping in mind the subject
-* Data Modelling Process:
-    * Resource Video[Designing Your Data Warehouse from the Ground Up](https://www.youtube.com/watch?v=patBYUGwsHE)
-    * Lecture Highlights: **Designing Your Data Warehouse from the Ground Up**
-    * Introduction & Motivation: The session walks through designing a modern data warehouse from scratch, covering key foundational steps ([YouTube][1]).
-    * Key Components (Inferred from associated materials): From similar webinar outlines and best practices content:
-        1. **Define the Need for Data Analysis**
-        Distinguish between operational and decision-support data and highlight why organizations build data warehouses to enable deep business insights ([Course Hero][2]).
-        2. **Business Intelligence (BI) Architecture**
-        Cover components of BI—data sources, ETL processes, warehouse storage, and analytical layers (OLAP).
-        3. **Data Warehouse Fundamentals**
-        Explore characteristics of a DW (subject-oriented, integrated, nonvolatile, time-variant) and introduce modeling techniques such as star schemas and multidimensional analysis ([Course Hero][2], [YouTube][1]).
-        4. **OLAP and Schema Design**
-        Discuss OLAP operations, design of cubes, and pros/cons of schemas like star vs. snowflake ([Course Hero][2]).
-
-    * Summary Notes:
-
-    | Section             | Highlights                                                                |
-    | ------------------- | ------------------------------------------------------------------------- |
-    | **Why DWs Matter**  | Support for decision-making, deeper insights, BI evolution                |
-    | **BI Architecture** | ETL → DW storage → OLAP/analytics stack                                   |
-    | **DW Traits**       | Integrated, time-variant, nonvolatile, supports subject-focused decisions |
-    | **Schema Design**   | Star schema best for performance and simplicity                           |
-    | **OLAP Cubes**      | Enable advanced analytics via slicing, dicing, drill-down                 |
-
-    * Suggested Next Steps:
-        * For more structured guidance, consider reviewing blog posts like **"The Ultimate Guide to Data Warehouse Design"**, which maps out design in steps—requirements, modeling, ETL, deployment, governance, and more ([Integrate.io][3]).
-        * For best practices on schema, modeling, and architecture decisions like star schema vs. surrogate keys, check out resources from SQLServerCentral ([SQLServerCentral][4]).
-
-    [1]: https://www.youtube.com/watch?v=patBYUGwsHE&utm_source=chatgpt.com "Designing Your Data Warehouse from the Ground Up"
-    [2]: https://www.coursehero.com/file/249770854/Chapter-9-10-Data-Warehousepdf/?utm_source=chatgpt.com "Mastering Data Warehousing: Essential Concepts and Techniques"
-    [3]: https://www.integrate.io/blog/the-ultimate-guide-to-data-warehouse-design/?utm_source=chatgpt.com "The Ultimate Guide to Data Warehouse Design"
-    [4]: https://www.sqlservercentral.com/blogs/10-sql-server-data-warehouse-design-best-practices-to-follow-part-1?utm_source=chatgpt.com "10 SQL Server Data Warehouse Design Best Practices to ..."
+##### **Webinar 1** Data Modelling Process - Designing DW from the ground up. It is a full data modelling process
+* Resource Video[Designing Your Data Warehouse from the Ground Up](https://www.youtube.com/watch?v=patBYUGwsHE)
+* 4 Steps to designing a star schema in a DW:
+    * **Step 1** Identity the Business Process
+        * How the business works not a department 
+        * Always start with High Impact & Low Risk item
+        * i.e capturing which data and building the DW will have the highest positive impact on the business but is low risk
+    * **Step 2** Identify the Grain 
+        * What one row in the fact table represents 
+        * Choose the most atomic level (the lowest granular level)
+        * "One row represents a movie rented by a customer from an employee in a store on a day" 
+        * More Granular: "One row represents a coupon code applied to a movie rented by a customer from an employee in a store on a day" if you want to add coupon codes to the rental data where more than one coupon can be applied to a rental
+    * **Step 3** Choose the Dimensions 
+        * Attributes (columns) for the dimensions are the ones that are most descriptive
+        * Always include the date dimension
+        * Select the smallest data type so data processing does not become heavy; eg: don't store all as string
+        * Best Datatype: a single field non-nullable data type -it is just a column that stores one type of value and cannot be left empty
+        * Use user friendly naming conventions
+        * Build for opportunities to build in natural hierarchy as it gives you performance bonus
+        * Eg: dimension Tables: DimProduct, DimEmployee, DimCustomer, DimStore, DimSaleDate
+    * **Step 4** Choose the Measures 
+        * Measures are the columns in a Fact table
+        * Measures are going to be - How does the business measure success?
+        * If we identify a measure that violates our grain then we go back to **Step 2 Identify the Grain**; revisit the grain level, check the dimensions and reevaluate the measures
+        * Eg: What was the sale amount? What is the cost on the line item?
+        * Best measures are the ones that can be aggregated or additive and can be rolledup and sliced based on the dimensions - Eg: If we roll up sales by geography, if rollup by customers etc they all make sense
+        * Non-additive measures - `Profit Margin` cannot be added by Geography so such measures are best handled by Data Access/Analytics tools eg: PowerBI, Tablaeu 
+        * Time related Measures like `Year to Date Sales`, `Year over Year`, `Sales\Quantity Last Year` are best handled by analytics tools 
+        * KPI Metrics type of measures eg: red light, green ligth etc are best handled by analytics tools
+        * Understand the number of rows in the fact table
+        * If Big Data then think about partitioning data eg: by hour, or aligning it with partitions in the tables in the DB could also give you good performance in the fact table
+        * Eg: Fact Tables: FactVideoSales
+        * Eg: Fact Table Measures- SalesDollarAmout, Quantity, CostAmount
+* Reasons you want a surrogate key:
+    1. Insulating from-source changes if the data in the source changes (like if the PK in the source data  changes this DW data is not disturbed)
+    2. To track historical date in the dimensions  ( the surrogate key is auto generated so if the same item id has a price change it will have a new surrogate key and this will help us track price changes. If we used the product id as primary key; such changes will be hard to track)
+    3. Data joins with the fact table are simple & less complex (Optimizes joins) as the SK are simpler and don’t need any pre processing
+* Business key vs Surrogate key 
+    * BK: the id the business uses to identify the item used mainly as primary key in DB
+    * SK: to identify the item in the DW  and tract it over time. Also to keep it separate from the BK which could change over time or be diff in each department. It is a key that helps us version the data
+* Books:
+    * The Data Warehouse Toolkit by Ralph Kimball
+    * Star Schema - The Complete Reference
+    * Agile Data Warehouse Design by Lawrance
+##### **Webinar 2** : [dimensional Modelling](https://youtu.be/lWPiSZf7-uQ?si=iFJ2EgTipaRTrqTQ) - is a data model tutorial on the concepts and practice of the Kimball Method
+* Why a Data Warehouse?
+    * To document historical data
+    * Controls Governance: To manage different discrepencies eg: different names for a product in different departments
+    * Supporatbility: cleans & transforms data and keeps it ready for you to use
+    * Not good for unstructured data, short term goals where you won't use the datawarehouse much etc.
+* Is dimensional Modelling Still a thing?
+* OLTP:
+    * Designed for inserts and updates as you will be locking the data while doing these actions and you want locking to be quick
+* OLAP:
+    * It is a copy of the OLTP Data
+    * Accessing the data quickly is the most important
+    * Locking is not an issue
+    * Insert and Update speeds are not relevant
+* What is dimensional Modelling?
+    * Data Maintenance; performance is secondary
+    * Data is denormalized  as needed to support reporting
+    * The modelling is based on the questions the business wants to ask
+    * Descriptive Data is seperated from Quantitative Data
+    * What is a Dimension?
+        * Makes up 95% of the data
+        * Can be numeric but often text based
+        * They describe something
+    * Bus Matrix:
+        * ![Bus Matrix](../analytical/week5/bus_matrix.png)
+    * How to differentiate between Dimensions & Measures
+        * Use the user story of the business to understand the domain. Ask questions like below to the business to understand the required details to be captured in the DW which they will use for analaysis 
+            * Eg 1: of a person purchasing a product: `Mary Jones buys 1 book for $22.50 entitled "Agile Data Warehouse Design" on December 2, 2013 at 3:12 PM via Amazon.com using her Visa card to be delivered on December 10, 2013 by UPS.` 
+            * Eg 2: `Boston University (Who?) orders 2000 books (What?) for $10000 (How Much?) using a Corporate Amazon Membership discount (How?) with Amazon credit financed (Where?) at 8% interest (How?).`
+        * 7 W's of DW Design
+            * Who - D `Mary Jones`
+            * What - D `1 book Agile Data Warehouse Design`
+            * Where - D `Amazon.com`
+            * When - D `December 2, 2013`
+            * Why - D 
+            * How? - D `Visa card`
+            * How Many/Much? - M `$22.50`
+    * Slowly Changing dimensions (SCD):
+        * Dimension values can change and how the change is handled depends on the value the business places on knowing the historical values of a dimension
+        * Example: `The New York store is reassigned from the Northeast Region to the Middle Region. Does management want to be able to see changes in sales as the Northeast Region before the change and Middle Region after the change?`
+        * How does the business want to manage this change?
+        * Type 1
+            * Simply overwrite the existing dimension data with the new information.
+            * Advantage:Easiest to implement
+            * Disadvantage: Lose ability to see how data looked previously.
+            * Example: `After the change, all sales history for the New York store would be reported as the Middle Region`
+        * Type 2:
+            * We keep all historical values of the dimension. The SK will help us do that
+            * Advantage:Better ability to report accurately historically.
+            * Disadvantage: Most complex to implement.
+            * Example: `Example: Sales in the New York store made prior to the change will be reported in the Northeast Region but any sales after that will be reported in the Middle Region.`
+        * Type 3:
+            * We keep the prior value and the new value. That would mean you have an extra column to store the previous value
+            * Advantage: Easier to implement than SCD Type 2 while still providing some support for historical reporting. Makes sense when you are trying to capture changes in data that will have only two stages like living and not living,
+            * Disadvantage: Historical reporting is limited.
+            * Example: `Example: Sales in the New York store made prior to the change will be reported in the Northeast Region but any sales after that will be reported in the Middle Region. However, if the store was moved to the Southeast Region subsequently, you would lose that it was ever in the Northeast Region`
+        * Conformed Dimensions:  is a single, shared dimension table with consistent attributes and meaning used across multiple fact tables, such as a "Date" dimension used by both Sales and Inventory fact tables to ensure data can be compared across different business processes. Another common example is a "Product" dimension, containing shared information like product ID, name, and category, which can be referenced by sales facts, inventory facts, and other related data tables. 
+* [Understanding the ETL Process Video](youtube.com/watch?v=wDTzxdShbd8&feature=youtu.be):
+    * What is ETL?
+    * ETL vs ELT
+    * Real World Example:
+        * Input Data in the DB : Sales Person, Product. Date, Sales, Boxes
+        * Tranform the above data
+            * Data Cleansing
+            * Remove Duplicates
+            * Add Keys & ID's
+            * Combine or Merge Data
+        * Analytics Questions: Monthly Report to see for each Sales Person & Each Product 
+            1. How much Sales were made? 
+            2. How many boxes were sold 
+            3. How many orders were there? 
+            4. How many orders more than $1000 
+            5. How many orders more than $1000
+    * ETL Tools:
+        * SQL - Extract (SELECT), Transform (SELECT) & Load (INSERT)
+        * Power Query
+    * ETL Demo
+        * Database - `awesome_db`
+            * geo table
+            * people table
+            * products table
+            * sales table
+                * SPID
+                * GeoID
+                * PID
+                * SaleDate
+                * Amount
+                * Customers
+                * Boxes
+        * Datawarehouse - `awesome_wh`
+            * monthly_summary table
+                * YearMonth
+                * ProductID
+                * PersonID
+                * TotalSales
+                * TotalOrders
+                * Orders>1k
+                * Orders>5k
+                * TotalBoxes
+        * Query
+        ```sql
+        USE awesome_wh;
+        INSERT INTO monthly_summary
+        (
+            month_id,
+            pid,
+            spid,
+            total_amount,
+            count_amount,
+            count_gt_1000,
+            count_gt_5000,
+            total_boxes
+        )
+        SELECT 
+            TO_CHAR(s.SaleDate, 'YYYYMM') AS month_id,
+            s.PID,
+            s.SPID,
+            SUM(s.Amount) AS total_amount,
+            COUNT(s.Amount) AS count_amount,
+            SUM(CASE WHEN s.Amount > 1000 THEN 1 ELSE 0 END) AS count_gt_1000,
+            SUM(CASE WHEN s.Amount > 5000 THEN 1 ELSE 0 END) AS count_gt_5000,
+            SUM(s.Boxes) AS total_boxes
+        FROM awesome_db.sales s
+        GROUP BY 
+            TO_CHAR(s.SaleDate, 'YYYYMM'),
+            s.PID,
+            s.SPID;
+        ```
+* [How to design the ETL Process Video](https://www.youtube.com/watch?v=0hGWXL32w6Q):
+    * DB:
+        * ~~OrderId~~ 
+        * OrderDate - This field is replaced by an id
+        * ~~OrderPriority~~
+        * OrderDiscount
+        * ~~ShippingMode~~
+        * UnitPrice
+        * ShippingCost
+        * ~~CustomerName~~
+        * Province - This field is replaced by an id
+        * CustomerType - This field is replaced by an id
+        * ~~ProductCategory~~
+        * ~~ProductName~~
+        * ~~ProductContainer~~
+        * ShippingDate - Used to calculate the ShipDelay
+    * DW
+        * FactSales Table
+            * CustomerTypeId
+            * OrderDateId
+            * ProirityId
+            * ProvinceId
+            * `Quantity`
+            * `Discount`
+            * `unitprice`
+            * `unitcost`
+            * ShipDelay
+            * ShipCost
+            * OrderTotal - (Order Quantity * Unit Price + Shipping Cost) * (1-OrderDiscount)
+            * UnitProfit - UnitPrice * (1 - OrderDiscount) - UnitCost
+        * DimCustomerType Table
+            * id
+            * Description
+        * DimPriority Table
+            * id
+            * Description
+        * DimProvince Table
+            * id
+            * name            
+        * DimDate
+            * id
+            * dayOfMonth
+            * dayOfWeek
+            * dayOfYear
+            * weekOfYear
+            * month
+            * year
+            * decade
+            * rawdate
+    * Data Staging
+    * Data Extraction: 
+        * Remove info from the db table the info that is not needed based on the dimension model and the analysis to be done
+    * Data Transformation:
+        * Handle missing data
+        * Handle all dimensional data i.e extract or delete data that is required for the dimensional model eg: the highlighted data in the fact table is new info added, deleted some data from the DB table
+        * Shipping Date is required for calcualting Shipping Delay
+    * Data Loading
+    * Example ETL Steps:
+        * Read Data
+        * Filter Column: Keep Priority column
+        * GroupBy: Keep only unique values
+        * Column Rename : Rename column to match the one in the DW table
+        * Datawarehouse Writer: Write to the DW
 
 ---
+
+### Lectures and Lab
+#### Lecture 1 - Database & Data Warehouse Introduction
+
+##### 1. Database Basics
+
+* **Database**: An organized collection of structured data, stored and accessed electronically.
+* **DBMS (Database Management System)**: Software that allows users to access, update, manage, and administer databases.
+
+###### Early Database Systems
+
+* **Flat file systems** – simple, but lots of duplication.
+* **Hierarchical & Network DBs** – rigid, hard to manage.
+* **Relational DBs (RDBMS)** – used tables (relations), reduced redundancy, enforced consistency.
+* **NoSQL DBs** – created to handle scalability, flexibility, and availability needs.
+
+---
+
+##### 2. Database Design
+
+###### 3-Step Process
+
+1. Understand business requirements
+2. Build a **conceptual data model** (ER diagrams)
+3. Convert into relational or non-relational schema
+
+###### Data Models
+
+* **Tables (Relational)** → structured rows & columns
+* **Documents (NoSQL)** → flexible JSON/XML
+* **Flat files, JSON, XML** – used in practice for data interchange
+
+---
+
+##### 3. Relational Databases
+
+* Data stored in **tables (relations)** with **primary keys**.
+* **Transactions** must follow **ACID**:
+
+  * **Atomic** (all or nothing)
+  * **Consistent** (respect rules/constraints)
+  * **Isolated** (independent execution)
+  * **Durable** (results persist after completion)
+
+###### Important Concepts
+
+* **Schema**: Structure of tables, relationships, constraints
+* **Tuple**: Row in a table
+* **Attribute**: Column in a table
+* **Domain**: Set of allowable values for an attribute
+* **Keys**: Primary, Candidate(Keys other than the primary key that can together be the primary key), Foreign, Composite (Two columns that make up the PK), Surrogate
+
+###### Normalization
+
+* Organizing tables to remove redundancy and anomalies
+* **1NF**: Atomic attributes (no repeating groups) - Least Normalized
+* **2NF**: Full dependency on primary key i.e all columns must depend on the primary key/s. If not move them to a seperate table.
+* **3NF**: No transitive dependencies. There shouldn't be any column that is dependant on another column (non primary key)
+* **4NF**
+* **5NF**: Most Normalized
+* **Referantial Integirty**: If a column is using referencing like foreign key; then that data should be available at the referenced point
+* **Denormalization**
+    * Adding redundancy to speed up reads (common in warehouses). Spend more on compute rather than storage
+    * Reduces the need to make joins
+---
+
+##### 4. NoSQL Databases
+
+* **Non-relational**, distributed, schema-less, horizontally scalable.
+* **BASE** properties: Basically Available, Soft state, Eventually consistent.
+* **CAP Theorem**: In distributed DBs, can only guarantee two of:
+
+    * Consistency = Everyone always sees the latest message at the same time.
+    * Availability = You can always send messages, even if servers are down.
+    * Partition tolerance = The chat still works, even if some people lose internet temporarily.
+
+###### NoSQL Types
+
+* **Key-Value Stores** (Redis, DynamoDB)
+* **Document Stores** (MongoDB, Firestore)
+* **Column-Family** (Cassandra, Bigtable)
+* **Graph DBs** (Neo4j)
+
+---
+
+##### 5. Data Warehouse (DW)
+
+* **Definition (Ralph Kimball):**
+  A system that extracts, cleans, and conforms data into a dimensional model for analysis & decision-making.
+
+Almost right 👍 but let me refine it for you.
+
+When people talk about **data warehouse modeling methodologies**, they usually mean the main approaches to designing how data is stored and related. Here’s the corrected view:
+
+---
+
+* Common Data Warehouse Modeling Methodologies
+
+    1. **Kimball Method (Dimensional Modeling)**
+
+    * Focuses on **star schemas** and **snowflake schemas**.
+    * Business-focused, easy to understand.
+
+    2. **Inmon Method (Corporate Information Factory / 3NF)**
+
+    * Focuses on **normalized models** (3rd Normal Form).
+    * Enterprise-wide, integrated view of data.
+
+    3. **Data Vault Modeling**
+
+    * Hybrid approach for modern warehouses.
+    * Separates **Hubs (business keys)**, **Links (relationships)**, and **Satellites (context/history)**.
+    * Great for scalability and auditing.
+
+    4. **One Big Table (OBT)** (sometimes used as a **design shortcut**, not really a full methodology)
+
+    * Denormalized, single wide table combining facts and dimensions.
+    * Simple for BI tools, but not as flexible.
+
+###### Goals
+
+* Make information **accessible**, **consistent**, **timely**, **secure**, and **adaptable**.
+* Provide a **trusted foundation** for decision-making.
+
+###### OLTP vs OLAP
+
+| OLTP (Operational)   | OLAP (Analytical)    |
+| -------------------- | -------------------- |
+| Handles transactions | Handles analysis     |
+| Normalized schema    | Dimensional schema   |
+| Current data         | Current + Historical |
+| Small queries        | Aggregated queries   |
+
+---
+
+##### 6. Dimensional Modeling (Kimball Method)
+
+* Focused on **business understanding** and **query performance**.
+* Works best with **Star Schema** (fact + dimensions).
+
+###### Components
+
+* **Fact Tables**: Store measurements (numeric, quantitative data).
+* **Dimension Tables**: Store descriptive context (who, what, where, when, how, why).
+
+###### Design Steps
+
+1. Identify the **business process** (e.g., Sales, Inventory).
+2. Declare the **grain** (lowest level of detail, e.g., per transaction).
+3. Identify **dimensions** (time, customer, product, location).
+4. Identify **facts** (sales amount, quantity, etc.).
+
+###### Types of Fact Tables
+
+* **Transactional**: Detailed event-level facts.
+* **Snapshot**: Periodic summary (daily, monthly).
+* **Accumulating Snapshot**: Tracks progress of a process with start and end points.
+
+---
+
+##### 7. Rules of Dimensional Modeling
+
+1. Store detailed atomic data.
+2. Organize around business processes.
+3. Always include a time dimension.
+4. Keep facts in a table at the same grain.
+5. Resolve many-to-many relationships in facts.
+6. Resolve many-to-one relationships in dimensions.
+7. Use surrogate keys in dimensions.
+8. Create **conformed dimensions** for consistency across fact tables.
+
+---
+
+#### Lecture 2 - Data Warehouse
+
+##### Key Concepts Discussed:
+* Data Model Schema in DW ( Central Fact Table Connected to Dimention Tables)
+
+###### Fact Table 
+
+* Measure Types
+
+    * 🧮 1. Additive Measures
+
+        * **Definition**: You can add them up across **all dimensions** (time, product, region, etc.).
+        * **Example**: **Sales Amount**
+
+        * If you sell \$100 today and \$200 tomorrow, total = \$300.
+        * Works across **time, products, regions, customers**—everywhere.
+
+        👉 Think: “Safe to sum up always.”
+
+    * 🚫 2. Non-Additive Measures
+
+        * **Definition**: You **cannot** add them up across any dimension.
+        * **Example**: **Inventory Level**
+
+        * If you have 500 items in stock today and 400 tomorrow, total is **NOT 900**.
+        * Inventory is a **point-in-time snapshot**, not something to sum.
+
+        👉 Think: “Never sum, only look at averages, min, max, or last value.”
+
+    * 🤔 3. Semi-Additive Measures
+
+        * **Definition**: You can add them up across **some dimensions, but not all**.
+        * **Example**: **Account Balance**
+
+        * You can add balances across **different customers** (Customer A + Customer B).
+        * But you can’t add balances across **time** (yesterday’s balance + today’s balance ≠ meaningful).
+
+        👉 Think: “Sometimes sum, but be careful with time.”
+
+    * **Quick Analogy** (bank account example):
+
+        * **Additive**: Total deposits (you can add across days, people, branches).
+        * **Non-additive**: Current account balance (you don’t sum yesterday + today).
+        * **Semi-additive**: Account balance across different accounts (ok), but not across days.
+
+    * ![Types of Measures](../analytical/week5/types_of_measures.png)
+
+    * Best Practice : The non- additive measures are still kept so they can be used and handled by BI tools
+
+###### Dimension Tables
+
+* Main Requirements of a dimension table
+    * Query Constraining via Grouping / Filtering
+        * Purpose: Dimensions should allow users to filter or group facts when running queries.
+        * Example:
+            * Fact table: Sales Amount = $500
+            * Dimension table: Product = "Shoes", Region = "Texas", Date = "2025-09-01"
+            * User can ask: “Show me sales by product” → grouped by Product
+            * Or: “Show me sales in Texas only” → filtered by Region
+
+        * 👉 Dimensions act like “filters” or “categories” in reports.
+    * Report Labeling
+        * Purpose: Dimensions provide human-readable labels for reports.
+        * Example:
+            * Instead of showing Product_ID = 101, the dimension table stores Product_Name = "Shoes".
+            * Instead of Region_Code = TX, it shows Region_Name = "Texas".
+        * 👉 This makes reports understandable to business users.
+
+* Dimension tables can also contain one or more hierarchial relationships (Category, brand, product)
+
+###### Fact vs Dimention Tables
+![Fact vs Dimension](../analytical/week5/fact_vs_dimension.png)
+
+###### Data Model Schemas
+* Star Schema: Consists of Central Fact Table which is connected to one or more Dimension Tables 
+* Snowflake Schema: Based on the Star Schema where the Dimention Tables are Normalized
+
+###### 4 Steps to create a Data Model in a DW
+* Find it [here](#webinar-1-data-modelling-process---designing-dw-from-the-ground-up-it-is-a-full-data-modelling-process)
+* Master Data Managment (MDM) - How would you merge data from similar table eg: loan customer data, bank account customer data and if we want to merge these two cutomer data tables we follow the rules in Master Data Management which creates Golden Records
+
+###### CASE STUDY
+
+---
+
 
 ## Week 6 - Data Transformation - SQL in ETL and Data Loading
 ## Week 7 - Data Transformation - Data Modeling and ETL in the Project
