@@ -1,6 +1,6 @@
 # 🐬 MySQL Cheat Sheet 4 – Explore Database & Tables
 
-Useful for **filtering, searching, or dynamically exploring databases and tables**.
+Useful for **filtering, searching, or dynamically exploring databases and tables**
 
 ## 1️⃣ Show Databases
 

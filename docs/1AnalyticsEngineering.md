@@ -3202,10 +3202,163 @@ When people talk about **data warehouse modeling methodologies**, they usually m
 * Master Data Managment (MDM) - How would you merge data from similar table eg: loan customer data, bank account customer data and if we want to merge these two cutomer data tables we follow the rules in Master Data Management which creates Golden Records
 
 ###### CASE STUDY
+* WECLOUD SCHOOL DATABASE - Look at the slides [here](../analytical/week5/W5.2%20Data%20Model%20and%20ETL.pdf)
+    * Step 1: Business Requirements - Requirements Analytics
+        * Eg: `Student 1` is enrolled in `cohort 8` in the `Data Engineering Program` in `Data Analytics`, `Big Data Engineering` & `Advanced Data Engineering` courses with discount offers `Scholarship200` and `5PercentFullPayment` on Sep 10 2022 via wire transfer paid fee of $10000 in full.
+    * Step 2 & 3: Grain & Dimension
+    * Step 4: Fact Table
 
+###### Levels of Data Modelling 
+The **three levels of data modeling** (Conceptual, Logical, Physical) **still apply** when doing **dimensional modeling** (Kimball/Inmon/Data Vault). They just take a slightly different flavor. The excel file with all the below levels is available [here](../analytical/week5/Lecture%20Data%20Model.xlsx)
+
+* 🔹 1. Conceptual Data Model
+
+    * **What it is**: High-level view of business needs.
+    * **Focus**: What data is important, not how it will be stored.
+    * **In Dimensional Modeling**:
+        * Identify business processes (e.g., Sales, Inventory, Customer Service).
+        * Identify high-level entities like Customer, Product, Order, Date.
+        * No details about keys, schema, or storage.
+
+
+* 🔹 2. Logical Data Model
+
+    * **What it is**: More detailed, but still tech-agnostic.
+    * **Focus**: Defines data structures, relationships, and granularity.
+    * **In Dimensional Modeling**:
+        * Decide **grain of the fact table** (e.g., “one row per sales transaction”).
+        * Define **facts** (measures like sales amount, quantity).
+        * Define **dimensions** (product, customer, region, time).
+        * Show relationships between facts and dimensions (Star Schema or Snowflake).
+
+    ---
+* 🔹 3. Physical Data Model
+
+    * **What it is**: Actual implementation in a database.
+    * **Focus**: How the model is stored and optimized.
+    * **In Dimensional Modeling**:
+        * Implement fact and dimension tables in a database (e.g., Snowflake, Redshift).
+        * Add **primary keys, foreign keys, indexes, partitions**.
+        * Apply naming conventions, column data types, and performance tuning.
+
+* ✅ **Analogy** (building a house):
+
+    * **Conceptual** = Blueprint sketch → "We’ll build a 3-bedroom house."
+    * **Logical** = Detailed architectural plan → dimensions of rooms, windows, layout.
+    * **Physical** = Actual construction with bricks, wiring, plumbing.
+
+###### ETL
+* ETL vs ELT
+    * Before 1980 Storage was more expensive than compute therefore ETL was more popular
+    * After 1980 to present- storage has become more cheaper therefore ELT is more used now
+* When is ETL is most utilized?
+    * When data masking.
+    * When you have high computation transformations it is cheaper to do the transformations using tools like Spark rather than storing the raw data directly in DW as it can get expensive. So in that case you transform the data using spark and then store it in the DW
+
+###### DDL
+* Data Definition Language
+* Used to create structures like
+    * Schemas
+    * Database
+    * Tables
+    * Constraints
+* Commands
+    * CREATE
+    * ALTER
+* Create Entire Data Model & Infrastructures
+    * Step 1: Create Schemas Eg: LandingZone
+    * Step 2: Create Dimension Tables
+    * Step 3: Create Fact Tables
+    * Step 4: Create Control Tables if needed
+
+###### DML
+* Data Manipulation Language
+* Commands
+    * INSERT 
+    * UPDATE
+    * DELETE
+* Polpulate data from one table to another
 ---
 
+#### Lab 1 - MiniProject
+##### Step 0: Create OLTP Database on Snowflake using DBeaver
+* Load Data into Snowflakes Database `WCD_LAB`'s SCHEMA `sakila` (This will be our OLTP Database) as Snowflake has `sql file size limit`
+* Create a Database `WCD_LAB` on Snowflake using the following command
+```sql
+CREATE DATABASE IF NOT EXISTS WCD_LAB
+```
+* Download DBeaver from Microsoft Store
+* Use the following credentials [Source Video](https://www.youtube.com/watch?v=u_q_SHZUq0U)
+```md
+Host: f******.us-east-2.aws.snowflakecomputing.com
+Database: WCD_LAB
+Warehouse: COMPUTE_WH
+Username: S*******
+Password: ******
+Role: ACCOUNTADMIN
+Snowflake Driver: Release 3.13.34
+```
+* Test Connection
+* Finish
+* Load data into WCD_LAB Database into the schema `sakila` use the sql script [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/1_os_db_creation.sql)
+* Run the entire script
+* Check if all the 15 tables are loaded
 
+##### Business Questions
+1. List the total revenue of each `store` everyday. (Payment, Rental, Inventory, Staff, Store, Address, City, Country)
+2. List the total revenue of totally everyday. (Calendar)
+3. List the top store according to their weekly revenue every week.
+4. List top sales clerk who have the most sales each day/week/month.
+5. Which film is the top film each week/month in each store/totally? (Film)
+6. Who are our top 10 customers each month/year? (Customer)
+7. Is there any store the sales is in a decline trend (within the recent 4 weeks the avg sales of each week is declining)
+
+##### Step 1 - Conceptual Data Model
+* **Steps**:
+    * Identify the  **business processes**:
+        * Looked at the schema and the business questions
+        * A customer_id with payment_id from staff_id rents a rental item with rental_id (this is an item with inventory_id (with film_id, store_id)) with return date
+    * Identify **high-level entities** :
+        * Noted which tables have the info to answer the business question
+        * `Store, Payment, Rental, Inventory, Staff, Address, City, Country, Calendar, Film, Customer`
+    * No details about keys, schema, or storage.
+
+##### Step 2 - Logical Data Model
+* **Steps**:
+    * Run SQL Queries on the Database to understand the structure of the DB
+        * Example Queries are [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/2_db_exploration.sql)
+        * Understanding from the queries:
+            * Each record in the payment table contains one rental transaction which is recorded when the dvd is returned and the payment is made i.e one payment_id has exactly one rental_id
+            * one transaction per row
+            * 5 payments with NULL rental_id in the payment table
+            * 182 records in the rental table are not available in the payment table
+            * 182 (above) + 1 more records in the rental table have null return dates
+            * These NULL records are missing data and therefore should be ignored
+            * The rental table has only one record per (customer_id, inventory_id) further confirming that the rental table only holds details about returns
+    * Decide **grain of the fact table** (e.g., “one row per sales transaction”).
+        * customer_id returns on date_id the rented dvd of film_id from staff_id at strore_id by paying amount  
+    * Define **facts** (measures like sales amount, quantity)
+        * Sales
+    * Required **dimensions**: Based on the business questions we need the following dimensions
+        * Store
+        * Calendar/Date
+        * Film
+        * Staff
+        * Customer
+        * Questions: 
+            * Will the staff, store, customer address be inside that dimension or a seperate address dimension?
+            * Staff and Store will have to be seperate as the business questions have questions for them seperately
+    * Find the mapping between the DB & DW tables [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/ERDiagram.xlsx)
+    * Show relationships between facts and dimensions (Star Schema or Snowflake)
+        * Star Schema
+
+##### Step 3 - Physical Data Model
+
+###### DDL
+
+###### DML
+
+---
 ## Week 6 - Data Transformation - SQL in ETL and Data Loading
 ## Week 7 - Data Transformation - Data Modeling and ETL in the Project
 ## Week 8 - Data Transformation - DBT for ETL
