@@ -3384,6 +3384,24 @@ Snowflake Driver: Release 3.13.34
 
 ---
 ## Week 6 - Data Transformation - SQL in ETL and Data Loading
+Data Loading
+* Full Load / Refresh
+  * Less Volume
+  * Data that does not change often Eg: Dimensuon table / static table
+  * History or one time load
+  * Data Load frequency is less eg: once a month
+  * Does not have Incremental Identifier Column
+* Incremental Load / Update
+  * Huge Volume
+  * Have Incremental Identifier Column
+  * Fact Table
+  * Frequency of load is huge
+
+* Slowly changing Dimensions
+things that describe the event are in the dimnesion table
+
+What are they: 
+---
 ## Week 7 - Data Transformation - Data Modeling and ETL in the Project
 ## Week 8 - Data Transformation - DBT for ETL
 ## Week 9 - Data Analyzation - Data Analyzation with Metabase and Project Summary
