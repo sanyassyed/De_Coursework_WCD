@@ -3367,7 +3367,7 @@ Snowflake Driver: Release 3.13.34
         ![Star Schema](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/2_star_schema.png)
 ##### Step 3 - Physical Data Model
 * Find the sql code for below [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/3_ddl_dml.sql)
-* Calendar Table Creation File is [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/onetime_calendar_dim.sql)
+* Not Used: ~~Calendar Table Creation File is [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/onetime_calendar_dim.sql)~~
 * Create a new schema `sakila_anl`
 
 ###### DDL
