@@ -3287,113 +3287,11 @@ The **three levels of data modeling** (Conceptual, Logical, Physical) **still ap
 ---
 
 #### Lab 1 - MiniProject - Sakila DVD Store Dataset - Data Modelling & ETL
-* Documentation can be found [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/)
+* Project Folder [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/)
+* Project Readme [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/README.md)
 * [Project Description](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/project_description.pdf)
 
-##### Step 0: Create OLTP Database on Snowflake using DBeaver
-* Load Data into Snowflakes Database `WCD_LAB`'s SCHEMA `sakila` (This will be our OLTP Database) as Snowflake has `sql file size limit`
-* Create a Database `WCD_LAB` on Snowflake using the following command
-```sql
-CREATE DATABASE IF NOT EXISTS WCD_LAB
-```
-* Download DBeaver from Microsoft Store
-* Use the following credentials [Source Video](https://www.youtube.com/watch?v=u_q_SHZUq0U)
-```md
-Host: f******.us-east-2.aws.snowflakecomputing.com
-Database: WCD_LAB
-Warehouse: COMPUTE_WH
-Username: S*******
-Password: ******
-Role: ACCOUNTADMIN
-Snowflake Driver: Release 3.13.34
-```
-* Test Connection
-* Finish
-* Load data into WCD_LAB Database into the schema `sakila` use the sql script [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/1_os_db_creation.sql)
-* Run the entire script
-* Check if all the 15 tables are loaded
-
-##### Business Questions
-1. List the total revenue of each `store` everyday. (Payment, Rental, Inventory, Staff, Store, Address, City, Country)
-2. List the total revenue of totally everyday. (Calendar)
-3. List the top store according to their weekly revenue every week.
-4. List top sales clerk who have the most sales each day/week/month.
-5. Which film is the top film each week/month in each store/totally? (Film)
-6. Who are our top 10 customers each month/year? (Customer)
-7. Is there any store the sales is in a decline trend (within the recent 4 weeks the avg sales of each week is declining)
-
-##### Step 1 - Conceptual Data Model
-* **Steps**:
-    * Identify the  **business processes**:
-        * Looked at the schema and the business questions
-        * A customer_id with payment_id from staff_id rents a rental item with rental_id (this is an item with inventory_id (with film_id, store_id)) with return date
-    * Identify **high-level entities** :
-        * Noted which tables have the info to answer the business question
-        * `Store, Payment, Rental, Inventory, Staff, Address, City, Country, Calendar, Film, Customer`
-    * No need to worry about details on keys, schema, or storage at this stage
-
-##### Step 2 - Logical Data Model
-* **Steps**:
-    * [Understanding Requirements](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/2_data_modelling_illustraion.pdf)
-    * Run SQL Queries on the Database to understand the structure of the DB
-        * Example Queries are [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/2_db_exploration.sql)
-        * Understanding from the queries:
-            * Each record in the payment table contains one rental transaction which is recorded when the dvd is returned and the payment is made i.e one payment_id has exactly one rental_id
-            * one transaction per row
-            * 5 payments with NULL rental_id in the payment table
-            * 182 records in the rental table are not available in the payment table
-            * 182 (above) + 1 more records in the rental table have null return dates
-            * These NULL records are missing data and therefore should be ignored
-            * The rental table has only one record per (customer_id, inventory_id) further confirming that the rental table only holds details about returns
-    * Decide **grain of the fact table** (e.g., “one row per sales transaction”).
-        * customer_id returns on date_id the rented dvd of film_id from staff_id at strore_id by paying amount
-    * Define **facts** (measures like sales amount, quantity)
-        * Sales with the field is_declining (True or False)
-        * Why is the is_declining flag added to the fact table itself? Why not compute it on the fly?
-            * Capture the “what happened” at a point in time.
-            * If you miss capturing them when they happen, you can’t “recreate” them exactly afterward.
-            * If it’s purely analytical insight → compute when needed.
-            * If it’s part of the business event or decision-making → store it in the fact table.
-    * Required **dimensions**: Based on the business questions we need the following dimensions
-        * Store
-        * Calendar/Date
-        * Film
-        * Staff
-        * Customer
-        * Questions: 
-            * Will the staff, store, customer address be inside that dimension or a seperate address dimension?
-            * Staff and Store will have to be seperate as the business questions have questions for them seperately
-    * Find the mapping between the DB & DW tables [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/2_er_diagram.xlsx)
-    * Show relationships between facts and dimensions (Star Schema or Snowflake)
-        * Star Schema
-        * Use `Lucid` or `draw.io` to draw the ER Star Schema
-        * Or use the ER Diagram generated by DBeaver once the dimensions and facts are created
-        ![Star Schema](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/2_star_schema.png)
-##### Step 3 - Physical Data Model
-* Find the sql code for below [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/3_ddl_dml.sql)
-* Calendar Dimension:
-    * Not Used: ~~Calendar Table Creation File is [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/onetime_calendar_dim.sql)~~
-    * Used: Generated a calendar using my own sql code
-    * Optional: dbt has a sql code in sql functions jinya which can generate calendar table for you. Code is [here](https://github.com/dbt-labs/dbt-utils/blob/main/macros/sql/date_spine.sql)
-* Create a new schema `sakila_anl`
-* Make sure **Dimensions** & **Fact** tables have their OWN PRIMARY KEYS (Surrogate Keys)
-
-###### DDL
-* Define surrogate keys as auto-increment columns in each table.
-* Create the tables (5 dimensions & 1 fact) using the DDL script.
-
-###### DML
-* Use `LEFT JOIN` to make sure the parent table data is not lost
-* Level 1 Fact Table Creation (base fact):
-    * `customer_id` returns on `date_id` dvd of `film_id` from `staff_id` at `strore_id` by paying `amount`
-* Level 2 Fact Table Creation (add derived attributes)
-    * From the transient table, compute the is_declining flag and add it as a new column to the fact table.
-
-###### NOTES
-![Notes 1](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/wk5_sakila_dvd_miniproject_notes1.jpg)
-![Notes 2](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/wk5_sakila_dvd_miniproject_notes2.jpg)
-###### TODO
-* Complete the DDL & DML Stages
+---
 
 ### Keywords & Terminologies
 * **Conformed Dimensions**: is a single, shared dimension table with consistent attributes and meaning which is used across multiple fact tables, such as a "Date" dimension used by both Sales and Inventory fact tables to ensure data can be compared across different business processes. Another common example is a "Product" dimension, containing shared information like product ID, name, and category, which can be referenced by sales facts, inventory facts, and other related data tables. 
@@ -3401,12 +3299,48 @@ Snowflake Driver: Release 3.13.34
 * **Surrogate Key**: New Primary Key for the Dimension and Fact table that is system generated so the tables are not dependant on the databases primary keys / source keys (which could change over time)
 * **Lookup Key**: The original primary keys (source keys / natural key) in the database can be used as keys to look up data
 
-### TODO: 
-* Complete the DDL (Redo it to include the surrogate key)
-* Complete the DML
 ---
 
 ## Week 6 - Data Transformation - SQL in ETL and Data Loading
+
+### Environments and Schemas Naming
+#### What are environments and schemas?
+```yaml
+Environment (Dev / Test / Prod)
+    ├── Schema: Landing (Raw)
+    ├── Schema: Enterprise (Staging)
+    └── Schema: Business (Dimensional models / Data marts)
+```
+
+#### Typical Zone Flow in Snowflake
+```pgsql
+[Files arrive]
+     |
+     v
+[Stage] (Snowflake internal/external file holding area)
+     |
+     v
+Raw Schema (Landing)    → exact copy of source (Bronze)
+     |
+     v
+Staging/Enterprise Schema → cleansed, standardized (Silver)
+     |
+     v
+Business/Mart Schema     → facts & dims (Gold)
+```
+
+#### Naming Cheat Sheet (Mappings)
+| Concept           | Course Term            | Common Terms        | Databricks Style | Snowflake Equivalent                  |
+| ----------------- | ---------------------- | ------------------- | ---------------- | ------------------------------------- |
+| Raw copy          | `landing_zone`         | Raw, Landing        | Bronze           | Raw schema (after loading from stage) |
+| Cleaned           | `enterprise_zone`      | Staging, Conformed  | Silver           | Staging schema (cleaned tables)       |
+| Business models   | `business_zone1/2/3`   | Data Mart, Business | Gold             | Business schema with facts & dims     |
+| File holding area | *(not in your course)* | File Staging        | N/A              | Snowflake Stage (`@stage_name`)       |
+
+
+* In Snowflake, stage (file area) comes before raw schema.
+* In ETL world, staging schema (tables) comes after raw.
+* They are two different concepts that unfortunately share the same word “staging.”
 
 ### Prework
 
@@ -3625,6 +3559,10 @@ Snowflake Driver: Release 3.13.34
 * NOTE:
     * Initial load logic and delta load logic should be same i.e sql code used should work for both
 ---
+#### Lab - MiniProject - Walmart Dataset - Data Modelling & Data Loads
+* Project Folder [here](../analytical/week6/MiniProjectWalmartDimensionalModelling/)
+* Project Readme [here](../analytical/week6/MiniProjectWalmartDimensionalModelling/README.md)
+* [Project Description](../analytical/week6/MiniProjectWalmartDimensionalModelling/project_description.pdf)
 
 ## Week 7 - Data Transformation - Data Modeling and ETL in the Project
 ## Week 8 - Data Transformation - DBT for ETL
