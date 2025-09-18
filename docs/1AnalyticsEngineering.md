@@ -2167,6 +2167,7 @@ Extra concepts
         - `Schema` : Stores the meta data about the schemas i.e Tables, Views etc's information; column information etc.
 
 - Schemas:  
+  - Snowflake is case sensitive if string is within quotes. For example these two are different schemas `TPCDS."raw"` and `TPCDS.RAW`
   - Logical groupings within databases used to organize data and objects.  
   - Examples of schema zones in a data pipeline:
     - `Landing Zone Schema:` Where raw data is ingested
@@ -3007,7 +3008,7 @@ FILE_FORMAT =CSV_COMMA;
 * **3NF**: No transitive dependencies. There shouldn't be any column that is dependant on another column (non primary key)
 * **4NF**
 * **5NF**: Most Normalized
-* **Referantial Integirty**: If a column is using referencing like foreign key; then that data should be available at the referenced point
+* **Referential Integirty**: If a column is using referencing like foreign key; then that data should be available at the referenced point
 * **Denormalization**
     * Adding redundancy to speed up reads (common in warehouses). Spend more on compute rather than storage
     * Reduces the need to make joins
@@ -3285,7 +3286,10 @@ The **three levels of data modeling** (Conceptual, Logical, Physical) **still ap
 * Polpulate data from one table to another
 ---
 
-#### Lab 1 - MiniProject
+#### Lab 1 - MiniProject - Sakila DVD Store Dataset - Data Modelling & ETL
+* Documentation can be found [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/)
+* [Project Description](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/project_description.pdf)
+
 ##### Step 0: Create OLTP Database on Snowflake using DBeaver
 * Load Data into Snowflakes Database `WCD_LAB`'s SCHEMA `sakila` (This will be our OLTP Database) as Snowflake has `sql file size limit`
 * Create a Database `WCD_LAB` on Snowflake using the following command
@@ -3367,41 +3371,261 @@ Snowflake Driver: Release 3.13.34
         ![Star Schema](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/2_star_schema.png)
 ##### Step 3 - Physical Data Model
 * Find the sql code for below [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/3_ddl_dml.sql)
-* Not Used: ~~Calendar Table Creation File is [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/onetime_calendar_dim.sql)~~
+* Calendar Dimension:
+    * Not Used: ~~Calendar Table Creation File is [here](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/onetime_calendar_dim.sql)~~
+    * Used: Generated a calendar using my own sql code
+    * Optional: dbt has a sql code in sql functions jinya which can generate calendar table for you. Code is [here](https://github.com/dbt-labs/dbt-utils/blob/main/macros/sql/date_spine.sql)
 * Create a new schema `sakila_anl`
+* Make sure **Dimensions** & **Fact** tables have their OWN PRIMARY KEYS (Surrogate Keys)
 
 ###### DDL
-* Add Surrogate Key to all the tables (auto increment key)
-* Create the tables (5 Dimensional & 1 Fact)
+* Define surrogate keys as auto-increment columns in each table.
+* Create the tables (5 dimensions & 1 fact) using the DDL script.
 
 ###### DML
 * Use `LEFT JOIN` to make sure the parent table data is not lost
-* Level 1 of Fact Table Creation using Table:
-    * customer_id returns on date_id the rented dvd of film_id from staff_id at strore_id by paying amount
-*  Level 1 of Fact Table Creation using Transient Table and then adding column to table created in Level 1:
-    * After computing this level; calculate the `is_declining` flag value and add this column to the fact table
+* Level 1 Fact Table Creation (base fact):
+    * `customer_id` returns on `date_id` dvd of `film_id` from `staff_id` at `strore_id` by paying `amount`
+* Level 2 Fact Table Creation (add derived attributes)
+    * From the transient table, compute the is_declining flag and add it as a new column to the fact table.
 
+###### NOTES
+![Notes 1](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/wk5_sakila_dvd_miniproject_notes1.jpg)
+![Notes 2](../analytical/week5/MiniProjectDvdStoreDimentionalModelling/wk5_sakila_dvd_miniproject_notes2.jpg)
+###### TODO
+* Complete the DDL & DML Stages
 
+### Keywords & Terminologies
+* **Conformed Dimensions**: is a single, shared dimension table with consistent attributes and meaning which is used across multiple fact tables, such as a "Date" dimension used by both Sales and Inventory fact tables to ensure data can be compared across different business processes. Another common example is a "Product" dimension, containing shared information like product ID, name, and category, which can be referenced by sales facts, inventory facts, and other related data tables. 
+* **Referential Integirty**: If a column is using referencing like foreign key; then that data should be available at the referenced point 
+* **Surrogate Key**: New Primary Key for the Dimension and Fact table that is system generated so the tables are not dependant on the databases primary keys / source keys (which could change over time)
+* **Lookup Key**: The original primary keys (source keys / natural key) in the database can be used as keys to look up data
+
+### TODO: 
+* Complete the DDL (Redo it to include the surrogate key)
+* Complete the DML
 ---
+
 ## Week 6 - Data Transformation - SQL in ETL and Data Loading
-Data Loading
-* Full Load / Refresh
-  * Less Volume
-  * Data that does not change often Eg: Dimensuon table / static table
-  * History or one time load
-  * Data Load frequency is less eg: once a month
-  * Does not have Incremental Identifier Column
-* Incremental Load / Update
-  * Huge Volume
-  * Have Incremental Identifier Column
-  * Fact Table
-  * Frequency of load is huge
 
-* Slowly changing Dimensions
-things that describe the event are in the dimnesion table
+### Prework
 
-What are they: 
+#### Slowly changing Dimensions (SCD)
+* Source [Video](https://youtu.be/Sg2AAk1vwEs?si=bD2XDfHEiozWzgY-)
+* Things that describe the `event` eg: a sale/transaction are in the dimension table.
+* Dimension values can change
+    * Customer gets married
+        * Name Change
+        * Marital Status
+    * Departments change segments or regions they are assigned
+        * Prior Sales belong to Old Region
+        * New Sales belong to New Region
+    * Employees change roles
+* Do you need to reflect these changes in your reports?
+
+##### Types Of SCDs
+* Type 1: Update with new value
+    * Update in place; no history is maintained, you have only one row per customer in the dimension table
+    * Eg: replace single with married
+    * If historic data is aggregrated then even if people were single at that time it has now been updated as married and that would be a wrong assumption 
+* Type 2: Maintain History
+    * We maintain a history using columns like `last_updated` date column or `current_value` boolean column (flag column) which will help us track which is the latest upto date record for the customer, item, store etc.
+    * ![SCD-Type 2](../analytical/week5/scd.png)
+    * Now the fact table will also contain multiple rows for the same customer; therefore when calculating make sure you are filtering out based on the last_updated or current_value column in the fact table to get the latest upto date record
+* Type 3: Keep Limited History
+    * Using a seperate column for each version 
+    * Hard to find which is the column that has the latest value if the columns are not named properly
+    * You have to decide ahead of time how many extra columns you need to hold the older values
+* Type 0: Never Update/Change. Just keep the original value.
+* Type 4: Maintain a seperate history table
+* Type 5: Seperate changing values into a mini dimension
+* Type 6: Combines Type 1, 2 and 3
+* Surrogate Key in SCDs: find steps [here](#loading-dimension-table)
+
 ---
+
+### Lectures & Lab
+#### Lecture 1 - SQL in ETL
+[Lecture Slides](../analytical/week6/W6.1%20SQL%20in%20ETL.pdf)
+##### Topics Covered
+* Inner Join
+* Right Join
+* Left Join
+* Full Join
+* Cross Join
+* MERGE :
+    * Useful when performing `INCREMENTAL Loads`
+    * Uses two keywords - 
+        * `MATCHED`: if matching record found then do the something (usually update)
+        * `NOT MATCHED`: if matching record not found the do something (usually insert)
+* CLUSTERING
+---
+
+#### Lecture 2 - Data Loading
+* [Lecture Slides](../analytical/week6/W6.2%20Data%20Loading.pdf)
+* Walmart Project
+* Once the models are created
+* Data is Loaded and tested
+* We performed Initial Load
+* Now we think about how are we going to manage future Data loads
+
+##### Data Loading
+* Full Load / Refresh
+    * Less Volume
+    * Data that does not change often Eg: Dimension table / static table
+    * History or one time load
+    * Data Load frequency is less eg: once a month
+    * Does not have Incremental Identifier Column
+* Incremental Load / Update
+    * Huge Volume
+    * Have Incremental Identifier Column to know which records are new and which are old
+    * Fact Table usually sees the most changes as dimensions don't change much eg: sales data is more compared to vendor data etc.
+    * Frequency of load is huge
+    * Different strategy for different types of loads eg: daily loads, weekly loads, monthly loads etc
+    * Snowflake usually handles batch loads. 
+    * Streaming loads are handled by different platforms built for that purpose because snowflake can be expensive for that.
+    * Steps:
+        * Initial Data Load (IDL) - the very first load
+        * Delta Load - all loads after the first load are called delta loads
+* Strategies: What are the methods used during Delta loads to load data into the following
+    * **Fact tables**  
+        * Are usually *append-only*, because transactions behave like logs 
+        
+    * **Dimension tables**
+        * Often require *updates* 
+        * Append new records (e.g., if a customer changes address or a product changes category)
+
+##### Loading Fact Table
+* Fact tables usually store *transactional or event-level data* (sales, clicks, payments, shipments, etc.). These are indeed *append-only* because each new transaction/event gets recorded as a new row. They behave like logs — you don’t typically go back and change old log entries. There are **exceptions** where fact tables may need updates:
+    * **Late-arriving facts**: when a transaction was delayed in reaching the warehouse.
+    * **Corrections**: sometimes transactions are cancelled, refunded, or corrected. Instead of deleting the row, often an adjustment (negative entry) is appended, but in some cases an update might be needed.
+    * **Derived metrics**: if you maintain pre-aggregated or snapshot-style fact tables, updates can happen.
+* ✅ Steps to perform incremental load in the DW `Fact table`:
+    * In the DW: SELECT THE MAX(date)
+    * In the DW: Cut i.e delete the records of MAX(date)
+    * From the DB(Operational DB) copy all records starting from MAX(date) and copy into the fact table in the DW
+
+##### Loading Dimension Table
+* Type 0: Never change & Never update. Eg: in single load cases
+    * Load once & do nothing
+* Type 1: Update with new value
+    * Eg: Customer name
+    * Eg: Customer Address
+    * ✅ Steps to perform Update in the DW for `Type 1 SCD Table` 
+        * Just update the record in the dimension table with the new value 
+        * Because the surrogate key does not change you don't make any change in the fact table
+* Type 2: Maintain History (new row per change, unlimited history)
+    * We maintain a history using columns like `last_updated` date column or `current_value` boolean column (flag column) which will help us track which is the latest upto date record for the customer, item, store etc.
+    * ![SCD-Type 2](../analytical/week5/scd.png)
+    * Now the fact table will also contain multiple rows for the same customer; therefore when calculating make sure you are filtering out based on the last_updated or current_value column in the fact table to get the latest upto date record
+    * ✅ Steps to perform Update in the DW for `Type 2 SCD Table` [detailed answer with SQL code eg](https://chatgpt.com/s/t_68cad762daf48191a1bbc367b7a33022)
+        * 🔹 Before updating
+            * [ ] **Identify the natural key** (e.g., `employee_code`) from the source system.
+            * [ ] **Check if the record exists in the dimension table**.
+            * [ ] **Find the current active surrogate key** (`is_current = TRUE`).
+
+        * 🔹 If the record has changed
+            * [ ] **Expire the old record**
+                * Set `valid_to = yesterday (or change effective date - 1)`
+                * Set `is_current = FALSE`
+            * [ ] **Insert a new record** in the dimension table with:
+                * New business key or updated attributes
+                * `valid_from = change effective date`
+                * `valid_to = NULL`
+                * `is_current = TRUE`
+
+        * 🔹 Fact table handling
+
+            * [ ] **Leave old facts unchanged** (they continue to point to the old surrogate key).
+            * [ ] **Insert new fact records** pointing to the new surrogate key for transactions after the change effective date.
+
+        * 🔹 After update
+
+            * [ ] **Validate history**
+
+                * Each natural key should have a closed record (old) and an open record (current).
+                * Only **one active record** per natural key should have `is_current = TRUE`.
+
+            * [ ] **Validate fact linkage**
+
+                * Facts before the change point to the old surrogate key.
+                * Facts after the change point to the new surrogate key.
+
+        * 👉 In short:
+
+            1. **Detect change**
+            2. **Expire old record**
+            3. **Insert new record**
+            4. **Update facts with new surrogate key** (only for new transactions)
+            5. **Validate**
+ 
+* Type 3: Keep Limited History (same row, add columns for old values, limited history)
+    * Limited Past
+    * Eg: Region of sales
+    * ✅ Steps to perform Update in the DW for `Type 3 SCD Table` [detailed answer with SQL code eg](https://chatgpt.com/s/t_68cad72d77548191a941ddcb82884c1b)
+        * 🔹 Before updating
+            * [ ] **Identify the natural key** from the source system (e.g., `employee_code`).
+            * [ ] **Check if the record exists** in `dim_employee`.
+        * 🔹 If the record has changed
+            * [ ] **Update the existing row**:
+                * Move current value to the `prev_` column (e.g., `prev_employee_code = employee_code`).
+                * Update the current column with the new value (`employee_code = new value`).
+                * Keep the **same surrogate key**.
+        * 🔹 Fact table handling
+            * [ ] **No updates needed for historical facts** — they still point to the same surrogate key.
+            * [ ] **Insert new fact records** pointing to the same surrogate key (facts don’t need to switch like in Type 2).
+        * 🔹 After update
+            * [ ] Verify that:
+                * Each row has the **latest value** in the main column.
+                * The **previous value** is stored in the `prev_` column.
+                * Only **one row per entity** (no duplicates like in Type 2).
+
+* Type 4 Steps: Keep a seperate table to maintain history
+    * Used maninly when your dimensions are changing a lot
+
+##### Demo
+* Use the scripts from the link in the lecture slides to load the .csv files for walmart database from [here](../analytical/week6/walmart%20raw%20data/)
+* Use DBeaver to load the data from .csv files to `WCD_LCT4.LAND` database.schema on Snowflake
+* Project Steps
+    * Full Load: We will have full tables `full_sales`(fact) & `full_product`(dim) which will act as our source db tables for practice
+        * Create tables in `WCD_LCT4.LAND` (If using tools like Airbyte this and the next step will be done by it)
+        * Load all csv's to `WCD_LCT4.LAND` schema to the corresponding tables
+    * Incremental Load - Initial Load: We will then create the actual `sales` and `products` tables 
+        * Create tables in `WCD_LCT4.LAND` (If using tools like Airbyte this and the next step will be done by it)
+        * Load limited data from `full_sales` to `sales` etc. Data from `2011-01-01` to `2011-12-31` and same for product
+        * We load the remaining data in batches later (delta load)
+        * 
+    * Create tables in `WCD_LCT4.ENTERPRISE` schema for all the tables in the landing zone
+    * Load the following tables in `WCD_LCT4.ENTERPRISE` with data
+        * calendar_dim - Type 0 Table
+        * product_dim - 
+        * daily_sales - Fact Table
+    
+
+
+##### Steps to Perform for 
+1. **Data Modelling**
+    * Conceptual model ↔ Identify business process
+        * Both are about scoping the business problem and agreeing with stakeholders.
+        * Conceptual Model - What data is important to the business?
+        * Business Process - Decide which business process to model
+    * Conceptual & Logical ↔ Declare grain
+        * Decide what each row in the fact table represents (e.g., one line item per order, one daily balance per account).
+        * This step sits between conceptual and logical—it’s about defining the granularity of facts.
+    * Logical model ↔ Choose dimensions, choose measures
+        * At this stage, you’re designing the star schema (fact and dimension tables) based on business needs.
+        * Logical Model - How will the data be organized logically?
+        * Choose dimensions & measures - Identify the descriptive context for the facts (e.g., Date, Customer, Product, Region).
+        * This is part of the logical modeling stage, turning business language into dimensional structures.
+    * Physical model ↔ Implement star schema in database
+        * Here, you create tables, set datatypes, indexes, and optimize for queries.
+        * Physical Model - How will the data be implemented in the chosen database system?
+
+1. **Data Loading**
+* NOTE:
+    * Initial load logic and delta load logic should be same i.e sql code used should work for both
+---
+
 ## Week 7 - Data Transformation - Data Modeling and ETL in the Project
 ## Week 8 - Data Transformation - DBT for ETL
 ## Week 9 - Data Analyzation - Data Analyzation with Metabase and Project Summary
