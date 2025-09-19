@@ -3556,8 +3556,7 @@ Business/Mart Schema     → facts & dims (Gold)
         * Physical Model - How will the data be implemented in the chosen database system?
 
 1. **Data Loading**
-* NOTE:
-    * Initial load logic and delta load logic should be same i.e sql code used should work for both
+* NOTE: Initial load logic and delta load logic should be same i.e sql code used should work for both
 ---
 #### Lab - MiniProject - Walmart Dataset - Data Modelling & Data Loads
 * Project Folder [here](../analytical/week6/MiniProjectWalmartDimensionalModelling/)
