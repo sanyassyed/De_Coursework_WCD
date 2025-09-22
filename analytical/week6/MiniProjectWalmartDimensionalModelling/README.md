@@ -2,6 +2,9 @@
 * Project Description - [here](./project_description.pdf)
 * Data - [here](./data/)
 
+## Data Lineage
+![Data Lineage](./docs/lineage_1.png)
+
 ## Tools
 * DBeaver - To create and load; database, schemas and tables as `Snowflake` has a limit on the sql query script
 * Snowflake - Where the actual database resides
