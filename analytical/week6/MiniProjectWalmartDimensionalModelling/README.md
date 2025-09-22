@@ -28,24 +28,27 @@
     * Choose the measures - fact_daily_sales, fact_weekly_sales
 * Physical Model
     * Load data from OLTP source into `LAND` 
-        * Create tables in the `LAND` schema [script](./scripts/load_into_landing.sql)
+        * Create tables in the `LAND` schema [script](./scripts/1_load_into_landing.sql)
         * Load data into each table from [here](./docs/) by left clicking on the table in DBeaver and selecting `Import Data` option
-    * DDL [script](./scripts/ddl.sql) to **CREATE** the following tables
+    * DDL [script](./scripts/2_ddl.sql) to **CREATE** the following tables
         * dim_calendar
         * dim_store
         * dim_product
         * fact_daily_sales
         * fact_weekly_sales
-    * DML [script](./scripts/dml.sql) to **LOAD** the following tables ising the **Incremental Load** DATA LOADING Methodology
+    * DML [script](./scripts/3_dml.sql) to **LOAD** the following tables ising the **Incremental Load** DATA LOADING Methodology
         * dim_calendar 
             * `Initial Load` - INSERT - Type 0 SCD
         * dim_store - Type 2
-            * `Initial Load` - INSERT
-            * `Delta Load` - UPDATE - Type 2 SCD
+            * `Initial Load` & `Delta Load` - Same script for INSERT & UPDATE - Type 2 SCD
         * dim_product - Type 2
-            * `Initial Load` - INSERT
-            * `Delta Load` - UPDATE - Type 2 SCD
+            * `Initial Load` & `Delta Load` - Same script for INSERT & UPDATE - Type 2 SCD
 
+## Update and Test
+* Done [here](./scripts/4_setup_and_eda_updates.sql)
+
+## Todo:
+Add foreign key in the ddl
 
 ## Reference
 * Week 6 - Lecture 2 & Lab
