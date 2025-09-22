@@ -24,20 +24,28 @@
     * Identify the grain
 * Logical Model
     * Star Schema - done [here](./docs/Data%20Model%20of%20Walmart.xlsx) `data model` sheet
-    * Choose the dimensions - calendar_dim, product_dim, store_dim
-    * Choose the measures - daily_fact, weekly_fact
+    * Choose the dimensions - dim_calendar, dim_product, dim_store
+    * Choose the measures - fact_daily_sales, fact_weekly_sales
 * Physical Model
     * Load data from OLTP source into `LAND` 
         * Create tables in the `LAND` schema [script](./scripts/load_into_landing.sql)
         * Load data into each table from [here](./docs/) by left clicking on the table in DBeaver and selecting `Import Data` option
-    * DDL [script](./scripts/ddl.sql)
-    * DML [script](./scripts/dml.sql)
+    * DDL [script](./scripts/ddl.sql) to **CREATE** the following tables
+        * dim_calendar
+        * dim_store
+        * dim_product
+        * fact_daily_sales
+        * fact_weekly_sales
+    * DML [script](./scripts/dml.sql) to **LOAD** the following tables ising the **Incremental Load** DATA LOADING Methodology
+        * dim_calendar 
+            * `Initial Load` - INSERT - Type 0 SCD
+        * dim_store - Type 2
+            * `Initial Load` - INSERT
+            * `Delta Load` - UPDATE - Type 2 SCD
+        * dim_product - Type 2
+            * `Initial Load` - INSERT
+            * `Delta Load` - UPDATE - Type 2 SCD
 
-## Data Loading
-* Incremental Load - `Initial Load` & `Delta Load`
-* calendar_dim - Type 0
-* product_dim - Type 2
-* store_dim - Type 2
 
 ## Reference
 * Week 6 - Lecture 2 & Lab
