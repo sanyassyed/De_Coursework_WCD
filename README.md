@@ -42,6 +42,8 @@ This repository contains notes, projects, and exercises from the Applied Data En
 - **Skills**: CAP Theorem, NoSQL Data Modeling, ELK Stack.
 - **Tools**: DynamoDB, Elasticsearch, Logstash, Kibana.
 - **Project**: Ingest and analyze log data using Elasticsearch.
+    - [Project:  Walmart data - ETL and Data Loads using Snowflake](./analytical/week6/MiniProjectWalmartDimensionalModelling/): This mini project involves performing ETL and Data Load of walmart database using Snowflake using the Kimball Dimensional Modelling Methodology
+    
 
 ### 7. Data Lakehouse and Streaming
 - **Focus**: Combining Data Lake and Warehouse with real-time data processing.

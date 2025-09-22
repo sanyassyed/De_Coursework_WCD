@@ -1,4 +1,5 @@
 # Mini Project - WALMART - ETL and Data Loads
+This project uses **Snowflake** to perform data load of Walmart data using Kimball dimentional modelling methodology
 * Project Description - [here](./project_description.pdf)
 * Data - [here](./data/)
 
