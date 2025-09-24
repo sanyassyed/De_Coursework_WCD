@@ -3298,7 +3298,7 @@ The **three levels of data modeling** (Conceptual, Logical, Physical) **still ap
 * **Referential Integirty**: If a column is using referencing like foreign key; then that data should be available at the referenced point 
 * **Surrogate Key**: New Primary Key for the Dimension and Fact table that is system generated so the tables are not dependant on the databases primary keys / source keys (which could change over time)
 * **Lookup Key**: The original primary keys (source keys / natural key) in the database can be used as keys to look up data
-
+* **Data Dictionary**: A Table with info about the columns in a dataset and what they mean
 ---
 
 ## Week 6 - Data Transformation - SQL in ETL and Data Loading
@@ -3341,6 +3341,22 @@ Business/Mart Schema     → facts & dims (Gold)
 * In Snowflake, stage (file area) comes before raw schema.
 * In ETL world, staging schema (tables) comes after raw.
 * They are two different concepts that unfortunately share the same word “staging.”
+
+DEV_DB
+   ├── RAW schema
+   ├── STAGING schema
+   └── BUSINESS schema
+
+TEST_DB
+   ├── RAW schema
+   ├── STAGING schema
+   └── BUSINESS schema
+
+PROD_DB
+   ├── RAW schema
+   ├── STAGING schema
+   └── BUSINESS schema
+
 
 ### Prework
 
@@ -3564,6 +3580,32 @@ Business/Mart Schema     → facts & dims (Gold)
 * [Project Description](../analytical/week6/MiniProjectWalmartDimensionalModelling/project_description.pdf)
 
 ## Week 7 - Data Transformation - Data Modeling and ETL in the Project
+* Week [instructions](../analytical/week7/eda_and_data_description_wk7_plan.pdf)
+* EDA using snowflake. Find notes related to this week in the project documentation [here](https://github.com/sanyassyed/DataEngineering_Retail_ETL_Pipeline/blob/main/docs/project_creation.md#part-3-eda-and-data-modelling-in-snowflake)
+
+### Lecture 1 - Data Modelling in the project
+#### Dataset info
+* TPC-DS Dataset: It is a standardised Dataset which is used to test Datawarehouse efficiency. Eg: to comapare BigQuery vs Snowflake vs Databricks etc.
+* More info on the dataset [here](https://www.fivetran.com/blog/warehouse-benchmark)
+* 
+#### Retail Project Terminologies
+##### 🔑 Quick Memory Guide
+- **List Price** = Before discount  
+- **Net Price / Sale Price** = After discount  
+- **Net Cost** = Seller’s cost  
+- **Final Cost** = What the buyer actually pays after adding shipping & tax  
+##### ✅ Full Example Walkthrough
+- **List Price:** $1000  
+- **Discount:** $200  
+- **Net Price / Sale Price (after discount):** $800  
+- **Seller’s Net Cost:** $600  
+- **Profit:** $200 (800 – 600)  
+- **Shipping:** $20  
+- **Tax:** $40  
+- **Final Cost (buyer pays):** $860  
+
+
+
 ## Week 8 - Data Transformation - DBT for ETL
 ## Week 9 - Data Analyzation - Data Analyzation with Metabase and Project Summary
 ## Week 10 - Final Project - Project Week

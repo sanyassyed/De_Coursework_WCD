@@ -48,7 +48,7 @@ This project uses **Snowflake** to perform data load of Walmart data using Kimba
         * dim_product - Type 2
             * `Initial Load` & `Delta Load` - Same script for INSERT & UPDATE - Type 2 SCD
 
-## Update and Test
+## Update and Test Delta Load
 * Done [here](./scripts/4_setup_and_eda_updates.sql)
 
 ## Todo:

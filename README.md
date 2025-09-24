@@ -24,6 +24,7 @@ This repository contains notes, projects, and exercises from the Applied Data En
 - **Skills**: ELT, Data Modeling, Snowflake, dbt, Airbyte.
 - **Tools**: Snowflake, Redshift, DBT, Fivetran, Hightouch, Postgres.
 - **Project**: Develop and orchestrate ELT pipelines with dbt.
+    - [Project 1:  Walmart data ETL and Data Loads using Snowflake](./analytical/week6/MiniProjectWalmartDimensionalModelling/): This mini project involves performing ETL and Data Load of Walmart data using Snowflake and the Kimball Dimensional Modelling Methodology
 
 ### 4. Big Data and Data Lake
 - **Focus**: Big Data processing using Spark and Data Lake architecture.
@@ -42,7 +43,6 @@ This repository contains notes, projects, and exercises from the Applied Data En
 - **Skills**: CAP Theorem, NoSQL Data Modeling, ELK Stack.
 - **Tools**: DynamoDB, Elasticsearch, Logstash, Kibana.
 - **Project**: Ingest and analyze log data using Elasticsearch.
-    - [Project:  Walmart data - ETL and Data Loads using Snowflake](./analytical/week6/MiniProjectWalmartDimensionalModelling/): This mini project involves performing ETL and Data Load of walmart database using Snowflake using the Kimball Dimensional Modelling Methodology
     
 
 ### 7. Data Lakehouse and Streaming
