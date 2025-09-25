@@ -326,3 +326,33 @@ Remember to follow these steps when working on the local and remote server respe
         * lsof | grep $HOME/.vscode-server | awk '{ print $2 }' | sort -u
         … then kill those processes, then trying removing the directory again.
         * Restart VSCode.
+
+* VSCode and EC2 Errors:
+    - **Issue Faced**
+        While working on my EC2 instance through **Visual Studio Code Remote SSH**, the connection to the instance kept dropping. Often, the only way to reconnect was to **restart the EC2 instance**, but even then, the connection wouldn’t remain stable for long. The issue became especially frequent when I was running **Docker containers**.
+
+    - **Initial Assumptions**
+        * I suspected the instance was corrupted or that **storage was insufficient**.
+        * I tried increasing the EBS volume, taking snapshots, and even launching new instances from snapshots.
+        * These attempts didn’t solve the problem and were also **increasing my AWS costs**.
+
+    - **Root Cause Discovery**
+        * After completing an in-depth **Linux course**, I became more confident in checking system-level logs.
+        * I looked into the logs at `~/.vscode-server/` and noticed that right before each disconnection, **VS Code extensions were being installed on the remote server**.
+        * The issue traced back to the **automatic installation prompts** in VS Code (e.g., Python extension, Docker extension).
+        * Every time I clicked “Yes” to those prompts, VS Code tried to install large extensions on the remote server, which caused instability and crashes.
+
+    - **Resolution**
+        * I stopped installing extensions directly on the remote server through those VS Code prompts.
+        * Once I disabled that behavior, the EC2 instance ran stably without disconnection issues.
+
+    * **Lesson Learned**
+        * Don’t jump to conclusions like "instance corruption" or "low storage" before investigating properly.
+        * System logs (`~/.vscode-server/logs`) provide valuable insights into connection and runtime issues.
+        * Learning **Linux fundamentals** gave me the ability to troubleshoot at a deeper level.
+        * Persistence is key — instead of giving up, systematically breaking down the problem led me to the root cause.
+
+    * **Situation**: EC2 kept crashing when using VS Code.
+    * **Task**: Needed to maintain a stable development environment.
+    * **Action**: Investigated logs, connected dots with Linux knowledge.
+    * **Result**: Found the real cause (VS Code extension installs) and solved it.

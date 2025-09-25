@@ -3129,6 +3129,12 @@ When people talk about **data warehouse modeling methodologies**, they usually m
 
 #### Lecture 2 - Data Warehouse
 
+* Data Modelling Methodologies
+    * Kimball
+    * Inmon
+    * Data Vault
+    * One Big Table
+
 ##### Key Concepts Discussed:
 * Data Model Schema in DW ( Central Fact Table Connected to Dimention Tables)
 
@@ -3216,7 +3222,7 @@ When people talk about **data warehouse modeling methodologies**, they usually m
     * Step 4: Fact Table
 
 ###### Levels of Data Modelling 
-The **three levels of data modeling** (Conceptual, Logical, Physical) **still apply** when doing **dimensional modeling** (Kimball/Inmon/Data Vault). They just take a slightly different flavor. The excel file with all the below levels is available [here](../analytical/week5/Lecture%20Data%20Model.xlsx)
+The **three levels of data modeling** (Conceptual, Logical, Physical) **still apply** when doing **dimensional modeling** (Kimball/Inmon/Data Vault/One Big Table). They just take a slightly different flavor. The excel file with all the below levels is available [here](../analytical/week5/Lecture%20Data%20Model.xlsx)
 
 * 🔹 1. Conceptual Data Model
 
@@ -3294,7 +3300,8 @@ The **three levels of data modeling** (Conceptual, Logical, Physical) **still ap
 ---
 
 ### Keywords & Terminologies
-* **Conformed Dimensions**: is a single, shared dimension table with consistent attributes and meaning which is used across multiple fact tables, such as a "Date" dimension used by both Sales and Inventory fact tables to ensure data can be compared across different business processes. Another common example is a "Product" dimension, containing shared information like product ID, name, and category, which can be referenced by sales facts, inventory facts, and other related data tables. 
+* **Conformed Dimensions**: is a single, shared dimension table with consistent attributes and meaning which is used across multiple fact tables, such as a "Date" dimension used by both Sales and Inventory fact tables to ensure data can be compared across different business processes. Another common example is a "Product" dimension, containing shared information like product ID, name, and category, which can be referenced by sales facts, inventory facts, and other related data tables.
+* **Role-Playing Dimensions**: A role-playing dimension is a single dimension table that is used multiple times within the same fact table to represent different logical contexts, most commonly a date dimension for "Order Date," "Ship Date," and "Delivery Date". 
 * **Referential Integirty**: If a column is using referencing like foreign key; then that data should be available at the referenced point 
 * **Surrogate Key**: New Primary Key for the Dimension and Fact table that is system generated so the tables are not dependant on the databases primary keys / source keys (which could change over time)
 * **Lookup Key**: The original primary keys (source keys / natural key) in the database can be used as keys to look up data
@@ -3587,7 +3594,32 @@ PROD_DB
 #### Dataset info
 * TPC-DS Dataset: It is a standardised Dataset which is used to test Datawarehouse efficiency. Eg: to comapare BigQuery vs Snowflake vs Databricks etc.
 * More info on the dataset [here](https://www.fivetran.com/blog/warehouse-benchmark)
-* 
+#### Data Modelling Steps
+* EDA on dataset
+* Make **Data dictionary** using tools like to add coulumn descriptions
+    * `documentation in dbt`
+    * `Collibra`
+    * `DataHub`
+    * `Excel`
+* Or add descriptions directly to the table and columns on Snowflake using the following commands
+    * `COMMENT ON TABLE / COLUMN` [more info](https://docs.snowflake.com/en/sql-reference/sql/comment)
+* Make a ERD (Entity Relationship Diagram) of the dataset if not available using tools like
+    * `Lucid` (also lets you convert the ERD to DDL)
+    * `Draw.io`
+* Perform the next stages of Data Modelling (Conceptual, Logical & Physical models)
+    * Conceptual Model:
+        * Identify the Grain:
+            * look at the business requirements
+            * item should also be included in the grain otherwise it will not make sense what the total quantity is for
+            * include warehouse also in the dimension as requirement states it wants to know *inventory on hand at the end of each week in all warehouses*
+    * Logical Model
+        * Choose the Dimensions:
+            * Customer Dimension: 
+                * integrate it and prepare it for SCD Type 2 (currently it does not store history) 
+                * it will include the following tables - `Customer`, `Customer_address`, `Customer_demographics`, `Household_demographics` & `Income_band`
+                * Question to ask: do want to maintain the history only in the customer table or all other dependant tables also? 
+                * Snowflake Schema: If we want history of only customer table then we do SCD Type 2 on only the customer table and then later join the address, etc. In this case the address info etc will be over written but info like customer birthdate, names etc (Which are in the customer table) will have history
+                * Star Schema: If we maintain history for all the above tables we first join them all and then do Type 2 SCD
 #### Retail Project Terminologies
 ##### 🔑 Quick Memory Guide
 - **List Price** = Before discount  
@@ -3604,7 +3636,14 @@ PROD_DB
 - **Tax:** $40  
 - **Final Cost (buyer pays):** $860  
 
-
+### Data RE-LOAD
+* Create a new snowflake account
+* Load the inventory.csv again using Lambda function `wcd-de-b8-snowflake-project`
+    * Change the snowflake account details in config `account identifier`
+    * Run the [script](../script/snowflake/1_setup.sql) to create the DB in Snowflake
+    * Run the lambda code by selecting `Deploy` & `Test`
+    * `Inventory` table in now loaded into TPCDS.RAW schema in Snowflake
+* Use Airbyte [playground]( https://demo.airbyte.io/workspaces/55c39a0b-037d-406c-a1ac-00393b055f18/connections) to load the other 18 tables
 
 ## Week 8 - Data Transformation - DBT for ETL
 ## Week 9 - Data Analyzation - Data Analyzation with Metabase and Project Summary
@@ -3621,3 +3660,23 @@ PROD_DB
 
 
 https://drive.google.com/file/d/1OjflCorv5awMlykK-kYZvl4Er9wPHsx4/view?usp=share_link
+
+## Challenges:
+* EC2 & VSCode Issuse: *"Tell me about a time you faced a technical issue and how you resolved it."* More [here](./setupNotes.md#errors)
+    * **Situation:**
+        * I was working on an AWS EC2 instance and using Visual Studio Code Remote SSH as my main development environment. Very often, my connection to the server would suddenly drop, and the only way I could reconnect was by restarting the instance. Even then, the connection wouldn’t hold for long, especially when I was using Docker containers.
+
+    * **Task:**
+        * My goal was to maintain a stable connection so I could continue building my project, but the frequent crashes were preventing me from making progress.
+
+    * **Action:**
+        * At first, I assumed the issue was related to storage or corruption of the instance. I tried increasing the EBS volume, taking snapshots, and even launching new instances, but none of those attempts solved the problem—and they were adding extra AWS costs.
+        * Instead of giving up, I decided to dig deeper. After completing a Linux course, I felt more confident about checking system logs. I reviewed the logs in `~/.vscode-server/` and noticed that right before each disconnection, VS Code was attempting to install extensions on the server, triggered by small prompts in the editor (for example, Python or Docker extensions). These installations were overloading the server and causing instability.
+        * Once I realized this, I disabled those automatic extension installs. After that, my EC2 instance became stable and I no longer faced random crashes.
+
+    * **Result:**
+        * This experience taught me two key lessons:
+            1. Don’t assume the issue without investigating — logs often hold the real answer.
+            2. Building a solid foundation in Linux helped me troubleshoot more effectively.
+
+    * Overall, I was able to save costs, stabilize my development environment, and continue my project without interruptions.
