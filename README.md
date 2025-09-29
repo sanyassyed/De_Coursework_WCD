@@ -18,13 +18,20 @@ This repository contains notes, projects, and exercises from the Applied Data En
 - **Tools**: Python, AWS S3, AWS EC2, Lambda, Serverless.
 - **Project**: Python applications on cloud and serverless deployments.
     - [Project 1: Job Data Processing and Storage in AWS Cloud](https://github.com/sanyassyed/DataEngineering_Jobs_Data_ETL_Pipeline/tree/main): This mini project involves developing a Python-based data engineering pipeline to extract, transform, and load (ETL) job data from an API into an AWS S3 bucket.
+    - [Project 2: Super Store Data ETL Pipeline in AWS Cloud](https://github.com/sanyassyed/DataEngineering_SuperStore_Data_ETL_Pipeline): This mini project involves developing a cloud-based data processing pipeline using AWS RDS, EC2, S3, Lambda, and a public API endpoint.
+
 
 ### 3. Modern Data Stack
 - **Focus**: Data warehouse technologies and SQL-based ELT transformation.
 - **Skills**: ELT, Data Modeling, Snowflake, dbt, Airbyte.
 - **Tools**: Snowflake, Redshift, DBT, Fivetran, Hightouch, Postgres.
 - **Project**: Develop and orchestrate ELT pipelines with dbt.
-    - [Project 1:  Walmart data ETL and Data Loads using Snowflake](./analytical/week6/MiniProjectWalmartDimensionalModelling/): This mini project involves performing ETL and Data Load of Walmart data using Snowflake and the Kimball Dimensional Modelling Methodology
+    - [Project 1: Sakila DVD ELT & Data Modelling using DBeaver & Snowflake](./analytical/week5/MiniProjectDvdStoreDimentionalModelling/): This mini project involves performing ELT and Data Modelling using Snowflake and the Kimball Dimensional Modelling Methodology
+    - [Project 2:  Walmart data ELT and Data Loads using Snowflake](./analytical/week6/MiniProjectWalmartDimensionalModelling/): This mini project involves performing ETL and Data Load of Walmart data using Snowflake and the Kimball Dimensional Modelling Methodology
+
+
+### 3. Midterm Project
+- ***Coming Soon***: In progress
 
 ### 4. Big Data and Data Lake
 - **Focus**: Big Data processing using Spark and Data Lake architecture.

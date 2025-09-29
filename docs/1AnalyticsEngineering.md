@@ -3590,60 +3590,9 @@ PROD_DB
 * Week [instructions](../analytical/week7/eda_and_data_description_wk7_plan.pdf)
 * EDA using snowflake. Find notes related to this week in the project documentation [here](https://github.com/sanyassyed/DataEngineering_Retail_ETL_Pipeline/blob/main/docs/project_creation.md#part-3-eda-and-data-modelling-in-snowflake)
 
-### Lecture 1 - Data Modelling in the project
-#### Dataset info
-* TPC-DS Dataset: It is a standardised Dataset which is used to test Datawarehouse efficiency. Eg: to comapare BigQuery vs Snowflake vs Databricks etc.
-* More info on the dataset [here](https://www.fivetran.com/blog/warehouse-benchmark)
-#### Data Modelling Steps
-* EDA on dataset
-* Make **Data dictionary** using tools like to add coulumn descriptions
-    * `documentation in dbt`
-    * `Collibra`
-    * `DataHub`
-    * `Excel`
-* Or add descriptions directly to the table and columns on Snowflake using the following commands
-    * `COMMENT ON TABLE / COLUMN` [more info](https://docs.snowflake.com/en/sql-reference/sql/comment)
-* Make a ERD (Entity Relationship Diagram) of the dataset if not available using tools like
-    * `Lucid` (also lets you convert the ERD to DDL)
-    * `Draw.io`
-* Perform the next stages of Data Modelling (Conceptual, Logical & Physical models)
-    * Conceptual Model:
-        * Identify the Grain:
-            * look at the business requirements
-            * item should also be included in the grain otherwise it will not make sense what the total quantity is for
-            * include warehouse also in the dimension as requirement states it wants to know *inventory on hand at the end of each week in all warehouses*
-    * Logical Model
-        * Choose the Dimensions:
-            * Customer Dimension: 
-                * integrate it and prepare it for SCD Type 2 (currently it does not store history) 
-                * it will include the following tables - `Customer`, `Customer_address`, `Customer_demographics`, `Household_demographics` & `Income_band`
-                * Question to ask: do want to maintain the history only in the customer table or all other dependant tables also? 
-                * Snowflake Schema: If we want history of only customer table then we do SCD Type 2 on only the customer table and then later join the address, etc. In this case the address info etc will be over written but info like customer birthdate, names etc (Which are in the customer table) will have history
-                * Star Schema: If we maintain history for all the above tables we first join them all and then do Type 2 SCD
-#### Retail Project Terminologies
-##### 🔑 Quick Memory Guide
-- **List Price** = Before discount  
-- **Net Price / Sale Price** = After discount  
-- **Net Cost** = Seller’s cost  
-- **Final Cost** = What the buyer actually pays after adding shipping & tax  
-##### ✅ Full Example Walkthrough
-- **List Price:** $1000  
-- **Discount:** $200  
-- **Net Price / Sale Price (after discount):** $800  
-- **Seller’s Net Cost:** $600  
-- **Profit:** $200 (800 – 600)  
-- **Shipping:** $20  
-- **Tax:** $40  
-- **Final Cost (buyer pays):** $860  
+### Lecture 1 & 2 - Data Modelling in the project & ETL in the project
+* Refer the notes [here](https://github.com/sanyassyed/DataEngineering_Retail_ETL_Pipeline/blob/main/docs/project_creation.md)
 
-### Data RE-LOAD
-* Create a new snowflake account
-* Load the inventory.csv again using Lambda function `wcd-de-b8-snowflake-project`
-    * Change the snowflake account details in config `account identifier`
-    * Run the [script](../script/snowflake/1_setup.sql) to create the DB in Snowflake
-    * Run the lambda code by selecting `Deploy` & `Test`
-    * `Inventory` table in now loaded into TPCDS.RAW schema in Snowflake
-* Use Airbyte [playground]( https://demo.airbyte.io/workspaces/55c39a0b-037d-406c-a1ac-00393b055f18/connections) to load the other 18 tables
 
 ## Week 8 - Data Transformation - DBT for ETL
 ## Week 9 - Data Analyzation - Data Analyzation with Metabase and Project Summary
