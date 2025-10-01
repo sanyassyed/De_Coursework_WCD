@@ -3402,8 +3402,10 @@ PROD_DB
 ---
 
 ### Lectures & Lab
+
 #### Lecture 1 - SQL in ETL
 [Lecture Slides](../analytical/week6/W6.1%20SQL%20in%20ETL.pdf)
+
 ##### Topics Covered
 * Inner Join
 * Right Join
@@ -3416,6 +3418,7 @@ PROD_DB
         * `MATCHED`: if matching record found then do the something (usually update)
         * `NOT MATCHED`: if matching record not found the do something (usually insert)
 * CLUSTERING
+
 ---
 
 #### Lecture 2 - Data Loading
@@ -3476,12 +3479,12 @@ PROD_DB
     * ![SCD-Type 2](../analytical/week5/scd.png)
     * Now the fact table will also contain multiple rows for the same customer; therefore when calculating make sure you are filtering out based on the last_updated or current_value column in the fact table to get the latest upto date record
     * ✅ Steps to perform Update in the DW for `Type 2 SCD Table` [detailed answer with SQL code eg](https://chatgpt.com/s/t_68cad762daf48191a1bbc367b7a33022)
-        * 🔹 Before updating
+        * Before updating
             * [ ] **Identify the natural key** (e.g., `employee_code`) from the source system.
             * [ ] **Check if the record exists in the dimension table**.
             * [ ] **Find the current active surrogate key** (`is_current = TRUE`).
 
-        * 🔹 If the record has changed
+        * If the record has changed
             * [ ] **Expire the old record**
                 * Set `valid_to = yesterday (or change effective date - 1)`
                 * Set `is_current = FALSE`
@@ -3491,12 +3494,12 @@ PROD_DB
                 * `valid_to = NULL`
                 * `is_current = TRUE`
 
-        * 🔹 Fact table handling
+        * Fact table handling
 
             * [ ] **Leave old facts unchanged** (they continue to point to the old surrogate key).
             * [ ] **Insert new fact records** pointing to the new surrogate key for transactions after the change effective date.
 
-        * 🔹 After update
+        * After update
 
             * [ ] **Validate history**
 
@@ -3520,18 +3523,18 @@ PROD_DB
     * Limited Past
     * Eg: Region of sales
     * ✅ Steps to perform Update in the DW for `Type 3 SCD Table` [detailed answer with SQL code eg](https://chatgpt.com/s/t_68cad72d77548191a941ddcb82884c1b)
-        * 🔹 Before updating
+        * Before updating
             * [ ] **Identify the natural key** from the source system (e.g., `employee_code`).
             * [ ] **Check if the record exists** in `dim_employee`.
-        * 🔹 If the record has changed
+        * If the record has changed
             * [ ] **Update the existing row**:
                 * Move current value to the `prev_` column (e.g., `prev_employee_code = employee_code`).
                 * Update the current column with the new value (`employee_code = new value`).
                 * Keep the **same surrogate key**.
-        * 🔹 Fact table handling
+        * Fact table handling
             * [ ] **No updates needed for historical facts** — they still point to the same surrogate key.
             * [ ] **Insert new fact records** pointing to the same surrogate key (facts don’t need to switch like in Type 2).
-        * 🔹 After update
+        * After update
             * [ ] Verify that:
                 * Each row has the **latest value** in the main column.
                 * The **previous value** is stored in the `prev_` column.
@@ -3580,11 +3583,16 @@ PROD_DB
 
 1. **Data Loading**
 * NOTE: Initial load logic and delta load logic should be same i.e sql code used should work for both
+
 ---
+
 #### Lab - MiniProject - Walmart Dataset - Data Modelling & Data Loads
 * Project Folder [here](../analytical/week6/MiniProjectWalmartDimensionalModelling/)
 * Project Readme [here](../analytical/week6/MiniProjectWalmartDimensionalModelling/README.md)
 * [Project Description](../analytical/week6/MiniProjectWalmartDimensionalModelling/project_description.pdf)
+
+
+---
 
 ## Week 7 - Data Transformation - Data Modeling and ETL in the Project
 * Week [instructions](../analytical/week7/eda_and_data_description_wk7_plan.pdf)
@@ -3594,8 +3602,248 @@ PROD_DB
 * Refer the notes [here](https://github.com/sanyassyed/DataEngineering_Retail_ETL_Pipeline/blob/main/docs/project_creation.md)
 
 
+---
+
+
 ## Week 8 - Data Transformation - DBT for ETL
-## Week 9 - Data Analyzation - Data Analyzation with Metabase and Project Summary
+
+### DBT Features
+Allows you to have a sql script for data transformations via dbt models which helps in the following
+* Lineage Tracking
+* Reliability
+* Modularity
+* Testing
+
+### DBT Functions
+
+* dbt does not automatically know about the objects (databases, schemas, tables, views, etc.) in your Data Warehouse (DW).
+* dbt builds **dbt models** (tables/views defined in `.sql` files) that can pull from:
+
+  * Raw warehouse objects (via **`source()`**)
+  * Other dbt models (via **`ref()`**)
+
+---
+
+#### 1. Source Function
+
+* Helps dbt identify and track the raw objects in your DW.
+* `sources.yml`
+
+  * defines metadata about external/raw data sources:
+
+    * source name
+    * source database
+    * source schema
+    * source tables
+
+```yaml
+-- Example: sources.yml
+sources:
+  - name: raw
+    schema: sales
+    tables:
+      - name: orders
+```
+
+* `source()` function
+
+    * used **inside a dbt model SQL file** to select from a raw table defined in `sources.yml`.
+    * does not create a physical object itself, but acts as a pointer for lineage and testing.
+    * When you use source(), dbt does not create a new table or view. Instead, it creates a kind of "pointer" object that:
+    * Represents a table/view in your warehouse (usually raw/staging tables that dbt itself didn’t build).
+    * Lets you reference that external table in your model SQL code with a consistent name.
+    * Ensures lineage is tracked in dbt’s DAG (you’ll see raw → staging → marts in dbt docs).
+    * Can enforce tests (like freshness, unique, not_null) on those raw tables.
+
+```sql
+-- Example: models/staging/stg_orders.sql
+select
+    order_id,
+    customer_id,
+    order_date
+from {{ source('raw', 'orders') }}
+```
+
+---
+
+#### 2. Reference Function
+
+* `ref()` is used inside a dbt model to reference another dbt model (not raw sources).
+* Ensures proper **dependencies** between models in the DAG (so dbt knows the order to run them).
+* Keeps your SQL portable across environments (dbt handles schema resolution).
+
+```sql
+-- Example: models/marts/orders_summary.sql
+select
+    customer_id,
+    count(*) as total_orders
+from {{ ref('stg_orders') }}
+group by customer_id
+```
+
+---
+
+#### Data Flow in DBT
+```mermaid
+flowchart LR
+    DW["Data Warehouse Objects
+    - Raw Tables
+    - Raw Views"]
+
+    DBTSOURCE["dbt Source Object (declared in sources.yml)"]
+
+    STAGING["Staging Model (.sql using source function)"]
+
+    DOWNSTREAM["Downstream Models (.sql using ref function)"]
+
+    DW -->|Declared in sources.yml| DBTSOURCE
+    DBTSOURCE -->|Used in dbt model with source function| STAGING
+    STAGING -->|Referenced with ref function| DOWNSTREAM
+```
+
+---
+
+### Data Transformation *Best Practice* in dbt
+
+* Goal: move data from **source-conformed** (raw system representation) → **business-conformed** (business-friendly, analytics-ready).
+* We use **dbt layers** to make this journey structured, modular, and maintainable.
+* Example: Raw `orders` from `store`, `online`, and `pop-up stores` → combined into a **single business table** `orders` (since business only cares about orders, not source system).
+
+---
+
+### Jaffle Shop Example (Classic dbt Demo Project)
+* Option 1: - documentation across multiple files `models.yml` & `docs.yml`
+![Jaffle Shop Dbt Repo](../analytical/week8/dbt_jaffle_shop.png)
+* Option 2: - documenation in one file `schema.yml`
+![Jaffle Shop Dbt Repo](../analytical/week8/dbt_jaffle_shop2.png)
+* `staging/` folder – has one model per raw source table.
+* `base/` folder – sometimes added to maintain strict 1:1 relationship with the raw source, or to union multiple raw tables before staging
+  * Example: `shop_customers` and `deleted_customers` unioned into `customers`.
+  * This prepares data so staging and marts layers can work with a **clean, unified source-conformed dataset**.
+* `marts/` folder – fact and dimension models built for analytics.
+
+---
+
+### Dbt Layers
+
+*These aren’t hard-coded by dbt; they’re naming/structuring conventions followed by the dbt community for best practice.*
+
+#### 1. **Staging Layer**
+
+* First stop for raw data. Each staging model is a **thin wrapper** over a raw table.
+* **Best practice:** 1 staging model per `source system` (1:1 mapping) Eg: `Jaffle shop` & `Stripe`
+* Usually implemented as **views** (freshness, low storage).
+* `sources.yml` – defines raw data sources (name, database, schema, tables).
+* ***Documentation Options***
+    * Option 1:
+        * `models.yml` - used for testing, documentation and config
+        * `docs.yml` - huge amount of documentation is done here
+    * Option 2 - this option dbt consolidates the above two into `schema.yml`
+        * `schema.yml` – defines tests, documentation, and configs for models
+* Most standard types of staging transformation
+    * ✅ Renaming
+    * ✅ Casting
+    * ✅ Simple calculations (C to F, etc)
+    * ✅ Categorizing
+    * 🚫 Complex Joins (if simple joins use `base` folder)
+    * 🚫 Aggregations (group by/ rank) 
+* Naming convension: 
+    * Sources: ***_source_system_name_sources.yml** eg: `_jaffle_shop_sources.yml`
+    * Schema: ***_source_system_schema.yml** eg: `_jaffle_shop_schema.yml`
+    * Docs: ***_source_system_docs.yml** eg: `_jaffle_shop_docs.yml`
+    * Models: ***_name_source_system_docs.yml** eg: `_jaffle_shop_docs.yml`
+    * DBT Model: ***layer_name_source_system_models.yml** eg: `stg_jaffle_shop_customers.sql`
+    
+#### 2. **Intermediate Layer**
+
+* Optional layer, used to simplify complex logic before marts.
+* Only used **within dbt** (not exposed to BI tools).
+* Often implemented with **ephemeral models** (not materialized as tables/views; compiled inline into downstream queries).
+* Great for reusable sub-queries, CTE-like logic, or joining multiple staging tables.
+
+#### 3. **Marts Layer**
+
+* Final transformed data → analytics-ready.
+* Typically modeled as **facts and dimensions** (if following Kimball star schema).
+* Materialized as **tables** for performance.
+* Exposed to BI/analytics layer.
+
+---
+
+### Important Clarifications
+
+* ✅ dbt **does not automatically perform dimensional modeling**. You design the logic, dbt executes and manages it.
+* ✅ dbt provides tools for **testing, documentation, lineage, and orchestration** of transformations — but **you decide the modeling methodology**.
+* ✅ dbt **layers are conventions, not enforced rules**. The community generally follows **staging → intermediate → marts**, but you can adapt to your org’s needs.
+
+---
+
+
+### DBT Dataflow between layers
+* This diagram matches the best practices you noted, showing how dbt layers move data from source-conformed → business-conformed.
+
+```mermaid
+flowchart LR
+    %% Raw Data Sources
+    DW["Data Warehouse Objects
+    - Raw Tables
+    - Raw Views"]
+
+    %% Staging Layer
+    STAGING["Staging Models (.sql using source function)
+    - Usually Views
+    - 1:1 mapping with sources
+    - source.yml defines metadata
+    - schema.yml for tests & docs"]
+
+    %% Intermediate Layer
+    INTERMEDIATE["Intermediate Models
+    - Often Ephemeral models
+    - Optional layer
+    - Complex transformations
+    - Only visible inside dbt"]
+
+    %% Marts Layer
+    MARTS["Marts / Analytics Models
+    - Facts & Dimensions
+    - Business-conformed
+    - Materialized as Tables for BI/Analytics"]
+
+    %% Connections (each connection on its own line)
+    DW -->|source function| STAGING
+    STAGING -->|ref function| INTERMEDIATE
+    INTERMEDIATE -->|ref function| MARTS
+```
+
+* Explanation of Flow:
+    * DW → Staging: Pull raw tables using source() into staging models.
+    * Staging → Intermediate: Transform and combine data in ephemeral or intermediate models using ref().
+    * Intermediate → Marts: Final business-ready tables (facts & dimensions) built using ref(), ready for BI/analytics.
+
+👉 **One-liner takeaway for interviews**:
+
+* *“In dbt, `source()` pulls raw tables into staging models, `ref()` chains dbt models together, and the best practice is to structure transformations in layers — staging, intermediate, and marts — moving data from source-conformed to business-conformed.”*
+
+---
+
+
+
+---
+
+#### DBT COMMANDS
+* dbt init
+* dbt build
+* dbt degug
+* dbt run
+
+---
+
+## Week 9 - Data Analyzation - Data Analyzation with Metabase and Project 
+
+### Summary
+
+---
+
 ## Week 10 - Final Project - Project Week
 
 
@@ -3607,8 +3855,7 @@ PROD_DB
 * [Free Tier](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=categories%23compute)
 * [My free tier usage](https://us-east-1.console.aws.amazon.com/billing/home#/freetier)
 
-
-https://drive.google.com/file/d/1OjflCorv5awMlykK-kYZvl4Er9wPHsx4/view?usp=share_link
+---
 
 ## Challenges:
 * EC2 & VSCode Issuse: *"Tell me about a time you faced a technical issue and how you resolved it."* More [here](./setupNotes.md#errors)
@@ -3629,3 +3876,5 @@ https://drive.google.com/file/d/1OjflCorv5awMlykK-kYZvl4Er9wPHsx4/view?usp=share
             2. Building a solid foundation in Linux helped me troubleshoot more effectively.
 
     * Overall, I was able to save costs, stabilize my development environment, and continue my project without interruptions.
+
+    ---
