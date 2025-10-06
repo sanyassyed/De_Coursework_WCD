@@ -3734,12 +3734,6 @@ flowchart LR
 * **Best practice:** 1 staging model per `source system` (1:1 mapping) Eg: `Jaffle shop` & `Stripe`
 * Usually implemented as **views** (freshness, low storage).
 * `sources.yml` – defines raw data sources (name, database, schema, tables).
-* ***Documentation Options***
-    * Option 1:
-        * `models.yml` - used for testing, documentation and config
-        * `docs.yml` - huge amount of documentation is done here
-    * Option 2 - this option dbt consolidates the above two into `schema.yml`
-        * `schema.yml` – defines tests, documentation, and configs for models
 * Most standard types of staging transformation
     * ✅ Renaming
     * ✅ Casting
@@ -3760,6 +3754,12 @@ flowchart LR
 * Only used **within dbt** (not exposed to BI tools).
 * Often implemented with **ephemeral models** (not materialized as tables/views; compiled inline into downstream queries).
 * Great for reusable sub-queries, CTE-like logic, or joining multiple staging tables.
+* ***Documentation Options***
+    * Option 1:
+        * `models.yml` - used for testing, documentation and config
+        * `docs.yml` - huge amount of documentation is done here
+    * Option 2 - this option dbt consolidates the above two into `schema.yml`
+        * `schema.yml` – defines tests, documentation, and configs for models
 
 #### 3. **Marts Layer**
 
@@ -3776,8 +3776,178 @@ flowchart LR
 * ✅ dbt provides tools for **testing, documentation, lineage, and orchestration** of transformations — but **you decide the modeling methodology**.
 * ✅ dbt **layers are conventions, not enforced rules**. The community generally follows **staging → intermediate → marts**, but you can adapt to your org’s needs.
 
+
 ---
 
+### 🧱 The Common YAML Files in dbt (`_sources.yml`, `_models.yml`, `_docs.yml`, `_snapshots.yml`)
+
+| File Name            | Typical Purpose                                                                                | Common Location                                                | dbt Recognizes It? | Notes                                                                                                                         |
+| -------------------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| **`_sources.yml`**   | Defines **external raw data sources** (not created by dbt).                                    | `models/staging/<source_name>/`                                | ✅ Yes              | Used with `{{ source('src_name', 'table_name') }}` to reference raw tables.                                                   |
+| **`_models.yml`**    | Defines **tests, descriptions, and documentation** for **dbt models** (and sometimes sources). | In the same folder as the models (e.g., `models/marts/core/`). | ✅ Yes              | dbt doesn’t care about the filename — only that it contains `version: 2` and a valid top-level key (`models:` or `sources:`). |
+| **`_docs.yml`**      | Optional — adds **project-level documentation**, markdown content, or glossary terms.          | Usually at the project root or inside `models/`.               | ✅ Yes              | Used with `dbt docs generate` to add general descriptions, methodology, and glossary pages.                                   |
+| **`_snapshots.yml`** | Defines **metadata and documentation** for snapshot models.                                    | Inside the `snapshots/` folder.                                | ✅ Yes              | Helps track changes in slowly changing dimensions (SCDs).                                                                     |
+
+---
+
+#### 🔹 1. `_sources.yml`
+
+**Purpose:** Define raw/external data inputs.
+
+```yaml
+version: 2
+
+sources:
+  - name: tpcds
+    schema: raw_tpcds
+    tables:
+      - name: customers
+        description: "Raw customer data from TPCDS dataset"
+      - name: orders
+        description: "Raw order data from TPCDS dataset"
+```
+
+**Location:**
+
+```
+models/staging/tpcds/_tpcds_sources.yml
+```
+
+---
+
+#### 🔹 2. `_models.yml`
+
+**Purpose:** Define tests, descriptions, and documentation for dbt models.
+
+```yaml
+version: 2
+
+models:
+  - name: stg_customers
+    description: "Cleans and standardizes customer data from TPCDS source"
+    columns:
+      - name: customer_id
+        description: "Unique customer identifier"
+        tests:
+          - not_null
+          - unique
+```
+
+**Location:**
+
+```
+models/staging/tpcds/_tpcds_models.yml
+```
+
+✅ **Note:** dbt doesn’t require specific filenames — it recognizes all `.yml` files containing `version: 2` and valid keys (`sources`, `models`, or `snapshots`).
+
+---
+
+#### 🔹 3. `_docs.yml`
+
+**Purpose:** Add markdown documentation or project-wide context.
+
+```yaml
+version: 2
+
+docs:
+  - name: data_flow
+    description: |
+      ## Data Flow Overview
+      Raw data comes from the TPCDS schema.
+      It’s cleaned in the staging layer, transformed in intermediate models,
+      and aggregated into the operational marts layer.
+```
+
+**Location:**
+
+```
+models/_project_docs.yml
+```
+
+To reference the doc in your model YAML:
+
+```yaml
+description: "{{ doc('data_flow') }}"
+```
+
+---
+
+#### 🔹 4. `_snapshots.yml`
+
+**Purpose:** Add metadata and tests for snapshot models (used for tracking historical changes).
+
+```yaml
+version: 2
+
+snapshots:
+  - name: customer_snapshot
+    description: "Tracks changes in customer attributes over time for SCD Type 2 logic"
+```
+
+**Location:**
+
+```
+snapshots/_snapshots.yml
+```
+
+---
+
+### 🧭 Folder Structure (2025 Best Practice)
+
+```
+models/
+│
+├── staging/
+│   ├── tpcds/
+│   │   ├── _tpcds_sources.yml         ← defines raw data sources
+│   │   ├── stg_customers.sql
+│   │   ├── stg_orders.sql
+│   │   └── _tpcds_models.yml          ← docs/tests for staging models
+│
+├── intermediate/
+│   ├── int_customer_orders.sql
+│   └── _intermediate_models.yml       ← docs/tests for intermediate models
+│
+├── marts/
+│   ├── core/
+│   │   ├── dim_customers.sql
+│   │   ├── fct_orders.sql
+│   │   └── _core_models.yml           ← docs/tests for core marts
+│   ├── operational/
+│   │   ├── dim_inventory.sql
+│   │   ├── fct_sales.sql
+│   │   └── _operational_models.yml    ← docs/tests for operational marts
+│
+└── _project_docs.yml                  ← optional project-level documentation
+│
+snapshots/
+│   ├── customer_snapshot.sql
+│   └── _snapshots.yml                 ← docs/tests for snapshot models
+```
+
+---
+
+### 💡 Best Practices
+
+✅ Add `_` (underscore) at the beginning of YAML filenames
+→ Keeps them sorted and visually grouped above SQL files.
+
+✅ Use double underscores `__` to separate **source names** or **schema identifiers**
+→ Example: `_tpcds__sources.yml`
+
+✅ Maintain consistent layer structure:
+
+| Layer            | Purpose                             |
+| ---------------- | ----------------------------------- |
+| **staging**      | Clean and standardize raw data      |
+| **intermediate** | Join or transform staging models    |
+| **marts**        | Domain-specific business-ready data |
+| **snapshots**    | Track historical changes (SCDs)     |
+| **docs**         | Central documentation & metadata    |
+
+
+---
 
 ### DBT Dataflow between layers
 * This diagram matches the best practices you noted, showing how dbt layers move data from source-conformed → business-conformed.
@@ -3825,18 +3995,209 @@ flowchart LR
 * *“In dbt, `source()` pulls raw tables into staging models, `ref()` chains dbt models together, and the best practice is to structure transformations in layers — staging, intermediate, and marts — moving data from source-conformed to business-conformed.”*
 
 ---
+### Materialization
+
+* Refer to lecture slides
+* Specify them at two locations:
+    1. dbt_project.yml
+    2. model sql files - this has higher priority
+
+---
+
+### DBT Folder Structure
+* Key files:
+    * dbt_project.yml
+        * contains pointer to profile which is located at `~/.dbt/profiles.yml`
+        * to use a different target in the profile use `dbt build --target prod`
+    * packages.yml
+* Key folders
+    * `analyses`: files under this are ignored by dbt
+    * `logs`
+    * `target`: two important sub folders are
+        * `target/compiled/`: This directory contains the compiled `SELECT` statements for your models and analyses. These are the queries that dbt generates from your source files (including Jinja rendering and macro expansion) before they are executed against your data warehouse.
+        * `target/run/`: This directory contains the compiled `CREATE` or `MERGE` statements that dbt executes to materialize your models during a dbt run or dbt build command. This includes the full DDL or DML statements used for creating tables, views, or incremental updates.
+    * `models`
+
+### DBT Snapshots
+
+#### Purpose
+
+* Snapshots are used to **maintain historical data** about a dimension.
+* Mainly for **auditing, compliance, or tracking changes over time**.
+* Typically implement **Type 2 Slowly Changing Dimensions (SCD Type 2)**.
+
+> **Important:** Most projects maintain **both tables**:
+>
+> 1. **Business-facing table** (Type 1, e.g., `customers_dim`) – for downstream models, visible to business users.
+> 2. **Snapshot table** (Type 2, e.g., `customers_snapshot`) – preserves history, mainly for auditing.
+>
+> Therefore `dbt snapshot` command is executed after `dbt run`
+> But if your downstream models are referencing snapshots then dbt build will automatically execure `dbt snapshot` before `dbt run`
 
 
+#### **SCD Models Overview**
+
+| SCD Type   | Description                                             | Implementation in dbt                                                                                                          | Example Table                                        |
+| ---------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------- |
+| **Type 1** | Stores **only the latest data**; overwrites old values. | **Regular dbt models** (table or incremental model). Snapshots **not used**.                                                   | `customers_dim` (business-facing, downstream models) |
+| **Type 2** | Preserves **full history** of changes.                  | Usually implemented with **dbt snapshots** (automates change detection). Can also use **incremental models with merge logic**. | `customers_snapshot` (auditing, historical tracking) |
 
 ---
 
-#### DBT COMMANDS
-* dbt init
-* dbt build
-* dbt degug
-* dbt run
+#### **Snapshot Strategies**
+
+1. **Timestamp Strategy**
+
+   * Detects changes using a single timestamp column (e.g., `updated_at`).
+2. **Check Strategy**
+
+   * Detects changes by comparing values across **one or more columns**.
 
 ---
+
+#### **Folder & Organization**
+
+* Snapshots should reside in the **`snapshots/` folder**.
+* Optional subfolders for organization:
+
+  ```
+  snapshots/
+      staging/
+      intermediate/
+      marts/
+  ```
+* Compiled snapshots are stored at:
+
+  ```
+  target/run/<project_name>/snapshots/<subfolder>
+  ```
+
+  * Snapshots typically use **`CREATE` and `MERGE` statements**, unlike regular `SELECT` models.
+
+---
+
+#### **Key Points**
+
+* **Snapshots are only for Type 2 SCDs**. Type 1 SCDs are implemented using regular dbt models.
+* Snapshots are mostly **not referenced downstream**, but can be if historical state is needed.
+* Most dimensions maintain **both a Type 1 table (business-facing) and a snapshot table (historical)**.
+* dbt handles snapshot logic automatically for detecting changes and inserting new records.
+
+
+```
+customers_dim (Type 1) → downstream models
+customers_snapshot (Type 2) → auditing/history
+```
+
+![SCD in Dbt](../analytical/week8/ScdInDbt.png)
+
+---
+
+
+### DBT Packages
+* [Dbt Package Repo](www.hub.dbt.com)
+* Example usage `facebook_ads` created by `fivetran`:
+    * When using Fivetran to bring in FB ads data. dbt has a package to handle this data
+    * the package provides generic tests
+* Useful packages
+    * `dbt_utils` : provides generic tests eg: not_accepted_values, accepted_ranges etc.
+    * `codegen` : creates dbt models for you by using some configs, generates model yml file
+    * `dbt_project_evaluator`: checks if you following the best practices
+    * `audit_helper` : useful during migrations as it can compare two tables if there is any difference
+    * `dbt_expectations` : used mainly for testing
+* Defining a package:   
+    * `packages.yml` : copy paste the code for the package into this file and this will automatically add a folder of the package in your project
+* Example: `dbt_utils.generate_surrogate_key(['field1', 'field2'])` - this used md5 cryptographic algorithm to generate a hash key which acts as the surroge key
+
+
+### DBT Tests:
+* To maintain data trust we need to do these tests
+* Four generic tests
+    * unique
+    * not_null
+    * accepted_values
+    * realtionships
+* usually used in `models.yml` or `schema.yml`
+* `Singular tests` which are specific tests are stored in `tests` folder as .sql files
+
+### DBT Docs
+Use the commands below to generate the docs and then view them on the browser
+
+### DBT Schedule
+* dbt-cloud
+* linux cron
+* airbyte
+* 
+---
+### DBT COMMANDS
+
+| Command                          | Purpose                                                                                            | Typical When to Use                                      | Example                      |
+| -------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ---------------------------- |
+| **`dbt init`**                   | Initializes a new dbt project (creates folders like `models`, `seeds`, `snapshots`, `tests`, etc.) | The *first* thing you do when starting a new dbt project | `dbt init netflix_pipeline`  |
+| **`dbt debug`**                  | Tests the connection to your data warehouse (checks profiles.yml, credentials, etc.)               | Run before your first build or if dbt can’t connect      | `dbt debug`                  |
+| **`dbt clean`**                  | Deletes the `/target/`, `/dbt_packages/`, and `/logs/` folders (generated files)                   | Use when you want a fresh rebuild or troubleshooting     | `dbt clean`                  |
+| **`dbt deps`**                   | Installs packages listed in `packages.yml` (like `dbt_utils`)                                      | After adding packages or cloning a new repo              | `dbt deps`                   |
+| **`dbt seed`**                   | Loads CSV files from `/seeds` folder into your data warehouse                                      | When you have seed data (lookup/reference tables)        | `dbt seed`                   |
+| **`dbt run`**                    | Runs (executes) all *models* — creates tables/views in the warehouse                               | Every time you want to build models after changes        | `dbt run`                    |
+| **`dbt test`**                   | Runs *tests* defined in your schema.yml (like `unique`, `not_null`, etc.)                          | After `dbt run` to validate your data                    | `dbt test`                   |
+| **`dbt snapshot`**               | Runs all snapshot models (tracks historical changes)                                               | When you want to record data changes (SCD logic)         | `dbt snapshot`               |
+| **`dbt build`**                  | Runs **models + tests + snapshots + seeds** together in correct dependency order                   | Shortcut for a full pipeline run                         | `dbt build`                  |
+| **`dbt docs generate`**          | Generates documentation (in `/target`) from your models, schema.yml, and lineage                   | After a successful run to update docs                    | `dbt docs generate`          |
+| **`dbt docs serve --port 8000`** | Launches a local web server to view docs and lineage graph                                         | After generating docs                                    | `dbt docs serve --port 8000` |
+
+---
+
+#### 🔄 Ideal Execution Order (End-to-End)
+
+If you’re working on a new or updated dbt project, this is the **recommended order**:
+
+1️⃣ **`dbt init`** — create project (once only)
+2️⃣ **`dbt debug`** — check your connection
+3️⃣ **`dbt deps`** — install dependencies
+4️⃣ **`dbt seed`** — load seed data (optional)
+5️⃣ **`dbt run`** — build your models
+6️⃣ **`dbt test`** — test data quality
+7️⃣ **`dbt snapshot`** — capture slowly changing dimension data (if configured)
+8️⃣ **`dbt docs generate`** — build documentation
+9️⃣ **`dbt docs serve --port 8000`** — open docs locally
+
+👉 For a **single command** workflow, you can often replace steps 5–7 with just:
+
+```
+dbt build
+```
+
+because it **runs models, seeds, tests, and snapshots** automatically in the correct order.
+
+---
+
+#### 🧩 Optional but Handy Commands
+
+| Command                            | Description                                           |
+| ---------------------------------- | ----------------------------------------------------- |
+| **`dbt run --select model_name`**  | Run only specific model(s)                            |
+| **`dbt test --select model_name`** | Test a specific model                                 |
+| **`dbt run-operation macro_name`** | Run a custom macro                                    |
+| **`dbt ls`**                       | Lists all models, tests, and resources in the project |
+| **`dbt source freshness`**         | Checks freshness of source data tables                |
+
+---
+
+#### 🧠 Quick Summary
+
+| Category             | Command(s)                            | Purpose                                |
+| -------------------- | ------------------------------------- | -------------------------------------- |
+| 🔧 **Setup**         | `dbt init`, `dbt debug`, `dbt deps`   | Initialize project & connect warehouse |
+| 📦 **Build Data**    | `dbt seed`, `dbt run`, `dbt snapshot` | Create data objects                    |
+| ✅ **Validate**       | `dbt test`, `dbt source freshness`    | Ensure data quality                    |
+| 🧱 **All-in-One**    | `dbt build`                           | Combines run + test + seed + snapshot  |
+| 📚 **Documentation** | `dbt docs generate`, `dbt docs serve` | Create and view project docs           |
+| 🧹 **Cleanup**       | `dbt clean`                           | Delete generated files                 |
+
+---
+
+### Mini Project - ETL on Walmart Data using Dbt
+Find the project [here](https://github.com/sanyassyed/DataEngineering_Walmart_ETL_Using_Dbt)
 
 ## Week 9 - Data Analyzation - Data Analyzation with Metabase and Project 
 
