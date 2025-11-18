@@ -190,6 +190,8 @@ Here’s the corrected and fully aligned version of your **MySQL String Function
 * **Time-series gaps**: `LAG()` + `DATEDIFF()`
 * **First/last per group**: `FIRST_VALUE()`, `ROW_NUMBER()` with filtering
 * **Complex grouping**: `GROUP_CONCAT()`, `JSON_ARRAYAGG()`, `VAR_*()` for stats
+* **AGGREGATE**: `ARRAY_AGG()`
+
 
 ---
 

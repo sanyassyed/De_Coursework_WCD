@@ -3742,11 +3742,10 @@ flowchart LR
     * 🚫 Complex Joins (if simple joins use `base` folder)
     * 🚫 Aggregations (group by/ rank) 
 * Naming convension: 
-    * Sources: ***_source_system_name_sources.yml** eg: `_jaffle_shop_sources.yml`
-    * Schema: ***_source_system_schema.yml** eg: `_jaffle_shop_schema.yml`
-    * Docs: ***_source_system_docs.yml** eg: `_jaffle_shop_docs.yml`
-    * Models: ***_name_source_system_docs.yml** eg: `_jaffle_shop_docs.yml`
-    * DBT Model: ***layer_name_source_system_models.yml** eg: `stg_jaffle_shop_customers.sql`
+    * sources.yml: ***_source_system_name__sources.yml** eg: `_jaffle_shop__sources.yml`
+    * models.yml: ***_source_system__schema.yml** eg: `_jaffle_shop__models.yml`
+    * docs.yml: ***_source_system__docs.yml** eg: `_jaffle_shop__docs.yml`
+    * DBT Model .sql file: ***layer_name_source_system__models.sql** eg: `stg_jaffle_shop__customers.sql`
     
 #### 2. **Intermediate Layer**
 
@@ -3934,7 +3933,7 @@ snapshots/
 → Keeps them sorted and visually grouped above SQL files.
 
 ✅ Use double underscores `__` to separate **source names** or **schema identifiers**
-→ Example: `_tpcds__sources.yml`
+→ Example: _sourceSystem__filename -> `_tpcds__sources.yml`
 
 ✅ Maintain consistent layer structure:
 
@@ -3946,6 +3945,7 @@ snapshots/
 | **snapshots**    | Track historical changes (SCDs)     |
 | **docs**         | Central documentation & metadata    |
 
+✅ 1 staging model folder per `source system` (1:1 mapping) Eg: `Jaffle shop` & `Stripe`
 
 ---
 
@@ -4001,6 +4001,7 @@ flowchart LR
 * Specify them at two locations:
     1. dbt_project.yml
     2. model sql files - this has higher priority
+* **NOTE** : `incremental materializations` can only be tables.
 
 ---
 
@@ -4103,12 +4104,13 @@ customers_snapshot (Type 2) → auditing/history
     * `dbt_utils` : provides generic tests eg: not_accepted_values, accepted_ranges etc.
     * `codegen` : creates dbt models for you by using some configs, generates model yml file
     * `dbt_project_evaluator`: checks if you following the best practices
-    * `audit_helper` : useful during migrations as it can compare two tables if there is any difference
+    * `audit_helper` : useful during migrations as it can compare two tables if there is any difference to produce **Data Reconciliation Reports**
     * `dbt_expectations` : used mainly for testing
 * Defining a package:   
     * `packages.yml` : copy paste the code for the package into this file and this will automatically add a folder of the package in your project
 * Example: `dbt_utils.generate_surrogate_key(['field1', 'field2'])` - this used md5 cryptographic algorithm to generate a hash key which acts as the surroge key
 
+---
 
 ### DBT Tests:
 * To maintain data trust we need to do these tests
@@ -4120,15 +4122,20 @@ customers_snapshot (Type 2) → auditing/history
 * usually used in `models.yml` or `schema.yml`
 * `Singular tests` which are specific tests are stored in `tests` folder as .sql files
 
+---
+
 ### DBT Docs
 Use the commands below to generate the docs and then view them on the browser
 
+---
 ### DBT Schedule
 * dbt-cloud
 * linux cron
 * airbyte
-* 
+
+
 ---
+
 ### DBT COMMANDS
 
 | Command                          | Purpose                                                                                            | Typical When to Use                                      | Example                      |
@@ -4199,9 +4206,23 @@ because it **runs models, seeds, tests, and snapshots** automatically in the cor
 ### Mini Project - ETL on Walmart Data using Dbt
 Find the project [here](https://github.com/sanyassyed/DataEngineering_Walmart_ETL_Using_Dbt)
 
+---
+
+### DBT in Main Project
+
+
 ## Week 9 - Data Analyzation - Data Analyzation with Metabase and Project 
 
 ### Summary
+In this chapter we look at using Metabase to create visualization
+* **TODO**:
+    * Create a new Snowflake account
+    * Fix airbyte with new snowflake account details
+    * Fix dbt with new snowflake account details
+    * Connect Metabase to the new snowflake account
+    * Add items and warehouse dimension to dbt
+    * 
+
 
 ---
 

@@ -4,6 +4,9 @@
 
 ## 🔁 REGEXP (Regular Expressions in MySQL)
 
+* Eg: `WHERE lower(mail) REGEXP "^[a-zA-Z]+[a-zA-Z0-9._-]*@leetcode\\.com$"`
+* NOTE: in mysql use `\\` double backslash for escape characters for example to escape a period do `\\.`
+
 ### 🔤 Basic Operators
 
 | Symbol   | Meaning                  | Example        | Matches             | Doesn’t Match  |
@@ -26,6 +29,9 @@
 ---
 
 ### 🧱 POSIX Character Classes (Must be inside `[]`)
+
+* Eg: `WHERE REGEXP_LIKE(mail COLLATE utf8_bin, '^[[:alpha:]]+[[:alnum:]._-]*@leetcode\\.com$')`
+* NOTE: [What is COLLATE?](#what-is-collate-in-mysql)
 
 | POSIX Class  | Meaning      | Equivalent        | Example        | Matches       |
 | ------------ | ------------ | ----------------- | -------------- | ------------- |
@@ -182,13 +188,78 @@ FROM product;
 
 ---
 
-### NOTES
+## **What is `COLLATE` in MySQL?**
+
+In MySQL:
+
+* **Collation** defines **how strings are compared and sorted**.
+* It affects:
+
+  1. **Equality comparisons** (`=`, `LIKE`)
+  2. **Sorting** (`ORDER BY`)
+  3. **Regex matching** (`REGEXP` / `REGEXP_LIKE`)
+
+A collation is always tied to a **character set**. For example:
+
+| Character set      | Example collations   | Description                                    |
+| ------------------ | -------------------- | ---------------------------------------------- |
+| `utf8` / `utf8mb3` | `utf8_general_ci`    | Case-insensitive (`ci` = **case-insensitive**) |
+| `utf8` / `utf8mb3` | `utf8_bin`           | Binary comparison, **case-sensitive**          |
+| `utf8mb4`          | `utf8mb4_general_ci` | Case-insensitive, full UTF-8 support           |
+| `utf8mb4`          | `utf8mb4_bin`        | Binary, case-sensitive, full UTF-8 support     |
+
+---
+
+### **Why it matters for regex**
+
+By default, MySQL regex matching **follows the collation of the string**:
+
+* If `mail` is stored with a **case-insensitive collation** (e.g., `utf8_general_ci`), regex is **case-insensitive**.
+
+  * Example: `'winston@leetcode.COM' REGEXP '^[[:alpha:]]+[[:alnum:]._-]*@leetcode\.com$'` → ✅ matches
+* If you want **case-sensitive regex**, you must force a **binary/case-sensitive collation** like `utf8_bin`.
+
+---
+
+### **How it works in your query**
+
+```sql
+WHERE REGEXP_LIKE(mail COLLATE utf8_bin,
+                  '^[[:alpha:]]+[[:alnum:]._-]*@leetcode\\.com$')
+```
+
+1. `mail COLLATE utf8_bin` → Treat the `mail` string as **binary/case-sensitive** for comparison.
+2. `REGEXP_LIKE(...)` → Uses this **collation** to decide whether each character matches.
+
+   * Lowercase `c` ≠ uppercase `C`
+   * Uppercase `A` ≠ lowercase `a`
+3. The pattern `'^[[:alpha:]]+[[:alnum:]._-]*@leetcode\\.com$'` is applied **with strict case sensitivity**.
+
+✅ Result:
+
+* `winston@leetcode.com` → matches
+* `winston@leetcode.COM` → does **not match**
+
+---
+
+### **Collate summary**
+
+> **COLLATE** specifies how string comparison is done.
+>
+> * Case-insensitive collations (`_ci`) ignore letter case.
+> * Binary collations (`_bin`) are case-sensitive.
+> * In `REGEXP_LIKE`, applying `COLLATE utf8_bin` forces **case-sensitive regex matching**, overriding the default column collation.
+
+---
+
+
+## NOTES
 
 * In SQL 0/0 results in `null` -> handle that by using `IFNULL()` function to display desired result
 
 ---
 
-### 📎 Additional References
+## 📎 Additional References
 
 * [MySQL 8.4 Window Function Frames Documentation](https://dev.mysql.com/doc/refman/8.4/en/window-functions-frames.html)
 * [Date/Time Intervals in MySQL](https://dev.mysql.com/doc/refman/8.4/en/date-and-time-functions.html#function_date-add)
