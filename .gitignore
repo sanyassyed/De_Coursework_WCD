@@ -2,6 +2,9 @@
 __pycache__/
 *.vscode
 
+# mac specific files -Desktop Service Storage
+**/.DS_Store
+
 # Environment Variables
 .env
 

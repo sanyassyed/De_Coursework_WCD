@@ -4260,3 +4260,50 @@ In this chapter we look at using Metabase to create visualization
     * Overall, I was able to save costs, stabilize my development environment, and continue my project without interruptions.
 
     ---
+## Scratchpad
+### Copy Lambda from one account to another
+1. Have the source account user (zara_de) and destination account user (shameem_de) profiles added to the aws credentials
+```bash
+# source account
+aws configure --profile zara_de
+# aws key
+# aws secret
+# region : us-east-2
+# output : json
+# destination account
+aws configure --profile shameem_de
+# aws key
+# aws secret
+# region : us-east-1
+# output : json
+```
+2. Download the function `wcd-de-b8-snowflake-project` from the source account and save it as .zip file `retail_etl.zip`
+```bash
+curl $(aws lambda get-function --function-name wcd-de-b8-snowflake-project --profile zara_de --output text --query "Code.[Location]") --output retail_etl.zip
+```
+3. Create a Role & attach Policies to it
+```bash
+# Step 1: Create a Role for the Lambda Function:
+# Trusted Entity Type: AWS Service
+# Use case: AWS Lambda
+# Permission Policies: AWSLambdaBasicExecutionRole
+
+# Create a role with this command - name in the old account was lambda-ex
+aws iam create-role --role-name CustomRoleLambdaEx --assume-role-policy-document '{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {"Service": "lambda.amazonaws.com"},
+    "Action": "sts:AssumeRole"
+  }]
+}'
+
+# Step 2: Attach Policies to the above Role `CustomRoleLambdaEx`
+# Attach a policy to the above role
+aws iam attach-role-policy --role-name CustomRoleLambdaEx --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+```
+4. Create the function on the destination account
+```bash
+aws lambda create-function --function-name wcd-de-b8-snowflake-project --runtime python3.12 --zip-file fileb://./retail_etl.zip --handler lambda_function.lambda_handler --role arn:aws:iam::841031788998:role/CustomRoleLambdaEx --profile shameem_de
+```
+
